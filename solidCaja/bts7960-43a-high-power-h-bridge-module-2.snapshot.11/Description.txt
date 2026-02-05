@@ -1,0 +1,44 @@
+BTS7960 43A High Power H Bridge Module
+
+https://grabcad.com/library/bts7960-43a-high-power-h-bridge-module-1
+
+Buy Link:
+https://www.aliexpress.us/item/3256805818916954.html
+
+#CAD #SolidWorks #3dmodel #BTS7960 #43A #HBridge #DCMotors
+
+The nice thing I like about this driver is I am able to control motor direction with 4 pins on the Arduino:
+L_EN, R_EN, LPWM, RPWM
+
+
+BTS7960B H-bridge 43A high-power motor driver Module Overview:
+
+This driver uses Infineon chips BTS7960 composed of high-power drive full H-bridge driver module with thermal over-current protection.
+
+Double BTS7960 H-bridge driver circuit, with a strong drive and braking, effectively isolating the microcontroller and motor driver!
+
+
+Features:
+
+Double BTS7960 large current (43 A) H bridge driver;
+
+5V isolate with MCU, and effectively protects MCU;
+
+5V power indicator on board;
+
+Voltage indication of motor driver output end;
+
+Can solder heat sink;
+
+Just need four lines from MCU to driver module
+(GND. 5V. PWM1. PWM2);
+
+Isolation chip 5 V power supply
+(can share with MCU 5 V);
+
+SIZE: 4 * 5 * 1.2 cm;
+
+Two PWM input frequency up to 25kHZ;
+
+Supply voltage 5.5V to 27V;
+
