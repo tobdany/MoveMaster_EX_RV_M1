@@ -5,43 +5,216 @@
 	Este capítulo detalla la transición del sistema de alimentación original hacia una arquitectura moderna de potencia. Se analizan los requerimientos de corriente de los actuadores, la integración de fuentes conmutadas y las soluciones de hardware personalizadas para optimizar la distribución eléctrica y la seguridad del robot.
 \end{resumenCapitulo}
 
-\section{Antecedentes: El Sistema de Control Original}
-Se realiza una revisión del controlador heredado del \textit{Move Master EX}, analizando las limitaciones de su fuente de voltaje interna y la necesidad de una etapa de potencia independiente que permita una mayor flexibilidad y protección de los componentes electrónicos modernos.
-
-\section{Análisis de Requerimientos Energéticos}
-Para el rediseño, fue fundamental determinar el consumo total del sistema:
+\section{Lista de materiales}
 \begin{itemize}
-	\item \textbf{Actuadores:} Análisis del amperaje nominal y de pico de los motores de corriente continua.
-	\item \textbf{Control y Potencia:} Consumo de los drivers y tarjetas lógicas auxiliares.
+	\item Fuente de poder de 12V y con capacidad de 40 Amp.
+	\item Regulador de voltaje Buck de salida de 1.1v a 40V.
+	\item Placa de suministro de voltaje (barra de bus).
+	\item Cables de calibre 16 y 20 AWG.
+	\item Multímetro.
 \end{itemize}
 
+\section{Antecedentes: El Sistema de Control Original}
+Se realiza una revisión del controlador heredado del \textit{Move Master EX}, analizando las limitaciones de su fuente de voltaje interna y la necesidad de una etapa de potencia independiente que permita una mayor flexibilidad y protección de los componentes electrónicos modernos. \\
+De acuerdo con las especificaciones técnicas detalladas en el manual del fabricante \cite{manualMitsubishi}, el sistema original presentaba una unidad de control integral que centralizaba múltiples funciones en un solo chasis. Según las especificaciones de placa y manual, el equipo estaba diseñado para operar con un rango de alimentación versátil de \textbf{120V / 220V / 230V / 240V AC $\pm$10\%}, con una potencia aparente nominal de \textbf{0.5 KVA}. Esta flexibilidad permitía al robot adaptarse a las diferentes líneas de voltaje según el país de operación, pero implicaba una etapa de transformación interna voluminosa y pesada. \\
+
+\begin{figure}[ht]
+	\centering
+	% --- PRIMERA MINIPAGE (Imagen del transformador) ---
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{images/FuentePoder/screenshot001}
+		\caption{Transformador de la etapa original de potencia del controlador.}
+		\label{fig:screenshot001}
+	\end{minipage}
+	\hfill % Crea un espacio elástico entre las dos minipages
+	% --- SEGUNDA MINIPAGE (Placa de especificaciones) ---
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{images/FuentePoder/screenshot002}
+		\caption{Especificaciones del transformador: 1 PH, 50/60 Hz y 520 VA.}
+		\label{fig:screenshot002}
+	\end{minipage}
+\end{figure}
+
+\subsection{Funcionalidades de la Drive Unit}
+Es importante destacar que el controlador no funcionaba únicamente como una fuente de poder; operaba como una \textit{Drive Unit} compleja que gestionaba diversos subsistemas:
+
+\begin{itemize}
+	\item \textbf{Interfaz de Comunicación:} Incorporaba un puerto serial \textbf{RS-232} para la vinculación con computadoras de la época.
+	\item \textbf{Control Manual:} Interfaz dedicada para la \textit{Teaching Box}, permitiendo el movimiento punto a punto.
+	\item \textbf{Gestión de Actuadores:} Salidas específicas para \textit{Motor Power} y recepción de señales a través de \textit{Motor Signal}.
+	\item \textbf{Herramientas Finales:} Opciones de configuración para el uso de terminales o efectores accionados tanto por DC como por AC.
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot004}
+	\caption{Componentes de la Drive Unit. Contiene un conector central para la conexión con la computadora, la teaching box, la alimentación de los motores, señales de control para el motor, selección del tipo de voltaje (AC/DC) del efector, etc. \cite{manualMitsubishi}  }
+	\label{fig:screenshot004}
+\end{figure}
+
+
+\subsection{Justificación del Rediseño y Simplificación}
+Al realizar la apertura del chasis, se identificó una arquitectura basada en múltiples paneles de circuitos integrados densamente poblados que, por su naturaleza analógica y lógica discreta, presentan una carga parasitaria considerable, generando calor y consumo de voltaje de forma constante. Fig. \ref{fig:screenshot003}. 
+
+Dado que el objetivo de este proyecto es el desarrollo de algoritmos y programas personalizados para controlar los motores de manera específica, la mayoría de las funciones predeterminadas del controlador original (como el protocolo RS-232 propietario o la lógica de la \textit{Teaching Box}) resultan redundantes. 
+
+Este análisis justifica la necesidad de migrar hacia una fuente conmutada moderna, eliminando la electrónica obsoleta que genera un gasto energético innecesario. Esta transición permite una gestión de potencia directa, compacta y eficiente, centrada exclusivamente en alimentar los nuevos drivers y el microcontrolador que ejecutará el software diseñado a medida.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot003}
+	\caption{Vista interna de uno de los paneles electrónicos del controlador original. Se observa la densidad de circuitos integrados que conforman la lógica de control y la unidad de potencia del sistema. \cite{schweizer2020}.}
+	\label{fig:screenshot003}
+\end{figure}
+
+
+
+
+\section{Análisis de Requerimientos Energéticos}
+Para determinar la capacidad necesaria de la fuente de alimentación, es fundamental analizar el consumo de corriente de todos los actuadores en su estado más crítico. Como se observa en la Figura \ref{fig:tabla_motores}, la cual presenta datos técnicos recopilados en la investigación de Sebastián,C. M \cite{tesisSebas}, se detallan las especificaciones nominales de los motores y frenos del brazo robótico.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\linewidth]{images/FuentePoder/screenshot005}
+	\caption{Tabla de especificaciones del motor y frenos.}
+	\label{fig:tabla_motores}
+\end{figure}
+
+
+
+Considerando un escenario de máxima exigencia operativa, donde todos los ejes se desplazan simultáneamente bajo carga, la corriente total requerida por los actuadores se obtiene mediante la sumatoria de las intensidades máximas registradas en la columna de ``Corriente con carga'':
+
+\[ I_{motores} = 2.0A + 2.75A + 2.2A + 2.0A + 2.65A + 0.2A = 11.8 \text{ A} \]
+
+Además del consumo de los motores, el sistema integra una etapa lógica y de potencia que debe ser considerada en el presupuesto energético total:
+\begin{itemize}
+	\item \textbf{Microcontroladores:} Un Arduino Mega y dos módulos ESP32, encargados de la gestión de trayectorias y comunicación inalámbrica.
+	\item \textbf{Drivers de Potencia:} Seis puentes H modelo \textbf{BTS7960}.
+	\item \textbf{Sistemas de Frenado:} Frenos electromagnéticos que operan a 12V.
+\end{itemize}
+
+Bajo estas consideraciones, se determinó que la fuente de alimentación debe ser capaz de suministrar de forma constante entre \textbf{13A y 14A}. Este margen de seguridad es vital para absorber los picos de corriente transitorios durante el arranque de los motores y para garantizar que el voltaje de 5V (obtenido mediante un regulador \textit{step-down} desde la línea de 12V) permanezca libre de ruido y caídas que pudieran provocar reinicios en los microcontroladores.
+
 \section{Gestión de Voltaje: El uso de 12V en Motores de 24V}
-Se exponen las razones técnicas detrás de alimentar motores de 24V con una fuente de 12V en este prototipo, considerando el torque necesario para las aplicaciones de laboratorio, la seguridad del operador y la prevención del sobrecalentamiento de los drivers de control.
+%Se exponen las razones técnicas detrás de alimentar motores de 24V con una fuente de 12V en este prototipo, considerando el torque necesario para las aplicaciones de laboratorio, la seguridad del operador y la prevención del sobrecalentamiento de los drivers de control.
+
+La selección del voltaje de operación para los actuadores del robot no es una decisión arbitraria, sino el resultado de una fase de experimentación previa y un análisis de eficiencia energética. Durante el semestre anterior, se realizaron pruebas preliminares operando los motores a un nivel de 12V DC, obteniendo resultados satisfactorios en cuanto a estabilidad y control de movimiento.
+
+Al profundizar en la investigación técnica, se determinó que operar a 12V representa un balance óptimo para los objetivos de este proyecto. Según la literatura técnica sobre máquinas eléctricas, existe una relación directa entre el voltaje aplicado y las características de salida del motor:
+
+\begin{quote}
+	``En los motores de corriente continua, el torque es proporcional a la corriente, mientras que la velocidad es proporcional al voltaje aplicado. Reducir el voltaje de operación permite un control más granular y un menor consumo de potencia base, aunque esto implique una reducción proporcional en el torque máximo y la velocidad final'' \cite{Hughes}.
+\end{quote}
+
+Para la aplicación actual del \textit{Move Master EX} en un entorno de laboratorio, no se requiere que el brazo manipule cargas máximas de diseño. Por lo tanto, el sacrificio en el torque es una concesión aceptable que ofrece las siguientes ventajas:
+
+\begin{itemize}
+	\item \textbf{Eficiencia Térmica:} Menor generación de calor en los drivers y en los propios motores, prolongando la vida útil de los componentes.
+	\item \textbf{Seguridad de Implementación:} Un sistema que opera a 12V reduce los riesgos de picos de corriente severos durante las fases de programación y testeo de algoritmos.
+	\item \textbf{Simplificación de la Etapa de Potencia:}  Para el funcionamiento integral del sistema, se identificaron tres niveles de tensión críticos: los motores operan nominalmente a \textbf{24V}, los sistemas de frenado requieren \textbf{12V}, y la lógica de control (microprocesadores y sensores) funciona a \textbf{5V}. \\
+	El uso de motores de 24V sugería la implementación de una fuente de dicha magnitud; sin embargo, esto habría implicado la necesidad de integrar una fuente conmutada adicional de 12V para los frenos, aumentando el volumen y la complejidad del sistema. Basado en la experimentación del semestre anterior, se determinó que operar los motores a 12V no resulta ser una mala decisión de ingeniería si se prioriza el consumo energético sobre el torque máximo
+\end{itemize}
+
+
 
 \section{Implementación de la Fuente Conmutada}
-Selección de una fuente conmutada (\textit{Switching Power Supply}) como núcleo del sistema. Se detallan las ventajas de eficiencia sobre las fuentes lineales y la importancia del sistema de enfriamiento activo (ventilador) para garantizar la operación continua sin degradación térmica.
+La elección de una fuente de alimentación conmutada (\textit{Switching Power Supply}) sobre un sistema lineal tradicional se basa en su alta eficiencia, dimensiones compactas y estabilidad bajo cargas variables. Para este proyecto, se seleccionó una unidad comercial con chasis de aluminio, material que actúa como un disipador de calor pasivo eficiente, garantizando la integridad de los componentes internos durante periodos prolongados de operación.
 
-\section{Distribución y Regulación de Voltaje Bajo}
-\subsection{Uso de Módulo Step-Down}
-Para la alimentación de las tarjetas de control y lógica, se implementó un regulador de voltaje tipo \textit{step-down} (Buck Converter) ajustado a 7V. Esta decisión asegura que los reguladores internos de las tarjetas no trabajen en su límite térmico, prolongando la vida útil del hardware.
+Las especificaciones técnicas de la fuente seleccionada son las siguientes:
+\begin{itemize}
+	\item \textbf{Capacidad de Salida:} Suministra una tensión constante de \textbf{12V DC} con una intensidad de hasta \textbf{40A}, lo cual cubre con amplitud los 14A calculados como requerimiento máximo, permitiendo que la fuente trabaje de manera holgada y sin sobrecalentamientos.
+	\item \textbf{Sistemas de Seguridad Integrados:}Esta unidad cuenta con protección activa contra \textbf{sobrecarga}, \textbf{cortocircuito} y \textbf{sobretensión}, desconectando la salida automáticamente ante cualquier anomalía eléctrica para proteger los drivers BTS7960 y la lógica de control.
+	\item \textbf{Protección Física:} El diseño incluye fusibles de protección internos y una rejilla de ventilación en la caja de aluminio que facilita el flujo de aire, crucial para mantener la estabilidad térmica del sistema.
+\end{itemize}
 
-\section{Diseño de Hardware Propietario}
-\subsection{Placa de Interconexión Rápida}
-Se describe el diseño y fabricación de una placa de interfaz personalizada. Esta placa permite una conexión y desconexión ágil de los motores, reduciendo el riesgo de errores en el cableado y mejorando la mantenibilidad del sistema.
+
+
+Esta sobredimensión en el amperaje (40A frente a los 14A requeridos) se decidió estratégicamente para permitir futuras expansiones del sistema, como la adición de actuadores adicionales asegurando que la fuente nunca sea un cuello de botella en el rendimiento del robot. Además de que el precio-capacidad era bueno. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot006}
+	\caption{Unidad de potencia seleccionada para el sistema. El diseño industrial en aluminio y su capacidad de 40A garantizan un suministro estable y seguro para los motores, frenos y la etapa lógica.}
+	\label{fig:screenshot006}
+\end{figure}
+
+
+\subsection{Implementación del Módulo Step-Down para la Etapa Lógica}
+
+Debido a que la fuente conmutada principal entrega 12V y la lógica de control (Arduino Mega y ESP32) requiere una tensión estable de 5V (o de 7V en el caso de ser alimentados por medio del pin de Vin del Arduino), se integró un regulador de voltaje de tipo \textit{Step-Down} (convertidor Buck) de alta potencia. 
+
+Las especificaciones técnicas del módulo seleccionado justifican su uso en este entorno industrial:
+\begin{itemize}
+	\item \textbf{Rangos de Operación:} El módulo admite un voltaje de entrada de \textbf{6V a 40V} y permite un ajuste preciso de salida entre \textbf{1.2V y 36V}, lo que lo hace ideal para reducir los 12V de la fuente principal a los 5V requeridos.
+	\item \textbf{Eficiencia y Potencia:} Cuenta con una eficiencia de conversión del \textbf{97\%}, minimizando el desperdicio energético en forma de calor. Además, es capaz de suministrar hasta \textbf{20A} de salida, garantizando que los tres microcontroladores y sensores operen con un flujo de corriente sobradamente estable.
+	\item \textbf{Gestión Térmica y Seguridad:} El dispositivo incorpora grandes disipadores de calor de aluminio y protección activa contra \textbf{cortocircuito}, añadiendo una capa de seguridad crítica antes de llegar a la electrónica de control.
+	\item \textbf{Controles de Precisión:} Incluye dos potenciómetros de ajuste: \textbf{CV} (\textit{Constant Voltage}) para fijar el voltaje de salida y \textbf{CC} (\textit{Constant Current}) para limitar la corriente de salida si fuera necesario.
+\end{itemize}
+
+
+
+Esta configuración permite que la etapa lógica esté eléctricamente aislada de las fluctuaciones de consumo de los motores, utilizando el regulador como una barrera de protección y estabilidad.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/FuentePoder/screenshot007}
+	\caption{Regulador de voltaje salida de 1.1v a 40v, 20a y 300w. Utilizado para la parte lógica del brazo robótico.}
+	\label{fig:screenshot007}
+\end{figure}
+
+
+
+\section{Placa de Interconexión Rápida}
+Debido al elevado flujo de corriente requerido para alimentar simultáneamente los seis drivers BTS7960, se diseñó y fabricó una PCB que funcionara como una \textbf{barra de bus} que se usan en gabinetes de motores. El propósito de esta placa es organizar la entrega de energía desde la fuente de 12V hacia cada controlador de manera segura y eficiente, evitando la caída de tensión por conexiones deficientes.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/FuentePoder/screenshot009}
+	\caption{Barras de buses usadas en gabinetes de motores y otros sistemas de distribución.}
+	\label{fig:screenshot009}
+\end{figure}
+
+
+La placa integra dos series de borneras de alta resistencia para facilitar la conexión y desconexión de los módulos. Un aspecto crítico en su diseño fue el grosor de las pistas de cobre pues es necesario considerar el tamaño de las pistas debido a la resistencia hacia estos amperajes. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/FuentePoder/screenshot008}
+	\caption{Placa de distribución de potencia diseñada para la administración de 12V hacia los drivers de los motores.}
+	\label{fig:screenshot008}
+\end{figure}
+
+
 
 \subsection{Dimensionamiento del Cableado}
-Consideraciones sobre el calibre de los cables (\textit{AWG}) elegidos para cada sección (potencia vs. señal), basándose en la densidad de corriente y la resistencia para evitar caídas de voltaje críticas.
+Para garantizar la seguridad del sistema y evitar caídas de tensión por resistencia, se seleccionó un conductor de calibre 16 AWG para la conexión principal entre la fuente de poder y la placa de distribución, ya que este calibre soporta con margen de seguridad los 14 A requeridos por el sistema completo. Por otro lado, para el cableado que va desde los drivers hacia cada motor, se optó por un calibre 20 AWG, el cual excede el requerimiento mínimo de 3 A, proporcionando la robustez necesaria para soportar los picos de corriente durante el arranque sin comprometer la flexibilidad del cableado en las articulaciones del robot. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot010}
+	\caption{Tabla donde se asocian los valores del calibre del cable al amperaje.}
+	\label{fig:screenshot010}
+\end{figure}
+
+
 
 \section{Diseño del Enclosure y Seguridad}
-Criterios de armado del gabinete o \textit{enclosure}. Se discute la organización de los componentes para evitar interferencias electromagnéticas (EMI), la correcta sujeción de la fuente y la ventilación del flujo de aire interno.
+Para el diseño de donde se encuentra centralizada toda la electrónica del brazo se priorizó la protección física y térmica de los componentes; así como, la capacidad de poder sostener el brazo robótico sobre una de sus caras. El diseño es discutido en otros capítulos, pero tras la selección de los componentes dentro de este capítulo, se considera necesario un flujo de aire constante, así como la posibilidad de poder tener un acceso estratégico a los componentes para monitorear las conexiones y poder cambiar componentes de manera modular.
 
-\section{Perspectivas Técnicas: Futura Integración en PCB}
-Se plantean las bases para una futura versión del sistema donde la etapa de potencia y el regulador \textit{step-down} se integren en una única PCB robusta, eliminando el cableado manual y optimizando el espacio.
 
 \begin{resultadosFase}
+	\vspace{0.4cm}
+	En esta fase se logró la transición exitosa de un sistema de alimentación rudimentario a una infraestructura de potencia industrial. Los resultados clave se resumen a continuación:
+	
 	\begin{itemize}
-		\item \textbf{Estabilidad:} Salida constante de 12.1V bajo carga nominal.
-		\item \textbf{Eficiencia Térmica:} Temperatura del gabinete estable tras 30 minutos de operación.
-		\item \textbf{Funcionalidad:} Reducción del tiempo de conexión de motores en un 70\% gracias a la placa de interfaz.
+		\item \textbf{Gestión de Voltaje y Protección de Actuadores:} Se determinó el uso de \textbf{12V} como tensión de operación para los motores. Esta decisión evitó picos de corriente severos que podrían comprometer la integridad de los devanados de los motores originales, garantizando una operación más suave y segura durante las pruebas de movimiento.
+		
+		\item \textbf{Modernización de la Fuente de Alimentación:} Se reemplazó el sistema original por una \textbf{fuente conmutada de 12V a 40A}. Esto no solo reduce drásticamente el volumen del controlador, sino que añade capas críticas de seguridad mediante sistemas integrados contra \textbf{sobrecarga, cortocircuito y sobretensión}.
+		
+		\item \textbf{Estabilidad Lógica mediante Conversión Buck:} Para alimentar la etapa de control, se implementó un regulador \textit{step-down} (Buck) de alta eficiencia. 
+		
+		\item \textbf{Criterios de Conducción y Visión de Diseño PCB:} Se realizó la selección de calibres de cable adecuados para soportar el flujo de corriente entre la fuente y los drivers BTS7960. Este análisis de amperaje sienta las bases para la siguiente fase de desarrollo, donde estas especificaciones se traducirán en el diseño de PCBs personalizadas, considerando anchos de pista calculados por densidad de corriente y un posicionamiento estratégico de componentes para minimizar el ruido e interferencias.
 	\end{itemize}
 \end{resultadosFase}

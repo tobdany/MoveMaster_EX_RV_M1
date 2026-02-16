@@ -1,14 +1,15 @@
 \babel@toc {spanish}{}\relax 
 \contentsline {chapter}{\numberline {1}Introducción}{1}{chapter.1}%
 \contentsline {chapter}{\numberline {2}Rediseño e Implementación de la Etapa de Potencia}{2}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Antecedentes: El Sistema de Control Original}{2}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Análisis de Requerimientos Energéticos}{3}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Gestión de Voltaje: El uso de 12V en Motores de 24V}{3}{section.2.3}%
-\contentsline {section}{\numberline {2.4}Implementación de la Fuente Conmutada}{3}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Distribución y Regulación de Voltaje Bajo}{3}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Uso de Módulo Step-Down}{3}{subsection.2.5.1}%
-\contentsline {section}{\numberline {2.6}Diseño de Hardware Propietario}{4}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Placa de Interconexión Rápida}{4}{subsection.2.6.1}%
-\contentsline {subsection}{\numberline {2.6.2}Dimensionamiento del Cableado}{4}{subsection.2.6.2}%
-\contentsline {section}{\numberline {2.7}Diseño del Enclosure y Seguridad}{4}{section.2.7}%
-\contentsline {section}{\numberline {2.8}Perspectivas Técnicas: Futura Integración en PCB}{4}{section.2.8}%
+\contentsline {section}{\numberline {2.1}Lista de materiales}{2}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Antecedentes: El Sistema de Control Original}{3}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Funcionalidades de la Drive Unit}{4}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Justificación del Rediseño y Simplificación}{5}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Análisis de Requerimientos Energéticos}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Gestión de Voltaje: El uso de 12V en Motores de 24V}{7}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Implementación de la Fuente Conmutada}{8}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Implementación del Módulo Step-Down para la Etapa Lógica}{9}{subsection.2.5.1}%
+\contentsline {section}{\numberline {2.6}Placa de Interconexión Rápida}{10}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Dimensionamiento del Cableado}{11}{subsection.2.6.1}%
+\contentsline {section}{\numberline {2.7}Diseño del Enclosure y Seguridad}{12}{section.2.7}%
+\contentsline {chapter}{Bibliografía}{14}{section.2.7}%
