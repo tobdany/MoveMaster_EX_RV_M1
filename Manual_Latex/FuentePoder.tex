@@ -1,0 +1,47 @@
+\chapter{Rediseño e Implementación de la Etapa de Potencia}
+\lineaLateral
+
+\begin{resumenCapitulo}
+	Este capítulo detalla la transición del sistema de alimentación original hacia una arquitectura moderna de potencia. Se analizan los requerimientos de corriente de los actuadores, la integración de fuentes conmutadas y las soluciones de hardware personalizadas para optimizar la distribución eléctrica y la seguridad del robot.
+\end{resumenCapitulo}
+
+\section{Antecedentes: El Sistema de Control Original}
+Se realiza una revisión del controlador heredado del \textit{Move Master EX}, analizando las limitaciones de su fuente de voltaje interna y la necesidad de una etapa de potencia independiente que permita una mayor flexibilidad y protección de los componentes electrónicos modernos.
+
+\section{Análisis de Requerimientos Energéticos}
+Para el rediseño, fue fundamental determinar el consumo total del sistema:
+\begin{itemize}
+	\item \textbf{Actuadores:} Análisis del amperaje nominal y de pico de los motores de corriente continua.
+	\item \textbf{Control y Potencia:} Consumo de los drivers y tarjetas lógicas auxiliares.
+\end{itemize}
+
+\section{Gestión de Voltaje: El uso de 12V en Motores de 24V}
+Se exponen las razones técnicas detrás de alimentar motores de 24V con una fuente de 12V en este prototipo, considerando el torque necesario para las aplicaciones de laboratorio, la seguridad del operador y la prevención del sobrecalentamiento de los drivers de control.
+
+\section{Implementación de la Fuente Conmutada}
+Selección de una fuente conmutada (\textit{Switching Power Supply}) como núcleo del sistema. Se detallan las ventajas de eficiencia sobre las fuentes lineales y la importancia del sistema de enfriamiento activo (ventilador) para garantizar la operación continua sin degradación térmica.
+
+\section{Distribución y Regulación de Voltaje Bajo}
+\subsection{Uso de Módulo Step-Down}
+Para la alimentación de las tarjetas de control y lógica, se implementó un regulador de voltaje tipo \textit{step-down} (Buck Converter) ajustado a 7V. Esta decisión asegura que los reguladores internos de las tarjetas no trabajen en su límite térmico, prolongando la vida útil del hardware.
+
+\section{Diseño de Hardware Propietario}
+\subsection{Placa de Interconexión Rápida}
+Se describe el diseño y fabricación de una placa de interfaz personalizada. Esta placa permite una conexión y desconexión ágil de los motores, reduciendo el riesgo de errores en el cableado y mejorando la mantenibilidad del sistema.
+
+\subsection{Dimensionamiento del Cableado}
+Consideraciones sobre el calibre de los cables (\textit{AWG}) elegidos para cada sección (potencia vs. señal), basándose en la densidad de corriente y la resistencia para evitar caídas de voltaje críticas.
+
+\section{Diseño del Enclosure y Seguridad}
+Criterios de armado del gabinete o \textit{enclosure}. Se discute la organización de los componentes para evitar interferencias electromagnéticas (EMI), la correcta sujeción de la fuente y la ventilación del flujo de aire interno.
+
+\section{Perspectivas Técnicas: Futura Integración en PCB}
+Se plantean las bases para una futura versión del sistema donde la etapa de potencia y el regulador \textit{step-down} se integren en una única PCB robusta, eliminando el cableado manual y optimizando el espacio.
+
+\begin{resultadosFase}
+	\begin{itemize}
+		\item \textbf{Estabilidad:} Salida constante de 12.1V bajo carga nominal.
+		\item \textbf{Eficiencia Térmica:} Temperatura del gabinete estable tras 30 minutos de operación.
+		\item \textbf{Funcionalidad:} Reducción del tiempo de conexión de motores en un 70\% gracias a la placa de interfaz.
+	\end{itemize}
+\end{resultadosFase}

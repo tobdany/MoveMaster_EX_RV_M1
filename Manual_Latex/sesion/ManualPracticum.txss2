@@ -1,0 +1,56 @@
+{
+    "InternalPDFViewer": {
+        "Embedded": true,
+        "File": "../Portada.pdf"
+    },
+    "Session": {
+        "Bookmarks": [
+        ],
+        "CurrentFile": "../FuentePoder.tex",
+        "FileVersion": 1,
+        "Files": [
+            {
+                "Col": 1,
+                "EditorGroup": 0,
+                "FileName": "../Portada.tex",
+                "FirstLine": 54,
+                "FoldedLines": "",
+                "Line": 73
+            },
+            {
+                "Col": 0,
+                "EditorGroup": 0,
+                "FileName": "../Introduccion.tex",
+                "FirstLine": 0,
+                "FoldedLines": "",
+                "Line": 0
+            },
+            {
+                "Col": 89,
+                "EditorGroup": 0,
+                "FileName": "../Desarrollo.tex",
+                "FirstLine": 0,
+                "FoldedLines": "",
+                "Line": 13
+            },
+            {
+                "Col": 0,
+                "EditorGroup": 0,
+                "FileName": "../Portada.aux",
+                "FirstLine": 0,
+                "FoldedLines": "",
+                "Line": 16
+            },
+            {
+                "Col": 200,
+                "EditorGroup": 0,
+                "FileName": "../FuentePoder.tex",
+                "FirstLine": 0,
+                "FoldedLines": "",
+                "Line": 4
+            }
+        ],
+        "MasterFile": "../Portada.tex",
+        "VerticalSplit": false
+    }
+}

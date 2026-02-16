@@ -1,0 +1,33 @@
+\thispagestyle{empty} % Asegura que esta página no tenga números ni encabezados/pies de página
+\begin{titlepage}
+	
+	% 1. Logo/Incio de imagen (alineado a la derecha en la parte superior)
+	\begin{flushright}
+		\vspace*{0.5cm} % Espacio desde el borde superior
+		
+		% Coloca \includegraphics directamente aquí, sin el entorno figure
+		\includegraphics[width=0.2\linewidth]{images/Logo}
+		
+		\vspace{0.2cm} % Espacio entre la imagen y el texto
+	\end{flushright}
+	
+	\vfill % Empuja el contenido restante hacia abajo
+	
+	% 2. Contenido principal (alineado a la izquierda, cerca de la parte inferior)
+	% Franja gris con el título
+	\colorbox{franjagris}{
+		\begin{minipage}{\textwidth}
+			\raggedleft % CAMBIO AQUÍ: Alinea el texto a la derecha
+			\vspace{0.8cm} % Espacio superior dentro de la caja
+			\Large \textbf{WaveLink32:} \\
+			\vspace{0.2cm}
+			\Huge \textbf{Creación de un carro dirigido por comandos de voz} \\
+			\vspace{0.8cm} % Espacio inferior dentro de la caja
+		\end{minipage}
+	}
+	
+	\vspace{0.5cm} % Espacio entre la franja y el texto del pie
+	
+	\raggedleft 
+	Documentación sobre la elaboración de un carro controlado por comandos de voz procesados por Matlab. La lógica de programación fue creada por medio de Simulink y el EmbeddedCoder.
+\end{titlepage}
