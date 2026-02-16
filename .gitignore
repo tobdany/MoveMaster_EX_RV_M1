@@ -1,0 +1,42 @@
+# --- LABVIEW ---
+# Ignorar archivos de configuración de usuario y estado del proyecto
+*.aliases
+*.lvlps
+*.lvbitx
+*.out
+*.map
+*.bak
+*.pcd
+
+# Ignorar archivos temporales y de recuperación
+*~.vi
+*~.lvproj
+*~.ctl
+
+# Ignorar resultados de compilación (si usas Application Builder)
+/Builds/
+/Installs/
+
+# --- SOLID / ORIENTACIÓN A OBJETOS ---
+# Si usas clases de LabVIEW (.lvclass), NO ignores los archivos .lvclass
+# Pero ignora los archivos de estado de la clase si aparecen
+*.lvclass.bak
+
+# --- ARDUINO / ELECTRÓNICA ---
+# Ignorar binarios de compilación de Arduino
+/Arduino_Code/build/
+/Arduino_Code/libraries/
+*.hex
+*.elf
+
+# --- SISTEMA / IDE ---
+# Archivos ocultos de Windows y miniaturas
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- LOGS Y DATOS ---
+# Si tu programa genera archivos de texto con los datos del sensor
+*.log
+*.csv
+*.txt
