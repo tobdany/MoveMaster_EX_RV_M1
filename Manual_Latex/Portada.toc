@@ -1,15 +1,34 @@
 \babel@toc {spanish}{}\relax 
-\contentsline {chapter}{\numberline {1}Introducción}{1}{chapter.1}%
-\contentsline {chapter}{\numberline {2}Rediseño e Implementación de la Etapa de Potencia}{2}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Lista de materiales}{2}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Antecedentes: El Sistema de Control Original}{3}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Funcionalidades de la Drive Unit}{4}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Justificación del Rediseño y Simplificación}{5}{subsection.2.2.2}%
-\contentsline {section}{\numberline {2.3}Análisis de Requerimientos Energéticos}{6}{section.2.3}%
-\contentsline {section}{\numberline {2.4}Gestión de Voltaje: El uso de 12V en Motores de 24V}{7}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Implementación de la Fuente Conmutada}{8}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Implementación del Módulo Step-Down para la Etapa Lógica}{9}{subsection.2.5.1}%
-\contentsline {section}{\numberline {2.6}Placa de Interconexión Rápida}{10}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Dimensionamiento del Cableado}{11}{subsection.2.6.1}%
-\contentsline {section}{\numberline {2.7}Diseño del Enclosure y Seguridad}{12}{section.2.7}%
-\contentsline {chapter}{Bibliografía}{14}{section.2.7}%
+\contentsline {chapter}{\numberline {1}Introducción}{4}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Palabras Claves}{6}{chapter.2}%
+\contentsline {chapter}{\numberline {3}Rediseño e Implementación de la Etapa de Potencia}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Lista de materiales}{7}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Antecedentes: El Sistema de Control Original}{8}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Funcionalidades de la Drive Unit}{9}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Justificación del Rediseño y Simplificación}{10}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Análisis de Requerimientos Energéticos}{11}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Gestión de Voltaje: El uso de 12V en Motores de 24V}{12}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Implementación de la Fuente Conmutada}{13}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Implementación del Módulo Step-Down para la Etapa Lógica}{14}{subsection.3.5.1}%
+\contentsline {section}{\numberline {3.6}Placa de Interconexión Rápida}{15}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Dimensionamiento del Cableado}{16}{subsection.3.6.1}%
+\contentsline {section}{\numberline {3.7}Diseño del Enclosure y Seguridad}{17}{section.3.7}%
+\contentsline {chapter}{\numberline {4}Implementación del Sistema de Protección por Corriente}{19}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Lista de materiales}{20}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Picos de Corriente en Actuadores DC}{20}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Seguridad Operativa: Detección de Colisiones y Obstrucciones Mecánicas}{20}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Detección de Anomalías Eléctricas: El Sensor ACS712}{21}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Comparativa de Sensado: BTS7960 vs. ACS712}{21}{subsection.4.4.1}%
+\contentsline {section}{\numberline {4.5}Integración del ACS712}{23}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Cálculos}{23}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Procesamiento de Señal en la Plataforma Arduino Uno}{24}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Esquema de Conexión e Integración Electrónica}{26}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Interfaz de Monitoreo en Tiempo Real mediante LabVIEW}{27}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Diseño y Construcción del Gabinete de Control (Prototipo)}{31}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Lista de materiales}{32}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Dimensionamiento y Diseño en SolidWorks}{32}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Arquitectura Interna y Distribución de Repisas}{38}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Necesidades Técnicas: Ventilación y Pasacables}{41}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Análisis de Mejoras para el Gabinete Final}{41}{section.5.5}%
+\contentsline {chapter}{\numberline {6}Conclusión}{44}{chapter.6}%
+\contentsline {chapter}{Bibliografía}{46}{chapter.6}%

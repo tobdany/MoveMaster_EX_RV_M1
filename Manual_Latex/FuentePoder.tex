@@ -23,8 +23,8 @@ De acuerdo con las especificaciones técnicas detalladas en el manual del fabric
 	% --- PRIMERA MINIPAGE (Imagen del transformador) ---
 	\begin{minipage}{0.48\textwidth}
 		\centering
-		\includegraphics[width=\linewidth]{images/FuentePoder/screenshot001}
-		\caption{Transformador de la etapa original de potencia del controlador.}
+		\includegraphics[width=\linewidth]{images/FuentePoder/screenshot001}[Titulo corto para la lista]{hi}
+		\caption[Transformador original]{Transformador de la etapa original de potencia del controlador.}
 		\label{fig:screenshot001}
 	\end{minipage}
 	\hfill % Crea un espacio elástico entre las dos minipages
@@ -32,7 +32,7 @@ De acuerdo con las especificaciones técnicas detalladas en el manual del fabric
 	\begin{minipage}{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{images/FuentePoder/screenshot002}
-		\caption{Especificaciones del transformador: 1 PH, 50/60 Hz y 520 VA.}
+		\caption[Especificaciones del transformador]{Especificaciones del transformador: 1 PH, 50/60 Hz y 520 VA.}
 		\label{fig:screenshot002}
 	\end{minipage}
 \end{figure}
@@ -50,7 +50,7 @@ Es importante destacar que el controlador no funcionaba únicamente como una fue
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot004}
-	\caption{Componentes de la Drive Unit. Contiene un conector central para la conexión con la computadora, la teaching box, la alimentación de los motores, señales de control para el motor, selección del tipo de voltaje (AC/DC) del efector, etc. \cite{manualMitsubishi}  }
+	\caption[Componentes de la Drive Unit]{Componentes de la Drive Unit. Contiene un conector central para la conexión con la computadora, la teaching box, la alimentación de los motores, señales de control para el motor, selección del tipo de voltaje (AC/DC) del efector, etc. \cite{manualMitsubishi}  }
 	\label{fig:screenshot004}
 \end{figure}
 
@@ -65,7 +65,7 @@ Este análisis justifica la necesidad de migrar hacia una fuente conmutada moder
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot003}
-	\caption{Vista interna de uno de los paneles electrónicos del controlador original. Se observa la densidad de circuitos integrados que conforman la lógica de control y la unidad de potencia del sistema. \cite{schweizer2020}.}
+	\caption[Panel del controlador viejo]{Vista interna de uno de los paneles electrónicos del controlador original. Se observa la densidad de circuitos integrados que conforman la lógica de control y la unidad de potencia del sistema. \cite{schweizer2020}.}
 	\label{fig:screenshot003}
 \end{figure}
 
@@ -73,12 +73,12 @@ Este análisis justifica la necesidad de migrar hacia una fuente conmutada moder
 
 
 \section{Análisis de Requerimientos Energéticos}
-Para determinar la capacidad necesaria de la fuente de alimentación, es fundamental analizar el consumo de corriente de todos los actuadores en su estado más crítico. Como se observa en la Figura \ref{fig:tabla_motores}, la cual presenta datos técnicos recopilados en la investigación de Sebastián,C. M \cite{tesisSebas}, se detallan las especificaciones nominales de los motores y frenos del brazo robótico.
+Para determinar la capacidad necesaria de la fuente de alimentación, es fundamental analizar el consumo de corriente de todos los actuadores en su estado más crítico. Como se observa en la Figura \ref{fig:tabla_motores}, la cual presenta datos técnicos recopilados en la investigación de 	Sebastián, C. M. J., y Sebastián, M. C. J. \cite{tesisSebas}, se detallan las especificaciones nominales de los motores y frenos del brazo robótico.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=1\linewidth]{images/FuentePoder/screenshot005}
-	\caption{Tabla de especificaciones del motor y frenos.}
+	\caption{Tabla de especificaciones del motor y frenos. \cite{tesisSebas} }
 	\label{fig:tabla_motores}
 \end{figure}
 
@@ -136,7 +136,7 @@ Esta sobredimensión en el amperaje (40A frente a los 14A requeridos) se decidi�
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot006}
-	\caption{Unidad de potencia seleccionada para el sistema. El diseño industrial en aluminio y su capacidad de 40A garantizan un suministro estable y seguro para los motores, frenos y la etapa lógica.}
+	\caption[Fuente de poder conmutada seleccionada]{Unidad de potencia seleccionada para el sistema. El diseño industrial en aluminio y su capacidad de 40A garantizan un suministro estable y seguro para los motores, frenos y la etapa lógica.}
 	\label{fig:screenshot006}
 \end{figure}
 
@@ -160,7 +160,7 @@ Esta configuración permite que la etapa lógica esté eléctricamente aislada d
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.4\linewidth]{images/FuentePoder/screenshot007}
-	\caption{Regulador de voltaje salida de 1.1v a 40v, 20a y 300w. Utilizado para la parte lógica del brazo robótico.}
+	\caption[Nuevo regulador de voltaje para los microcontroladores]{Regulador de voltaje salida de 1.1v a 40v, 20a y 300w. Utilizado para la parte lógica del brazo robótico.}
 	\label{fig:screenshot007}
 \end{figure}
 
@@ -172,7 +172,7 @@ Debido al elevado flujo de corriente requerido para alimentar simultáneamente l
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.5\linewidth]{images/FuentePoder/screenshot009}
-	\caption{Barras de buses usadas en gabinetes de motores y otros sistemas de distribución.}
+	\caption[Ejemplos de barras de buses usadas en gabinetes]{Barras de buses usadas en gabinetes de motores y otros sistemas de distribución.}
 	\label{fig:screenshot009}
 \end{figure}
 
@@ -182,10 +182,17 @@ La placa integra dos series de borneras de alta resistencia para facilitar la co
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.4\linewidth]{images/FuentePoder/screenshot008}
-	\caption{Placa de distribución de potencia diseñada para la administración de 12V hacia los drivers de los motores.}
+	\caption[Creación de una placa de distribución de potencia simple]{Placa de distribución de potencia diseñada para la administración de 12V hacia los drivers de los motores.}
 	\label{fig:screenshot008}
 \end{figure}
 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/SensorCorriente/screenshot017}
+	\caption{Conexión de la fuente de poder al regulador de voltaje y barra de bus.}
+	\label{fig:screenshot017}
+\end{figure}
 
 
 \subsection{Dimensionamiento del Cableado}
@@ -194,7 +201,7 @@ Para garantizar la seguridad del sistema y evitar caídas de tensión por resist
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{images/FuentePoder/screenshot010}
-	\caption{Tabla donde se asocian los valores del calibre del cable al amperaje.}
+	\caption[Tabla con valores AWG]{Tabla donde se asocian los valores del calibre del cable al amperaje.}
 	\label{fig:screenshot010}
 \end{figure}
 

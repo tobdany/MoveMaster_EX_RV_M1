@@ -1,4 +1,8 @@
 \chapter{Introducción}
 \lineaLateral
 
-El proyecto de modernización del robot \textbf{Move Master EX} representa un desafío técnico...
+El desarrollo de este brazo robótico de 6 grados de libertad (GDL) representa un reto que integra la parte mecánica, la electrónica de potencia y la programación. En un sistema de este tipo, no basta con lograr el movimiento de los actuadores, sino que es fundamental garantizar que el equipo sea capaz de autoprotegerse ante eventos críticos, como colisiones o sobrecargas de corriente. Por esta razón, el proyecto se enfoca en implementar un sistema de monitoreo que asegure la integridad de los motores y de toda la etapa de control involucrada.
+
+Para la gestión de los datos, se diseñó una interfaz en LabVIEW utilizando una arquitectura de \textit{Queue Message Handler} (QMH). Este enfoque permite que el programa procese de manera simultánea la lectura de los sensores ACS712 y la comunicación con el Arduino Mega sin comprometer la fluidez de la interfaz. De esta manera, es posible visualizar en tiempo real los picos de corriente durante el arranque o detectar si un motor se encuentra bajo un esfuerzo excesivo, lo que permite interrumpir la alimentación antes de que ocurra un daño en los \textit{drivers} o en la fuente de poder.
+
+Finalmente, se dio prioridad al diseño y construcción de un gabinete de control (prototipo) utilizando el software \textit{SolidWorks}. La realización de estos primeros prototipos en una etapa temprana del desarrollo permite identificar carencias en el diseño y mejorar los siguientes intentos antes de la fabricación final. Este chasis permitió validar la distribución de los componentes, como los controladores BTS7960 y el sistema de ventilación, además de evitar la necesidad de conectar y desconectar componentes constantemente. Gracias a este enfoque de mejora continua, el proceso de prueba del robot resulta mucho más ordenado, seguro y eficiente.
