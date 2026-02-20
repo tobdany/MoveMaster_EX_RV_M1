@@ -1,49 +1,92 @@
 #include <ESP32Encoder.h>
 
+// Pines del Encoder y Home
 #define PIN_HOME 4
+#define PIN_ENC_A 19
+#define PIN_ENC_B 18
+
+// Pines PWM para el Motor
+#define PIN_PWM_DER 25
+#define PIN_PWM_IZQ 26
+
+// Configuración PWM moderna
+const int frecuencia = 5000;
+const int resolucion = 8; // 0 a 255
 
 ESP32Encoder encoder;
 
-// Variables volátiles para comunicación entre la interrupción y el loop
 volatile bool homeDetectado = false;
 volatile long pasosCapturados = 0;
+volatile unsigned long ultimaInterrupcion = 0;
 
-// Esta es la función que se ejecuta instantáneamente al tocar el sensor
 void IRAM_ATTR funcionInterrupcion() {
-  pasosCapturados = (long)encoder.getCount();
- // encoder.setCount(0); // Reiniciamos el contador de inmediato
-  homeDetectado = true;
+  unsigned long tiempoActual = millis();
+  if (tiempoActual - ultimaInterrupcion > 200) { 
+    pasosCapturados = (long)encoder.getCount();
+    encoder.setCount(0); 
+    homeDetectado = true;
+    ultimaInterrupcion = tiempoActual;
+  }
 }
 
 void setup() {
   Serial.begin(115200);
   
-  pinMode(PIN_HOME, INPUT_PULLUP);
+  // --- NUEVA FORMA DE CONFIGURAR PWM ---
+  // Ya no se usan canales (0, 1), se asocia directo al pin
+  ledcAttach(PIN_PWM_DER, frecuencia, resolucion);
+  ledcAttach(PIN_PWM_IZQ, frecuencia, resolucion);
 
-  // Configuramos la interrupción
-  // FALLING significa que se activa cuando el pin pasa de HIGH a LOW (contacto a GND)
-  attachInterrupt(digitalPinToInterrupt(PIN_HOME), funcionInterrupcion, FALLING);
+  // Configuración de Home e Interrupción
+ // pinMode(PIN_HOME, INPUT_PULLUP);
+  //attachInterrupt(digitalPinToInterrupt(PIN_HOME), funcionInterrupcion, FALLING);
 
-  encoder.attachHalfQuad(19, 18);
+  // Configuración de Encoder
+  ESP32Encoder::useInternalWeakPullResistors = puType::up;
+  encoder.attachHalfQuad(PIN_ENC_A, PIN_ENC_B);
   encoder.clearCount();
 
-  Serial.println("Sistema listo. Esperando primer paso por HOME...");
+  
 }
 
 void loop() {
-  // Solo imprimimos cuando la interrupción nos avisa que detectó algo
-  if (homeDetectado) {
-    Serial.print(">>> ¡HOME! Pasos en esta revolución: ");
-    Serial.println(pasosCapturados);
-    
-    homeDetectado = false; // Resetear la bandera
+  if (Serial.available() > 0) {
+    int velocidad = Serial.parseInt();
+    while(Serial.available() > 0) Serial.read(); // Limpiar buffer
+    moverMotor(velocidad);
   }
 
-  // Monitor opcional cada 500ms para ver que todo se mueva
+  if (homeDetectado) {
+    noInterrupts(); 
+    long copiaPasos = pasosCapturados;
+    homeDetectado = false;
+    interrupts();
+    Serial.print("\n>>> ¡HOME! Pasos: ");
+    Serial.println(copiaPasos);
+  }
+
   static unsigned long lastPrint = 0;
-  if (millis() - lastPrint > 100) {
-    Serial.print("Contando: ");
+  if (millis() - lastPrint > 200) {
+    Serial.print("Posición: ");
     Serial.println((long)encoder.getCount());
     lastPrint = millis();
+  }
+}
+
+void moverMotor(int v) {
+  if (v > 0) {
+    ledcWrite(PIN_PWM_DER, abs(v)); // Ahora se usa el PIN directamente
+    ledcWrite(PIN_PWM_IZQ, 0);
+    Serial.print("DERECHA: "); Serial.println(v);
+  } 
+  else if (v < 0) {
+    ledcWrite(PIN_PWM_DER, 0);
+    ledcWrite(PIN_PWM_IZQ, abs(v));
+    Serial.print("IZQUIERDA: "); Serial.println(v);
+  } 
+  else {
+    ledcWrite(PIN_PWM_DER, 0);
+    ledcWrite(PIN_PWM_IZQ, 0);
+    Serial.println("STOP");
   }
 }
