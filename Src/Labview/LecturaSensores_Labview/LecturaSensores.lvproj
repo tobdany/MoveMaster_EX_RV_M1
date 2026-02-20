@@ -15,6 +15,7 @@
 		<Item Name="main.vi" Type="VI" URL="../main.vi"/>
 		<Item Name="openVISA_current.vi" Type="VI" URL="../openVISA_current.vi"/>
 		<Item Name="readCurrent.vi" Type="VI" URL="../readCurrent.vi"/>
+		<Item Name="readModbus.vi" Type="VI" URL="../readModbus.vi"/>
 		<Item Name="StateEnum.ctl" Type="VI" URL="../StateEnum.ctl"/>
 		<Item Name="Dependencies" Type="Dependencies"/>
 		<Item Name="Build Specifications" Type="Build"/>
