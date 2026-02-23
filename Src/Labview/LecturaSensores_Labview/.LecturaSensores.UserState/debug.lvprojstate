@@ -1,6 +1,37 @@
 <Configuration>
   <Target name="My Computer">
     <EnableDebuggingForAllVIs>0</EnableDebuggingForAllVIs>
+    <VI name="decodeModbusMessage.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="809"/>
+          <SignalUID value="6232"/>
+          <SignalUID value="926"/>
+          <SignalUID value="375"/>
+          <SignalUID value="4309"/>
+          <SignalUID value="1358"/>
+          <SignalUID value="1584"/>
+          <SignalUID value="11826"/>
+          <SignalUID value="389"/>
+          <SignalUID value="434"/>
+          <SignalUID value="4443"/>
+          <SignalUID value="168"/>
+          <SignalUID value="361"/>
+          <SignalUID value="419"/>
+          <SignalUID value="2360"/>
+          <SignalUID value="2368"/>
+          <SignalUID value="2172"/>
+          <SignalUID value="2641"/>
+          <SignalUID value="5474"/>
+        </Generic>
+      </Probes>
+    </VI>
     <VI name="main.vi">
       <Breakpoints>
         <NodeIndexes>
@@ -10,6 +41,32 @@
       </Breakpoints>
       <Probes>
         <Generic>
+          <SignalUID value="672"/>
+          <SignalUID value="2177"/>
+          <SignalUID value="1983"/>
+          <SignalUID value="1435"/>
+          <SignalUID value="3996"/>
+          <SignalUID value="1818"/>
+          <SignalUID value="983"/>
+          <SignalUID value="656"/>
+          <SignalUID value="4890"/>
+          <SignalUID value="7444"/>
+          <SignalUID value="2499"/>
+        </Generic>
+      </Probes>
+    </VI>
+    <VI name="openVISA_current.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="913"/>
+          <SignalUID value="223"/>
+          <SignalUID value="241"/>
         </Generic>
       </Probes>
     </VI>
