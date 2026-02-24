@@ -14,22 +14,27 @@
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Controls" Type="Folder">
 			<Item Name="Ctr_Enc_Values.ctl" Type="VI" URL="../Control/Ctr_Enc_Values.ctl"/>
+			<Item Name="Ctrl_Enc_Values_Steps.ctl" Type="VI" URL="../Control/Ctrl_Enc_Values_Steps.ctl"/>
+			<Item Name="Ctrl_Errores.ctl" Type="VI" URL="../Control/Ctrl_Errores.ctl"/>
+			<Item Name="Ctrl_EstadoQueue.ctl" Type="VI" URL="../Control/Ctrl_EstadoQueue.ctl"/>
+			<Item Name="Ctrl_Estados.ctl" Type="VI" URL="../Ctrl_Estados.ctl"/>
 		</Item>
 		<Item Name="Modbus_VI" Type="Folder">
 			<Item Name="decodeModbusMessage.vi" Type="VI" URL="../decodeModbusMessage.vi"/>
 		</Item>
-		<Item Name="actualizarIndicadores.vi" Type="VI" URL="../actualizarIndicadores.vi"/>
-		<Item Name="Check_Modbus_Packet_Header.vi" Type="VI" URL="../Check_Modbus_Packet_Header.vi"/>
-		<Item Name="Ctrl_Enc_Values_Steps.ctl" Type="VI" URL="../Control/Ctrl_Enc_Values_Steps.ctl"/>
-		<Item Name="Ctrl_Errores.ctl" Type="VI" URL="../Control/Ctrl_Errores.ctl"/>
-		<Item Name="cualControl.ctl" Type="VI" URL="../Control/cualControl.ctl"/>
-		<Item Name="Decode_Modbus_Message.vi" Type="VI" URL="../utils/Decode_Modbus_Message.vi"/>
+		<Item Name="Unused" Type="Folder">
+			<Item Name="Decode_Modbus_Message.vi" Type="VI" URL="../utils/Decode_Modbus_Message.vi"/>
+			<Item Name="openVISA_current.vi" Type="VI" URL="../utils/openVISA_current.vi"/>
+		</Item>
+		<Item Name="VirtualInstruments" Type="Folder">
+			<Item Name="actualizarIndicadores.vi" Type="VI" URL="../actualizarIndicadores.vi"/>
+			<Item Name="manejadorErrores.vi" Type="VI" URL="../manejadorErrores.vi"/>
+		</Item>
+		<Item Name="Ctrl_Datos6Motores.ctl" Type="VI" URL="../Control/Ctrl_Datos6Motores.ctl"/>
+		<Item Name="Ctrl_Modbus13.ctl" Type="VI" URL="../Control/Ctrl_Modbus13.ctl"/>
+		<Item Name="Ctrl_Modbus64.ctl" Type="VI" URL="../Control/Ctrl_Modbus64.ctl"/>
+		<Item Name="Ctrl_Motores_Valores.ctl" Type="VI" URL="../Control/Ctrl_Motores_Valores.ctl"/>
 		<Item Name="main.vi" Type="VI" URL="../main.vi"/>
-		<Item Name="manejadorErrores.vi" Type="VI" URL="../manejadorErrores.vi"/>
-		<Item Name="openVISA_current.vi" Type="VI" URL="../utils/openVISA_current.vi"/>
-		<Item Name="readCurrent.vi" Type="VI" URL="../readCurrent.vi"/>
-		<Item Name="StateEnum.ctl" Type="VI" URL="../StateEnum.ctl"/>
-		<Item Name="Verify_Modbus_CRC.vi" Type="VI" URL="../Verify_Modbus_CRC.vi"/>
 		<Item Name="Dependencies" Type="Dependencies"/>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
