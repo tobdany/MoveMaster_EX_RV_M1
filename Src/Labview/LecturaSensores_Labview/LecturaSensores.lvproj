@@ -31,6 +31,7 @@
 			<Item Name="manejadorErrores.vi" Type="VI" URL="../manejadorErrores.vi"/>
 		</Item>
 		<Item Name="Ctrl_Datos6Motores.ctl" Type="VI" URL="../Control/Ctrl_Datos6Motores.ctl"/>
+		<Item Name="Ctrl_IndicadoresMainPanel.ctl" Type="VI" URL="../Control/Ctrl_IndicadoresMainPanel.ctl"/>
 		<Item Name="Ctrl_Modbus13.ctl" Type="VI" URL="../Control/Ctrl_Modbus13.ctl"/>
 		<Item Name="Ctrl_Modbus64.ctl" Type="VI" URL="../Control/Ctrl_Modbus64.ctl"/>
 		<Item Name="Ctrl_Motores_Valores.ctl" Type="VI" URL="../Control/Ctrl_Motores_Valores.ctl"/>
