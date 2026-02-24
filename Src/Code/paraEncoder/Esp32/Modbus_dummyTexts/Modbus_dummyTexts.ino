@@ -12,8 +12,8 @@ void setup() {
 }
 
 void loop() {
-  enviarTelemetriaGlobal();
-  delay(10); 
+  //enviarTelemetriaGlobal();
+ // delay(10); 
   telemetriaPorEncoder();
   delay(10); 
 }
@@ -78,24 +78,18 @@ void enviarTelemetriaGlobal() {
 }
 
 /**
- * @brief  Transmite la telemetría individual de un eje específico mediante una trama binaria.
- * * Esta función empaqueta la posición, vueltas y velocidad de un solo motor en un 
- * paquete de 12 bytes. Es ideal para diagnósticos rápidos o cuando se requiere 
- * alta frecuencia de actualización en un solo eje.
- * * @struct Trama_Individual (12 bytes total):
+ * @brief  Transmite la telemetría individual de un eje específico (15 bytes).
+ * * @struct Trama_Individual (14 bytes total):
  * [0]    - Header: 0x3A (':')
- * [1]    - Función: 0x01 (Telemetría individual de eje)
-*  [2]    -Longitud: 0x09 (ID+8 bytes de datos)
+ * [1]    - Función: 0x01 (Telemetría individual)
+ * [2]    - Longitud: 0x0B (11 bytes: ID + 10 bytes de datos de motor)
  * [3]    - ID: Identificador del motor (0-5)
- * [4-7]  - Pasos: int32_t (Little Endian)
- * [8-9]  - Vueltas: int16_t (Little Endian)
- * [10-11] - Velocidad: int16_t (Little Endian)
- * [12]   - Checksum: Suma de bytes (Function + ID + Data) & 0xFF
- * * @note   La función utiliza memcpy para asegurar la integridad de los datos de punto fijo 
- * al convertirlos a bytes de transmisión serial.
- * @see    enviarTelemetriaGlobal() para el reporte de los 6 ejes simultáneos.
+ * [4-7]  - Pasos: int32_t (4 bytes)
+ * [8-9]  - Vueltas: int16_t (2 bytes)
+ * [10-11]- Velocidad: int16_t (2 bytes)
+ * [12-13]- Reserva: 0x00 (2 bytes de espacio) <--- Agregados para paridad con Global
+ * [14]   - Checksum: (Function + Length + ID + Data) & 0xFF
  */
-
 void telemetriaPorEncoder() {
   pasosSimulados += 50; 
   if (pasosSimulados > 4000) pasosSimulados = 0;
@@ -103,21 +97,29 @@ void telemetriaPorEncoder() {
 
   int16_t vueltas = (int16_t)(pasosSimulados / PASOS_POR_VUELTA);
   int16_t vel = 120; 
-  uint8_t f = 0x01;  // Función de telemetría
-  uint8_t bufferSize = 9;   // ID(1) + Datos(8)
   
-  uint8_t data[8];
-  memcpy(&data[0], &pasosSimulados, 4);
-  memcpy(&data[4], &vueltas, 2);
-  memcpy(&data[6], &vel, 2);
+  uint8_t f = 0x01;         // Función
+  uint8_t payloadSize = 11; // ID(1) + BloqueMotor(10) = 11 bytes
+  
+  // Creamos un buffer para el bloque de datos del motor (10 bytes como en la global)
+  uint8_t motorData[10];
+  memcpy(&motorData[0], &pasosSimulados, 4);
+  memcpy(&motorData[4], &vueltas, 2);
+  memcpy(&motorData[6], &vel, 2);
+  motorData[8] = 0; // Reserva 1
+  motorData[9] = 0; // Reserva 2
 
-  uint16_t sumaCrc = f + bufferSize + idSimulado;
-  for(int i = 0; i < 8; i++) sumaCrc += data[i];
+  // Cálculo del Checksum (Función + Longitud + ID + Datos)
+  uint16_t sumaCrc = f + payloadSize + idSimulado;
+  for(int i = 0; i < 10; i++) {
+    sumaCrc += motorData[i];
+  }
 
-  Serial.write(0x3A);        // Header
-  Serial.write(f);           // Función
-  Serial.write(bufferSize);         // Longitud
-  Serial.write(idSimulado);  // ID
-  Serial.write(data, 8);     // Datos
-  Serial.write((uint8_t)(sumaCrc & 0xFF)); // Checksum
+  // Envío de la trama completa (Total 15 bytes contando el CRC final)
+  Serial.write(0x3A);         // [0] Header ':'
+  Serial.write(f);            // [1] Función
+  Serial.write(payloadSize);  // [2] Longitud de datos
+  Serial.write(idSimulado);   // [3] ID del motor
+  Serial.write(motorData, 10);// [4-13] Datos (incluye los 2 de reserva)
+  Serial.write((uint8_t)(sumaCrc & 0xFF)); // [14] Checksum
 }
