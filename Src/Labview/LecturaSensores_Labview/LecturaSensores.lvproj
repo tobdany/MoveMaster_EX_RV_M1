@@ -14,10 +14,16 @@
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Controls" Type="Folder">
 			<Item Name="Ctr_Enc_Values.ctl" Type="VI" URL="../Control/Ctr_Enc_Values.ctl"/>
+			<Item Name="Ctrl_DataLoggerQueue.ctl" Type="VI" URL="../Control/Ctrl_DataLoggerQueue.ctl"/>
+			<Item Name="Ctrl_Datos6Motores.ctl" Type="VI" URL="../Control/Ctrl_Datos6Motores.ctl"/>
+			<Item Name="Ctrl_DLQueue.ctl" Type="VI" URL="../Control/Ctrl_DLQueue.ctl"/>
 			<Item Name="Ctrl_Enc_Values_Steps.ctl" Type="VI" URL="../Control/Ctrl_Enc_Values_Steps.ctl"/>
 			<Item Name="Ctrl_Errores.ctl" Type="VI" URL="../Control/Ctrl_Errores.ctl"/>
-			<Item Name="Ctrl_EstadoQueue.ctl" Type="VI" URL="../Control/Ctrl_EstadoQueue.ctl"/>
 			<Item Name="Ctrl_Estados.ctl" Type="VI" URL="../Ctrl_Estados.ctl"/>
+			<Item Name="Ctrl_IndicadoresMainPanel.ctl" Type="VI" URL="../Control/Ctrl_IndicadoresMainPanel.ctl"/>
+			<Item Name="Ctrl_Modbus13.ctl" Type="VI" URL="../Control/Ctrl_Modbus13.ctl"/>
+			<Item Name="Ctrl_Modbus64.ctl" Type="VI" URL="../Control/Ctrl_Modbus64.ctl"/>
+			<Item Name="Ctrl_Motores_Valores.ctl" Type="VI" URL="../Control/Ctrl_Motores_Valores.ctl"/>
 		</Item>
 		<Item Name="Modbus_VI" Type="Folder">
 			<Item Name="decodeModbusMessage.vi" Type="VI" URL="../decodeModbusMessage.vi"/>
@@ -29,13 +35,11 @@
 		<Item Name="VirtualInstruments" Type="Folder">
 			<Item Name="actualizarIndicadores.vi" Type="VI" URL="../actualizarIndicadores.vi"/>
 			<Item Name="manejadorErrores.vi" Type="VI" URL="../manejadorErrores.vi"/>
+			<Item Name="WriteCommand.vi" Type="VI" URL="../WriteCommand.vi"/>
 		</Item>
-		<Item Name="Ctrl_Datos6Motores.ctl" Type="VI" URL="../Control/Ctrl_Datos6Motores.ctl"/>
-		<Item Name="Ctrl_IndicadoresMainPanel.ctl" Type="VI" URL="../Control/Ctrl_IndicadoresMainPanel.ctl"/>
-		<Item Name="Ctrl_Modbus13.ctl" Type="VI" URL="../Control/Ctrl_Modbus13.ctl"/>
-		<Item Name="Ctrl_Modbus64.ctl" Type="VI" URL="../Control/Ctrl_Modbus64.ctl"/>
-		<Item Name="Ctrl_Motores_Valores.ctl" Type="VI" URL="../Control/Ctrl_Motores_Valores.ctl"/>
+		<Item Name="LogData_Command.vi" Type="VI" URL="../LogData_Command.vi"/>
 		<Item Name="main.vi" Type="VI" URL="../main.vi"/>
+		<Item Name="MainQueue_Analyzer.vi" Type="VI" URL="../MainQueue_Analyzer.vi"/>
 		<Item Name="Dependencies" Type="Dependencies"/>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>
