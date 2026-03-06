@@ -37,6 +37,12 @@
 			<Item Name="manejadorErrores.vi" Type="VI" URL="../manejadorErrores.vi"/>
 			<Item Name="WriteCommand.vi" Type="VI" URL="../WriteCommand.vi"/>
 		</Item>
+		<Item Name="Ctrl_DataLogger_SM.ctl" Type="VI" URL="../Control/Ctrl_DataLogger_SM.ctl"/>
+		<Item Name="Ctrl_EscrituraComandos.ctl" Type="VI" URL="../Control/Ctrl_EscrituraComandos.ctl"/>
+		<Item Name="Ctrl_Fgv_DatosMotores.ctl" Type="VI" URL="../Control/Ctrl_Fgv_DatosMotores.ctl"/>
+		<Item Name="FGV_ADQ.vi" Type="VI" URL="../FGV_ADQ.vi"/>
+		<Item Name="FGV_DatosMotores.vi" Type="VI" URL="../FGV_DatosMotores.vi"/>
+		<Item Name="FGV_Error.vi" Type="VI" URL="../FGV_Error.vi"/>
 		<Item Name="LogData_Command.vi" Type="VI" URL="../LogData_Command.vi"/>
 		<Item Name="main.vi" Type="VI" URL="../main.vi"/>
 		<Item Name="MainQueue_Analyzer.vi" Type="VI" URL="../MainQueue_Analyzer.vi"/>

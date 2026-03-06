@@ -15,6 +15,20 @@
         </Generic>
       </Probes>
     </VI>
+    <VI name="MainQueue_Analyzer.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="1632"/>
+          <SignalUID value="1620"/>
+        </Generic>
+      </Probes>
+    </VI>
     <VI name="actualizarIndicadores.vi">
       <Breakpoints>
         <NodeIndexes>
@@ -38,11 +52,6 @@
       </Breakpoints>
       <Probes>
         <Generic>
-          <SignalUID value="6232"/>
-          <SignalUID value="926"/>
-          <SignalUID value="375"/>
-          <SignalUID value="4309"/>
-          <SignalUID value="434"/>
           <SignalUID value="4443"/>
           <SignalUID value="168"/>
           <SignalUID value="361"/>
@@ -50,8 +59,7 @@
           <SignalUID value="2360"/>
           <SignalUID value="2172"/>
           <SignalUID value="5474"/>
-          <SignalUID value="809"/>
-          <SignalUID value="5017"/>
+          <SignalUID value="889"/>
         </Generic>
       </Probes>
     </VI>
@@ -72,7 +80,6 @@
           <SignalUID value="1818"/>
           <SignalUID value="656"/>
           <SignalUID value="4890"/>
-          <SignalUID value="7444"/>
           <SignalUID value="2499"/>
           <SignalUID value="3382"/>
           <SignalUID value="3839"/>
@@ -80,6 +87,7 @@
           <SignalUID value="8875"/>
           <SignalUID value="970"/>
           <SignalUID value="3739"/>
+          <SignalUID value="14117"/>
         </Generic>
       </Probes>
     </VI>
