@@ -1,68 +1,6 @@
 <Configuration>
   <Target name="My Computer">
-    <EnableDebuggingForAllVIs>0</EnableDebuggingForAllVIs>
-    <VI name="LogData_Command.vi">
-      <Breakpoints>
-        <NodeIndexes>
-        </NodeIndexes>
-        <SignalIndexes>
-        </SignalIndexes>
-      </Breakpoints>
-      <Probes>
-        <Generic>
-          <SignalUID value="1086"/>
-          <SignalUID value="10951"/>
-        </Generic>
-      </Probes>
-    </VI>
-    <VI name="MainQueue_Analyzer.vi">
-      <Breakpoints>
-        <NodeIndexes>
-        </NodeIndexes>
-        <SignalIndexes>
-        </SignalIndexes>
-      </Breakpoints>
-      <Probes>
-        <Generic>
-          <SignalUID value="1632"/>
-          <SignalUID value="1620"/>
-        </Generic>
-      </Probes>
-    </VI>
-    <VI name="actualizarIndicadores.vi">
-      <Breakpoints>
-        <NodeIndexes>
-        </NodeIndexes>
-        <SignalIndexes>
-        </SignalIndexes>
-      </Breakpoints>
-      <Probes>
-        <Generic>
-          <SignalUID value="1798"/>
-          <SignalUID value="800"/>
-        </Generic>
-      </Probes>
-    </VI>
-    <VI name="decodeModbusMessage.vi">
-      <Breakpoints>
-        <NodeIndexes>
-        </NodeIndexes>
-        <SignalIndexes>
-        </SignalIndexes>
-      </Breakpoints>
-      <Probes>
-        <Generic>
-          <SignalUID value="4443"/>
-          <SignalUID value="168"/>
-          <SignalUID value="361"/>
-          <SignalUID value="419"/>
-          <SignalUID value="2360"/>
-          <SignalUID value="2172"/>
-          <SignalUID value="5474"/>
-          <SignalUID value="889"/>
-        </Generic>
-      </Probes>
-    </VI>
+    <EnableDebuggingForAllVIs></EnableDebuggingForAllVIs>
     <VI name="main.vi">
       <Breakpoints>
         <NodeIndexes>
@@ -72,37 +10,7 @@
       </Breakpoints>
       <Probes>
         <Generic>
-          <SignalUID value="672"/>
-          <SignalUID value="2177"/>
-          <SignalUID value="1983"/>
-          <SignalUID value="1435"/>
-          <SignalUID value="3996"/>
-          <SignalUID value="1818"/>
-          <SignalUID value="656"/>
-          <SignalUID value="4890"/>
-          <SignalUID value="2499"/>
-          <SignalUID value="3382"/>
-          <SignalUID value="3839"/>
-          <SignalUID value="2265"/>
-          <SignalUID value="8875"/>
-          <SignalUID value="970"/>
-          <SignalUID value="3739"/>
-          <SignalUID value="14117"/>
-        </Generic>
-      </Probes>
-    </VI>
-    <VI name="openVISA_current.vi">
-      <Breakpoints>
-        <NodeIndexes>
-        </NodeIndexes>
-        <SignalIndexes>
-        </SignalIndexes>
-      </Breakpoints>
-      <Probes>
-        <Generic>
-          <SignalUID value="913"/>
-          <SignalUID value="223"/>
-          <SignalUID value="241"/>
+          <SignalUID value="15590"/>
         </Generic>
       </Probes>
     </VI>
