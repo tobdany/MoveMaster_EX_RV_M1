@@ -1,0 +1,155 @@
+\chapter{Análisis de la Infraestructura Eléctrica y Mapeo de Señales}
+\lineaLateral
+
+\begin{resumenCapitulo}
+	El presente capítulo detalla el levantamiento técnico realizado sobre la infraestructura electrónica del brazo robótico. Dado que el sistema carece de documentación, se realizó un proceso de ingeniería inversa para mapear la arquitectura de cableado desde el segmento de captación de cada articulación hasta el centro de control. 
+	
+	Este análisis no solo permitió clasificar las señales según su función: potencia, retroalimentación de encoders y finales de carrera, sino que fue indispensable para identificar las discrepancias en el código de colores y las necesidades de voltaje reales. 
+	
+	La sistematización de esta información es la piedra angular que permitió posteriormente el diseño de la placa de acondicionamiento de señales y la integración segura con el microcontrolador ESP32.
+\end{resumenCapitulo}
+
+
+\section{Jerarquía del Sistema de Cableado}
+Para comprender la conectividad del brazo robótico, se definieron tres conceptos fundamentales que clasifican la ruta de las señales desde el sensor hasta el controlador final:
+
+\renewcommand{\arraystretch}{1.5}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{>{\raggedright\arraybackslash\bfseries}p{4cm} p{10cm}}
+		\toprule
+		\rowcolor{green!5} Concepto & Descripción Técnica \\ \midrule
+		Segmento de Captación & Cables que salen directamente de la carcasa de cada periférico. \\
+		Segmento de Transmisión & Conductores intermedios que conectan la captación con la terminal del cable enroscado. \\
+		SDP & Punto de agrupación central para señales de encoders, frenos y finales de carrera. \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\section{Análisis del Cordón Umbilical (SDP)}
+El cable principal de comunicación, o cordón umbilical, se divide en dos secciones lógicas para segregar potencia y control. El estudio de este componente permitió identificar el estado físico de los conectores y sus requerimientos técnicos:
+
+\begin{itemize}
+	\item \textbf{Segmento A:} Destinado exclusivamente a la potencia de motores y el accionamiento de frenos.
+	\item \textbf{Segmento B:} Consiste en una terminal de $2 \times 17$ pines que centraliza los datos de los encoders y los interruptores de final de carrera.
+\end{itemize}
+
+\section{Identificación de Componentes y Código de Colores}
+Se realizó un levantamiento de los periféricos instalados, incluyendo encoders (modelos Sharp GP1R112), frenos y sensores de límite. Durante este proceso, se detectó que, aunque existe un patrón entre códigos de colores y ubicación de las conexiones, ocurren cambios significativos entre los segmentos.
+
+\subsection{Tablas Comparativas de Colorimetría por Eje}
+
+Para consolidar el mapeo eléctrico, se presentan a continuación las tablas de correspondencia para cada uno de los cinco encoders del brazo robótico. Este registro es vital para la etapa de interconexión física, dado que la falta de estandarización en el cableado original podría derivar en fallas de alimentación o lectura errática de señales.
+
+% Encoder 1: Cadera
+\begin{table}[h]
+	\centering
+	\caption{Mapeo de señales y colorimetría - Encoder 1 (Cadera).}
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{green!5}{white}
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Señal} & \textbf{S. Captación} & \textbf{S. Transmisión} & \textbf{SDP (Pin)} \\ \midrule
+		V (Voltaje)    & Amarillo              & N/A                     & N/A                \\
+		G (GND)        & Verde                 & N/A                     & N/A                \\
+		A (Datos)      & Rojo                  & N/A                     & N/A                \\
+		B (Datos)      & Gris                  & N/A                     & N/A                \\
+		Z (Índice)     & Azul                  & N/A                     & N/A                \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+% Encoder 2: Hombro
+\begin{table}[h]
+	\centering
+	\caption{Mapeo de señales y colorimetría - Encoder 2 (Hombro).}
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{green!5}{white}
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Señal} & \textbf{S. Captación} & \textbf{S. Transmisión} & \textbf{SDP (Pin)} \\ \midrule
+		V (Voltaje)    & Amarillo              & N/A                     & Rojo (16)          \\
+		G (GND)        & Verde                 & N/A                     & Gris (14)          \\
+		A (Datos)      & Rojo                  & N/A                     & Gris (12)          \\
+		B (Datos)      & Gris                  & N/A                     & Amarillo (12)      \\
+		Z (Índice)     & Azul                  & N/A                     & Verde (11)         \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+% Encoder 3: Codo
+\begin{table}[h]
+	\centering
+	\caption{Mapeo de señales y colorimetría - Encoder 3 (Codo).}
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{green!5}{white}
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Señal} & \textbf{S. Captación} & \textbf{S. Transmisión} & \textbf{SDP (Pin)} \\ \midrule
+		V (Voltaje)    & Amarillo              & N/A                     & Gris (16)          \\
+		G (GND)        & Verde                 & N/A                     & Azul (14)          \\
+		A (Datos)      & Rojo                  & N/A                     & Morado (10)        \\
+		B (Datos)      & Gris                  & N/A                     & Gris (11)          \\
+		Z (Índice)     & Azul                  & N/A                     & Gris (10)          \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+% Encoder 4: Antebrazo
+\begin{table}[h]
+	\centering
+	\caption{Mapeo de señales y colorimetría - Encoder 4 (Antebrazo).}
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{green!5}{white}
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Señal} & \textbf{S. Captación} & \textbf{S. Transmisión} & \textbf{SDP (Pin)} \\ \midrule
+		V (Voltaje)    & Rojo                  & Rojo                    & Rojo (15)          \\
+		G (GND)        & Gris                  & Azul                    & Blanco (13)        \\
+		A (Datos)      & Azul                  & Verde Claro             & Blanco (9)         \\
+		B (Datos)      & Verde                 & Amarillo                & Amarillo (9)       \\
+		Z (Índice)     & Amarillo              & Gris                    & Verde (8)          \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+% Encoder 5: Muñeca
+\begin{table}[h]
+	\centering
+	\caption{Mapeo de señales y colorimetría - Encoder 5 (Muñeca).}
+	\renewcommand{\arraystretch}{1.5}
+	\rowcolors{2}{green!5}{white}
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Señal} & \textbf{S. Captación} & \textbf{S. Transmisión} & \textbf{SDP (Pin)} \\ \midrule
+		V (Voltaje)    & Rojo                  & Rojo                    & Blanco (15)        \\
+		G (GND)        & Gris                  & Azul                    & Azul (13)          \\
+		A (Datos)      & Azul                  & Verde Claro             & Morado (7)         \\
+		B (Datos)      & Verde                 & Amarillo                & Blanco (8)         \\
+		Z (Índice)     & Amarillo              & Gris                    & Blanco (7)         \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+\clearpage
+\subsubsection{Análisis de Similitudes y Discrepancias}
+
+Tras el levantamiento de datos realizado en los tres segmentos (Captación, Transmisión y SDP), se pueden extraer las siguientes observaciones técnicas:
+
+\begin{itemize}
+	\item \textbf{Estandarización por Segmentos:} Se observa una división clara en dos grupos de diseño. Los encoders de la (\textbf{muñeca y antebrazo}) guardan una simetría total en sus colores de captación y transmisión. Por otro lado, los ejes de mayor torque (\textbf{codo, hombro y cadera}) comparten un esquema de colores propio, diferenciado principalmente por el uso de Amarillo para voltaje y Verde para tierra en su etapa inicial.
+	
+	\item \textbf{Excepción del Encoder 1:} El Encoder de la Cadera destaca como una excepción logística, ya que al ser la base del robot, su cableado no transita por el segmento de transmisión ni por el SDP, conectándose de forma independiente al sistema de control.
+\end{itemize}
+
+
+
+\section{Requerimientos para el Diseño de la PCB de Acondicionamiento}
+El análisis exhaustivo de esta sección permitió establecer las directrices para la fabricación de la placa de interfaz personalizada:
+\begin{enumerate}
+	\item \textbf{Necesidades de Voltaje:} Determinación de los niveles lógicos y voltajes de alimentación requeridos para no dañar los sensores.
+	\item \textbf{Compatibilidad Mecánica:} Definición de las terminales y dimensiones necesarias para acoplarse directamente a la terminal $2 \times 17$ del Segmento B.
+	\item \textbf{Integridad de Señal:} Evaluación del desgaste de los conectores originales para garantizar una transmisión libre de ruidos electromagnéticos.
+\end{enumerate}
+
+\clearpage
+\begin{resultadosFase}
+	\begin{itemize}
+		\item \textbf{Precisión de lectura:} Se garantizó una lectura estable de los 6 ejes sin saturar el procesamiento del sistema.
+	\end{itemize}
+\end{resultadosFase}
