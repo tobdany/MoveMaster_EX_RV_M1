@@ -118,7 +118,6 @@ void tareaMuestreo(void * parameter) {
   for (;;) {
     vTaskDelayUntil(&xLastWakeTime, xPeriodo);
     
-    uint16_t sumaCrc = 0;
     memset(localBuffer, 0, 24); // Limpiamos buffer
     
     // 1. Recolectar datos de los 6 motores (o los que tengas)
@@ -128,13 +127,26 @@ void tareaMuestreo(void * parameter) {
     }
 
     // 2. Preparar el mensaje individual
-    MsgDatos_t clusterLocalMsg;
-    clusterLocalMsg.funcion = 0x01;
-    memcpy(clusterLocalMsg.globalBuffer, localBuffer, 24);
-    
-    // Calcular CRC simple
-    for(int i = 0; i < 24; i++) sumaCrc += localBuffer[i];
-    clusterLocalMsg.crcFinal = (uint8_t)(sumaCrc & 0xFF);
+
+  MsgDatos_t clusterLocalMsg;
+  clusterLocalMsg.funcion = 0x01; // Identificador de telemetría
+  memcpy(clusterLocalMsg.globalBuffer, localBuffer, 24);
+
+  // Reiniciamos la suma para cada mensaje
+  uint16_t sumaCrc = 0;
+
+  // Sumamos los campos fijos
+  sumaCrc += clusterLocalMsg.header;      // 0x3A
+  sumaCrc += clusterLocalMsg.funcion;     // 0x01
+  sumaCrc += clusterLocalMsg.payloadSize; // 25
+
+  // Sumamos el buffer de los encoders (24 bytes)
+  for(int i = 0; i < 24; i++) {
+    sumaCrc += clusterLocalMsg.globalBuffer[i];
+  }
+
+  // Guardamos solo el último byte de la suma (CheckSum 8-bit)
+  clusterLocalMsg.crcFinal = (uint8_t)(sumaCrc & 0xFF);
 
     // 3. Llenar la ráfaga de 25
     arrayMsg[iteradorMsg] = clusterLocalMsg;
@@ -199,19 +211,33 @@ void ReadSerial(void * parameter) {
 }
 
 //-------------------------------
-// --- TAREA:LEER AL SERIAL
+// --- TAREA:ESCRIBIR AL SERIAL
 ////-------------------------------
 
 void WriteSerial(void * parameter){
-  MsgDatos_t arrayLocalRecibido[25];
+  MsgDatos_t arrayLocalRecibido[25]; // Recibimos la ráfaga de 25 mensajes
   
   for(;;){
+    // Esperamos a que la cola tenga una ráfaga completa
     if (xQueueReceive(colaTelemetria, &arrayLocalRecibido, portMAX_DELAY) == pdPASS) {
-      //poner la lógica de labview
       
-      int32_t* pasos = (int32_t*)arrayLocalRecibido[0].globalBuffer;
-      Serial.printf("P_M1:%d, P_M2:%d, P_M3:%d, P_M4:%d, P_M5:%d, P_M6:N/A\n", 
-                    pasos[0], pasos[1], pasos[2], pasos[3], pasos[4]);
+      // Enviamos los 25 mensajes uno por uno al Serial
+      for(int m = 0; m < 25; m++) {
+        uint8_t header      = arrayLocalRecibido[m].header;
+        uint8_t funcion     = arrayLocalRecibido[m].funcion;
+        uint8_t payloadSize = arrayLocalRecibido[m].payloadSize;
+        uint8_t crc         = arrayLocalRecibido[m].crcFinal;
+
+        // Escribimos el paquete binario tal cual viene de la ráfaga
+        Serial.write(header); 
+        Serial.write(funcion); 
+        Serial.write(payloadSize);      
+        Serial.write(arrayLocalRecibido[m].globalBuffer, 24); 
+        Serial.write(crc);
+      }
+
+      
+      
     }
   }
 }
@@ -240,15 +266,15 @@ void setup() {
 
 // --- ENCODERS ---
   const int pinesEncoder[5][2] = {
-    {34, 35}, // Motor 1 (Recordatorio: pon las R de 10k externas)
-    {36, 39}, // Motor 2
+    {34, 35}, // Motor 1 
+    {36, 39}, // Motor 2  (VP/VN)
     {32, 33}, // Motor 3
     {18, 19}, // Motor 4
     {23, 05}  // Motor 5
   };
 
   //const int arrayPasosPorVuelta[]={400,400,400,96,96,0};
-  const int arrayPasosPorVuelta[]={400,400,400,400,400,400};
+  const int arrayPasosPorVuelta[]={400,400,400,192,192,0};
 
 // --- ASIGNACIÓN DE PINES ---
   for(int i = 0; i < NUM_MOTORES; i++) {
