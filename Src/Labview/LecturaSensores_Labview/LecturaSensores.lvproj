@@ -37,15 +37,23 @@
 			<Item Name="manejadorErrores.vi" Type="VI" URL="../manejadorErrores.vi"/>
 			<Item Name="WriteCommand.vi" Type="VI" URL="../WriteCommand.vi"/>
 		</Item>
+		<Item Name="calculoVelocidad.vi" Type="VI" URL="../calculoVelocidad.vi"/>
+		<Item Name="Ctrl_Array_Enc_Out.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out.ctl"/>
+		<Item Name="Ctrl_Array_Enc_Out_final.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out_final.ctl"/>
 		<Item Name="Ctrl_DataLogger_SM.ctl" Type="VI" URL="../Control/Ctrl_DataLogger_SM.ctl"/>
+		<Item Name="Ctrl_datos6motores_final.ctl" Type="VI" URL="../Control/Ctrl_datos6motores_final.ctl"/>
 		<Item Name="Ctrl_EscrituraComandos.ctl" Type="VI" URL="../Control/Ctrl_EscrituraComandos.ctl"/>
 		<Item Name="Ctrl_Fgv_DatosMotores.ctl" Type="VI" URL="../Control/Ctrl_Fgv_DatosMotores.ctl"/>
+		<Item Name="Ctrl_Modbus28.ctl" Type="VI" URL="../Control/Ctrl_Modbus28.ctl"/>
 		<Item Name="FGV_ADQ.vi" Type="VI" URL="../FGV_ADQ.vi"/>
 		<Item Name="FGV_DatosMotores.vi" Type="VI" URL="../FGV_DatosMotores.vi"/>
 		<Item Name="FGV_Error.vi" Type="VI" URL="../FGV_Error.vi"/>
+		<Item Name="Global_init.vi" Type="VI" URL="../Global_init.vi"/>
 		<Item Name="LogData_Command.vi" Type="VI" URL="../LogData_Command.vi"/>
 		<Item Name="main.vi" Type="VI" URL="../main.vi"/>
 		<Item Name="MainQueue_Analyzer.vi" Type="VI" URL="../MainQueue_Analyzer.vi"/>
+		<Item Name="Muestreo.vi" Type="VI" URL="../GlobalVariable/Muestreo.vi"/>
+		<Item Name="obtener_Telemetria.vi" Type="VI" URL="../obtener_Telemetria.vi"/>
 		<Item Name="Dependencies" Type="Dependencies"/>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>

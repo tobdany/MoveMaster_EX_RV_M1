@@ -1,6 +1,50 @@
 <Configuration>
   <Target name="My Computer">
-    <EnableDebuggingForAllVIs></EnableDebuggingForAllVIs>
+    <EnableDebuggingForAllVIs>0</EnableDebuggingForAllVIs>
+    <VI name="FGV_DatosMotores.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="7280"/>
+          <SignalUID value="5087"/>
+        </Generic>
+      </Probes>
+    </VI>
+    <VI name="WriteCommand.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="1109"/>
+        </Generic>
+      </Probes>
+    </VI>
+    <VI name="decodeModbusMessage.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="926"/>
+          <SignalUID value="9578"/>
+          <SignalUID value="2356"/>
+          <SignalUID value="2876"/>
+          <SignalUID value="57"/>
+        </Generic>
+      </Probes>
+    </VI>
     <VI name="main.vi">
       <Breakpoints>
         <NodeIndexes>
@@ -10,7 +54,51 @@
       </Breakpoints>
       <Probes>
         <Generic>
-          <SignalUID value="15590"/>
+          <SignalUID value="14651"/>
+          <SignalUID value="7842"/>
+          <SignalUID value="14648"/>
+          <SignalUID value="11792"/>
+          <SignalUID value="12550"/>
+          <SignalUID value="6544"/>
+          <SignalUID value="9921"/>
+          <SignalUID value="641"/>
+          <SignalUID value="8793"/>
+          <SignalUID value="16194"/>
+        </Generic>
+      </Probes>
+    </VI>
+    <VI name="obtener_Telemetria.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="4063"/>
+          <SignalUID value="4754"/>
+          <SignalUID value="4519"/>
+          <SignalUID value="4535"/>
+          <SignalUID value="2140"/>
+          <SignalUID value="3058"/>
+          <SignalUID value="7183"/>
+        </Generic>
+      </Probes>
+    </VI>
+    <VI name="openVISA_current.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="907"/>
+          <SignalUID value="439"/>
+          <SignalUID value="774"/>
+          <SignalUID value="651"/>
         </Generic>
       </Probes>
     </VI>
