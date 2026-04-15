@@ -49,7 +49,7 @@ struct __attribute__((packed)) MsgDatos_t {
 //-------------------------------
 // -- MOTORES ---
 //-------------------------------
-const int NUM_MOTORES = 6;
+const int NUM_MOTORES = 5;
 const int NUM_ENCODERS = 5; 
 
 //-------------------------------
@@ -108,57 +108,39 @@ void frenarMotor(Motor_t &objMotor){
 //-------------------------------
 
 void tareaMuestreo(void * parameter) {
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  const TickType_t xPeriodo = pdMS_TO_TICKS(2); 
-  
-  uint8_t localBuffer[24]; 
-  MsgDatos_t arrayMsg[25];
-  int iteradorMsg = 0;
+  Serial.println("[TASK] Muestreo Iniciada");
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xPeriodo = pdMS_TO_TICKS(4); 
+    uint8_t localBuffer[24]; 
 
-  for (;;) {
-    vTaskDelayUntil(&xLastWakeTime, xPeriodo);
-    
-    memset(localBuffer, 0, 24); // Limpiamos buffer
-    
-    // 1. Recolectar datos de los 6 motores (o los que tengas)
-    for(int i = 0; i < NUM_ENCODERS; i++){
-      int32_t pasos = encoders[i].getCount();
-      memcpy(&localBuffer[i * 4], &pasos, 4);
+    for (;;) {
+        vTaskDelayUntil(&xLastWakeTime, xPeriodo);
+        memset(localBuffer, 0, 24); 
+        
+        for(int i = 0; i < NUM_ENCODERS; i++){
+            int32_t pasos = encoders[i].getCount();
+            // Usamos datos simulados o reales de los encoders
+            //int32_t pasos = (i * 1000) + (esp_random() % 1000);
+            memcpy(&localBuffer[i * 4], &pasos, 4);
+        }
+
+        MsgDatos_t clusterLocalMsg;
+        clusterLocalMsg.funcion = 0x01; 
+        memcpy(clusterLocalMsg.globalBuffer, localBuffer, 24);
+
+        uint16_t sumaCrc = 0;
+        sumaCrc += clusterLocalMsg.header;
+        sumaCrc += clusterLocalMsg.funcion;
+        sumaCrc += clusterLocalMsg.payloadSize;
+        for(int i = 0; i < 24; i++) sumaCrc += clusterLocalMsg.globalBuffer[i];
+        clusterLocalMsg.crcFinal = (uint8_t)(sumaCrc & 0xFF);
+
+        // MANDAR INDIVIDUALMENTE A LA COLA
+        // Ya no llenamos un array de 25 aquí
+        if (xQueueSend(colaTelemetria, &clusterLocalMsg, 0) != pdPASS) {
+            // Si la cola se llena, se descarta el dato para no bloquear el núcleo
+        }
     }
-
-    // 2. Preparar el mensaje individual
-
-  MsgDatos_t clusterLocalMsg;
-  clusterLocalMsg.funcion = 0x01; // Identificador de telemetría
-  memcpy(clusterLocalMsg.globalBuffer, localBuffer, 24);
-
-  // Reiniciamos la suma para cada mensaje
-  uint16_t sumaCrc = 0;
-
-  // Sumamos los campos fijos
-  sumaCrc += clusterLocalMsg.header;      // 0x3A
-  sumaCrc += clusterLocalMsg.funcion;     // 0x01
-  sumaCrc += clusterLocalMsg.payloadSize; // 25
-
-  // Sumamos el buffer de los encoders (24 bytes)
-  for(int i = 0; i < 24; i++) {
-    sumaCrc += clusterLocalMsg.globalBuffer[i];
-  }
-
-  // Guardamos solo el último byte de la suma (CheckSum 8-bit)
-  clusterLocalMsg.crcFinal = (uint8_t)(sumaCrc & 0xFF);
-
-    // 3. Llenar la ráfaga de 25
-    arrayMsg[iteradorMsg] = clusterLocalMsg;
-    iteradorMsg++;
-
-    if(iteradorMsg >= 25){
-      if (xQueueSend(colaTelemetria, &arrayMsg, 0) != pdPASS) {
-          // Cola llena: el consumidor (Serial) es más lento que el productor
-      }
-      iteradorMsg = 0;
-    }
-  }
 }
 //-------------------------------
 // --- TAREA : Leer Consola ---
@@ -205,7 +187,7 @@ void ReadSerial(void * parameter) {
     }
 
     }
-    vTaskDelay(10 / portTICK_PERIOD_MS); 
+    vTaskDelay(20 / portTICK_PERIOD_MS); 
   }
   
 }
@@ -215,32 +197,24 @@ void ReadSerial(void * parameter) {
 ////-------------------------------
 
 void WriteSerial(void * parameter){
-  MsgDatos_t arrayLocalRecibido[25]; // Recibimos la ráfaga de 25 mensajes
-  
-  for(;;){
-    // Esperamos a que la cola tenga una ráfaga completa
-    if (xQueueReceive(colaTelemetria, &arrayLocalRecibido, portMAX_DELAY) == pdPASS) {
-      
-      // Enviamos los 25 mensajes uno por uno al Serial
-      for(int m = 0; m < 25; m++) {
-        uint8_t header      = arrayLocalRecibido[m].header;
-        uint8_t funcion     = arrayLocalRecibido[m].funcion;
-        uint8_t payloadSize = arrayLocalRecibido[m].payloadSize;
-        uint8_t crc         = arrayLocalRecibido[m].crcFinal;
+  Serial.println("[TASK] WriteSerial Iniciada");
 
-        // Escribimos el paquete binario tal cual viene de la ráfaga
-        Serial.write(header); 
-        Serial.write(funcion); 
-        Serial.write(payloadSize);      
-        Serial.write(arrayLocalRecibido[m].globalBuffer, 24); 
-        Serial.write(crc);
-      }
-
-      
-      
+    MsgDatos_t msgParaEnviar; 
+    
+    for(;;){
+        // Recibimos de uno en uno con espera infinita
+        if (xQueueReceive(colaTelemetria, &msgParaEnviar, portMAX_DELAY) == pdPASS) {
+            // MANDAR BINARIO DIRECTO
+            // LabVIEW recibirá esto conforme llegue y lo guardará en su buffer de entrada
+           Serial.write(msgParaEnviar.header); 
+           Serial.write(msgParaEnviar.funcion); 
+           Serial.write(msgParaEnviar.payloadSize);      
+           Serial.write(msgParaEnviar.globalBuffer, 24); 
+           Serial.write(msgParaEnviar.crcFinal);
+        }
     }
-  }
 }
+
 
 //-------------------------------
 // TAREA: SETUP
@@ -250,6 +224,12 @@ void setup() {
 
 // --- Comunicación serial con Labview
   Serial.begin(921600);
+  delay(1000); // ESPERA 2 SEGUNDOS CRÍTICOS
+  Serial.println("\n\n*******************************");
+  Serial.println("PRUEBA DE ARRANQUE FORZADA");
+  Serial.println("*******************************");
+
+  Serial.println("\n--- SISTEMA INICIANDO ---");
 
 // --- Comunicación serial con la otra tarjeta
   const int RXD2=13;
@@ -265,6 +245,7 @@ void setup() {
 
 
 // --- ENCODERS ---
+  ESP32Encoder::useInternalWeakPullResistors = puType::none;
   const int pinesEncoder[5][2] = {
     {34, 35}, // Motor 1 
     {36, 39}, // Motor 2  (VP/VN)
@@ -281,11 +262,16 @@ void setup() {
     //Configurar hardware en la estructura
     ArrayMotores[i].pwmL = pinesPWM_L[i];
     ArrayMotores[i].pwmR = pinesPWM_R[i];
+    
 
     //Encoders
     if(i < NUM_ENCODERS) {
       ArrayMotores[i].pinA = pinesEncoder[i][0];
       ArrayMotores[i].pinB = pinesEncoder[i][1];
+      /*pinMode(ArrayMotores[i].pinA, INPUT);
+      pinMode(ArrayMotores[i].pinB, INPUT);   */   
+      Serial.print("num encoder: ");
+      Serial.println(i);
       
       encoders[i].attachHalfQuad(ArrayMotores[i].pinA, ArrayMotores[i].pinB);
       encoders[i].setFilter(10);
@@ -306,18 +292,21 @@ void setup() {
    
   }
 
+  Serial.println("[SETUP] Pines configurados.");
 // --- Asignación de memoria a la colaTelemetría ---
-  colaTelemetria = xQueueCreate(5, sizeof(MsgDatos_t) * 25);
+  colaTelemetria = xQueueCreate(100, sizeof(MsgDatos_t));
   if (colaTelemetria == NULL) {
         Serial.println("Error al crear la cola");
   }
 
-
+  Serial.println("[SETUP] Creando tareas...");
 
 // --- CREAMOS LAS TAREAS EN NÚCLEOS DIFERENTES
   xTaskCreatePinnedToCore(tareaMuestreo, "TaskMuestreo", 4096, NULL, 3, &MuestreoHandler, 1);
   xTaskCreatePinnedToCore(ReadSerial, "TaskReadSerial", 4096, NULL, 1, &ReadSerialHandler, 0);
   xTaskCreatePinnedToCore(WriteSerial, "TaskWriteSerial", 4096, NULL, 1, &WriteSerialHandler, 0);
+
+  Serial.println("[SETUP] Todo listo. Entrando a loop.");
 }
 
 void loop() {
