@@ -1,6 +1,41 @@
 <Configuration>
   <Target name="My Computer">
     <EnableDebuggingForAllVIs>0</EnableDebuggingForAllVIs>
+    <VI name="Control_VI.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="3878"/>
+          <SignalUID value="880"/>
+          <SignalUID value="1962"/>
+          <SignalUID value="2180"/>
+          <SignalUID value="1173"/>
+          <SignalUID value="1058"/>
+          <SignalUID value="1529"/>
+          <SignalUID value="4596"/>
+          <SignalUID value="1485"/>
+        </Generic>
+      </Probes>
+    </VI>
+    <VI name="Dashboard.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="2335"/>
+          <SignalUID value="746"/>
+        </Generic>
+      </Probes>
+    </VI>
     <VI name="FGV_DatosMotores.vi">
       <Breakpoints>
         <NodeIndexes>
@@ -15,6 +50,22 @@
         </Generic>
       </Probes>
     </VI>
+    <VI name="VI_caller.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="4543"/>
+          <SignalUID value="922"/>
+          <SignalUID value="1156"/>
+          <SignalUID value="986"/>
+        </Generic>
+      </Probes>
+    </VI>
     <VI name="WriteCommand.vi">
       <Breakpoints>
         <NodeIndexes>
@@ -25,6 +76,11 @@
       <Probes>
         <Generic>
           <SignalUID value="1109"/>
+          <SignalUID value="713"/>
+          <SignalUID value="1475"/>
+          <SignalUID value="1157"/>
+          <SignalUID value="1168"/>
+          <SignalUID value="1401"/>
         </Generic>
       </Probes>
     </VI>
@@ -42,6 +98,14 @@
           <SignalUID value="2356"/>
           <SignalUID value="2876"/>
           <SignalUID value="57"/>
+          <SignalUID value="951"/>
+          <SignalUID value="2775"/>
+          <SignalUID value="434"/>
+          <SignalUID value="1425"/>
+          <SignalUID value="170"/>
+          <SignalUID value="9123"/>
+          <SignalUID value="4507"/>
+          <SignalUID value="41"/>
         </Generic>
       </Probes>
     </VI>
@@ -64,6 +128,9 @@
           <SignalUID value="641"/>
           <SignalUID value="8793"/>
           <SignalUID value="16194"/>
+          <SignalUID value="8675"/>
+          <SignalUID value="4392"/>
+          <SignalUID value="4417"/>
         </Generic>
       </Probes>
     </VI>

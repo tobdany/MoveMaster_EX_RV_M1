@@ -28,6 +28,12 @@
 		<Item Name="Modbus_VI" Type="Folder">
 			<Item Name="decodeModbusMessage.vi" Type="VI" URL="../decodeModbusMessage.vi"/>
 		</Item>
+		<Item Name="Subpanel" Type="Folder">
+			<Item Name="Control_Event.vi" Type="VI" URL="../Control_Event.vi"/>
+			<Item Name="Control_VI.vi" Type="VI" URL="../Control_VI.vi"/>
+			<Item Name="Dashboard.vi" Type="VI" URL="../Dashboard.vi"/>
+			<Item Name="Dashboard_event.vi" Type="VI" URL="../Dashboard_event.vi"/>
+		</Item>
 		<Item Name="Unused" Type="Folder">
 			<Item Name="Decode_Modbus_Message.vi" Type="VI" URL="../utils/Decode_Modbus_Message.vi"/>
 			<Item Name="openVISA_current.vi" Type="VI" URL="../utils/openVISA_current.vi"/>
@@ -38,13 +44,22 @@
 			<Item Name="WriteCommand.vi" Type="VI" URL="../WriteCommand.vi"/>
 		</Item>
 		<Item Name="calculoVelocidad.vi" Type="VI" URL="../calculoVelocidad.vi"/>
+		<Item Name="Cluster_Dashboard.ctl" Type="VI" URL="../Control/Cluster_Dashboard.ctl"/>
+		<Item Name="Control 2" Type="VI"/>
+		<Item Name="Controlador_grados_a_pasos.vi" Type="VI" URL="../Controlador_grados_a_pasos.vi"/>
 		<Item Name="Ctrl_Array_Enc_Out.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out.ctl"/>
 		<Item Name="Ctrl_Array_Enc_Out_final.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out_final.ctl"/>
+		<Item Name="Ctrl_Dashboard_StateMach.ctl" Type="VI" URL="../Control/Ctrl_Dashboard_StateMach.ctl"/>
 		<Item Name="Ctrl_DataLogger_SM.ctl" Type="VI" URL="../Control/Ctrl_DataLogger_SM.ctl"/>
 		<Item Name="Ctrl_datos6motores_final.ctl" Type="VI" URL="../Control/Ctrl_datos6motores_final.ctl"/>
 		<Item Name="Ctrl_EscrituraComandos.ctl" Type="VI" URL="../Control/Ctrl_EscrituraComandos.ctl"/>
 		<Item Name="Ctrl_Fgv_DatosMotores.ctl" Type="VI" URL="../Control/Ctrl_Fgv_DatosMotores.ctl"/>
+		<Item Name="Ctrl_GuiEvent.ctl" Type="VI" URL="../Control/Ctrl_GuiEvent.ctl"/>
 		<Item Name="Ctrl_Modbus28.ctl" Type="VI" URL="../Control/Ctrl_Modbus28.ctl"/>
+		<Item Name="Ctrl_Modbus_To_Esp32.ctl" Type="VI" URL="../Control/Ctrl_Modbus_To_Esp32.ctl"/>
+		<Item Name="Enum_VICaller.ctl" Type="VI" URL="../Control/VI_Caller/Enum_VICaller.ctl"/>
+		<Item Name="excel_creacion_archivo.vi" Type="VI" URL="../excel_creacion_archivo.vi"/>
+		<Item Name="excel_lectura_archivo.vi" Type="VI" URL="../excel_lectura_archivo.vi"/>
 		<Item Name="FGV_ADQ.vi" Type="VI" URL="../FGV_ADQ.vi"/>
 		<Item Name="FGV_DatosMotores.vi" Type="VI" URL="../FGV_DatosMotores.vi"/>
 		<Item Name="FGV_Error.vi" Type="VI" URL="../FGV_Error.vi"/>
@@ -54,6 +69,11 @@
 		<Item Name="MainQueue_Analyzer.vi" Type="VI" URL="../MainQueue_Analyzer.vi"/>
 		<Item Name="Muestreo.vi" Type="VI" URL="../GlobalVariable/Muestreo.vi"/>
 		<Item Name="obtener_Telemetria.vi" Type="VI" URL="../obtener_Telemetria.vi"/>
+		<Item Name="s.ctl" Type="VI" URL="../s.ctl"/>
+		<Item Name="Selector_VI.ctl" Type="VI" URL="../Selector_VI.ctl"/>
+		<Item Name="VI_caller.vi" Type="VI" URL="../VI_caller.vi"/>
+		<Item Name="VI_opener.vi" Type="VI" URL="../VI_opener.vi"/>
+		<Item Name="visacleaner.vi" Type="VI" URL="../../../../../../Users/danie/Downloads/visacleaner.vi"/>
 		<Item Name="Dependencies" Type="Dependencies"/>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>

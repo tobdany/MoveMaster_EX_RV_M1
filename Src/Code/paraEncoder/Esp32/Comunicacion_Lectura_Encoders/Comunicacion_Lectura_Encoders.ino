@@ -38,12 +38,23 @@ struct Motor_t {
     EstadoMotor estado;     // IDLE, MOVIENDO, etc.
 };
 
+//Estructura para mandar datos a Labview
 struct __attribute__((packed)) MsgDatos_t {
      uint8_t header=0x3A;
      uint8_t funcion;
      uint8_t payloadSize=25;
      uint8_t globalBuffer[24];
      uint8_t crcFinal;
+};
+
+
+//Estructura para recibir comandos de Labview
+struct __attribute__((packed)) MsgComando_t {
+    uint8_t header;      // 0x3A
+    uint8_t funcion;     // 0x02
+    uint8_t payloadSize; // 24
+    int32_t metas[6];    // 24 bytes (metas para los motores)
+    uint8_t crcFinal;
 };
 
 //-------------------------------
@@ -108,7 +119,7 @@ void frenarMotor(Motor_t &objMotor){
 //-------------------------------
 
 void tareaMuestreo(void * parameter) {
-  Serial.println("[TASK] Muestreo Iniciada");
+  //Serial.println("[TASK] Muestreo Iniciada");
     TickType_t xLastWakeTime = xTaskGetTickCount();
     const TickType_t xPeriodo = pdMS_TO_TICKS(4); 
     uint8_t localBuffer[24]; 
@@ -118,7 +129,9 @@ void tareaMuestreo(void * parameter) {
         memset(localBuffer, 0, 24); 
         
         for(int i = 0; i < NUM_ENCODERS; i++){
-            int32_t pasos = encoders[i].getCount();
+          //***********************************************************************************SIMULACION
+            int32_t pasos = ArrayMotores[i].pasosActuales;
+           // int32_t pasos = encoders[i].getCount();
             // Usamos datos simulados o reales de los encoders
             //int32_t pasos = (i * 1000) + (esp_random() % 1000);
             memcpy(&localBuffer[i * 4], &pasos, 4);
@@ -146,50 +159,54 @@ void tareaMuestreo(void * parameter) {
 // --- TAREA : Leer Consola ---
 //-------------------------------
 void ReadSerial(void * parameter) {
-  int pwm=0;
-  int vueltas=0;
+    MsgComando_t comando;
+    const size_t tamanoPaquete = sizeof(MsgComando_t);
+    uint8_t buffer[tamanoPaquete];
 
-  for (;;) {
-    // 1. LEER DE LA CONSOLA (Comandos desde LabVIEW)
-    if (Serial.available() > 0) {
-      String cmd = Serial.readStringUntil('\n');
-      if (cmd.startsWith("HOME:INIT:")) {
-        pwm = cmd.substring(10).toInt();
-        vueltas=-1;
-        //lógica para mandar el comando
-      }
+    for (;;) {
+        // ¿Hay suficientes bytes para un paquete completo?
+        if (Serial.available() >= tamanoPaquete) {
+            
+            // Sincronización: Buscamos el header 0x3A
+            if (Serial.peek() == 0x3A) {
+                Serial.readBytes(buffer, tamanoPaquete);
 
-      else if(cmd.startsWith("MOV:1V:")){
-        pwm=cmd.substring(7).toInt();
-        vueltas=1;
-      }
+                // Mapeamos el buffer a nuestra estructura
+                memcpy(&comando, buffer, tamanoPaquete);
 
-      else if(cmd.startsWith("MOV:10V:")){
-        pwm=cmd.substring(8).toInt(); 
-        vueltas=10;
-      }
+                // --- VALIDACIÓN DE CRC ---
+                uint16_t sumaCrc = 0;
+                sumaCrc += comando.header;
+                sumaCrc += comando.funcion;
+                sumaCrc += comando.payloadSize;
+                for(int i = 0; i < 24; i++) {
+                    sumaCrc += ((uint8_t*)comando.metas)[i];
+                }
 
-      Serial.print("pwm: ");
-      Serial.print(pwm);
-      Serial.print(" , vueltas:");
-      Serial.println(vueltas);
+                if(true){
+                  
+                //if ((uint8_t)(sumaCrc & 0xFF) == comando.crcFinal) {
+                    // --- DATOS VÁLIDOS: ACTUALIZAR MOTORES ---
 
-    // 2. ENVIAR DATOS (Tus paquetes de 500 bytes o lo que decidas)
-    portENTER_CRITICAL(&mux);
-    for(int i=0; i<NUM_MOTORES; i++){
-      ArrayMotores[i].pwmActual = pwm;
+                    portENTER_CRITICAL(&mux);
+                    for(int i = 0; i < NUM_MOTORES; i++) {
+                        // Actualizamos la meta de pasos para cada motor
+                        ArrayMotores[i].metaPasos = comando.metas[i];
+                        ArrayMotores[i].estado = MOVIENDO;
+
+                        //**********************************************************************************************************SIMULACION
+                        ArrayMotores[i].pasosActuales = comando.metas[i];
+                    }
+                    portEXIT_CRITICAL(&mux);
+                } 
+            } else {
+                // Si el primer byte no es el header, lo descartamos y seguimos buscando
+                Serial.read();
+            }
+        }
+        // Pequeño delay para no estresar el núcleo
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
-    portEXIT_CRITICAL(&mux);
-
-    // 3. EJECUTAR MOVIMIENTO (Fuera de la sección crítica)
-    for(int i=0; i<NUM_MOTORES; i++){
-      moverMotor(ArrayMotores[i], ArrayMotores[i].pwmActual);
-    }
-
-    }
-    vTaskDelay(20 / portTICK_PERIOD_MS); 
-  }
-  
 }
 
 //-------------------------------
@@ -197,7 +214,7 @@ void ReadSerial(void * parameter) {
 ////-------------------------------
 
 void WriteSerial(void * parameter){
-  Serial.println("[TASK] WriteSerial Iniciada");
+  //Serial.println("[TASK] WriteSerial Iniciada");
 
     MsgDatos_t msgParaEnviar; 
     
@@ -225,11 +242,11 @@ void setup() {
 // --- Comunicación serial con Labview
   Serial.begin(921600);
   delay(1000); // ESPERA 2 SEGUNDOS CRÍTICOS
-  Serial.println("\n\n*******************************");
-  Serial.println("PRUEBA DE ARRANQUE FORZADA");
-  Serial.println("*******************************");
+ // Serial.println("\n\n*******************************");
+ // Serial.println("PRUEBA DE ARRANQUE FORZADA");
+ // Serial.println("*******************************");
 
-  Serial.println("\n--- SISTEMA INICIANDO ---");
+ // Serial.println("\n--- SISTEMA INICIANDO ---");
 
 // --- Comunicación serial con la otra tarjeta
   const int RXD2=13;
@@ -270,8 +287,8 @@ void setup() {
       ArrayMotores[i].pinB = pinesEncoder[i][1];
       /*pinMode(ArrayMotores[i].pinA, INPUT);
       pinMode(ArrayMotores[i].pinB, INPUT);   */   
-      Serial.print("num encoder: ");
-      Serial.println(i);
+      /*Serial.print("num encoder: ");
+      Serial.println(i);*/
       
       encoders[i].attachHalfQuad(ArrayMotores[i].pinA, ArrayMotores[i].pinB);
       encoders[i].setFilter(10);
@@ -299,14 +316,14 @@ void setup() {
         Serial.println("Error al crear la cola");
   }
 
-  Serial.println("[SETUP] Creando tareas...");
+  //Serial.println("[SETUP] Creando tareas...");
 
 // --- CREAMOS LAS TAREAS EN NÚCLEOS DIFERENTES
   xTaskCreatePinnedToCore(tareaMuestreo, "TaskMuestreo", 4096, NULL, 3, &MuestreoHandler, 1);
   xTaskCreatePinnedToCore(ReadSerial, "TaskReadSerial", 4096, NULL, 1, &ReadSerialHandler, 0);
   xTaskCreatePinnedToCore(WriteSerial, "TaskWriteSerial", 4096, NULL, 1, &WriteSerialHandler, 0);
 
-  Serial.println("[SETUP] Todo listo. Entrando a loop.");
+  //Serial.println("[SETUP] Todo listo. Entrando a loop.");
 }
 
 void loop() {
