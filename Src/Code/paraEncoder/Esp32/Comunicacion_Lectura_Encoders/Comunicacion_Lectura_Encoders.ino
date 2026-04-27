@@ -270,39 +270,47 @@ void tareaMuestreo(void * parameter) {
           break;
 
         case COMANDO_MANUAL:
-          // Verificamos si ya llegó a la meta
-          if (abs(ArrayMotores[i].metaPasos - ArrayMotores[i].pasosActuales) < 5) {
+        {
+          // Calculamos el error actual
+          int32_t errorActual = ArrayMotores[i].metaPasos - ArrayMotores[i].pasosActuales;
+          // Se detiene si está cerca (tolerancia) 
+          // O si el signo del error cambió (indicando que ya se pasó de la meta)
+          bool yaSePaso = false;
+          if (ArrayMotores[i].pwmActual > 0 && errorActual <= 0) yaSePaso = true; // Iba hacia adelante y se pasó
+          if (ArrayMotores[i].pwmActual < 0 && errorActual >= 0) yaSePaso = true; // Iba hacia atrás y se pasó
+
+          if (abs(errorActual) < 8 || yaSePaso) { 
               frenarMotor(ArrayMotores[i]);
-              ArrayMotores[i].estado = IDLE; // Volvemos a esperar
+              ArrayMotores[i].estado = IDLE; 
           } else {
-              //Si no hemos llegado, aplicamos el PWM que recibimos de LabVIEW
+              // Seguimos moviendo a la velocidad definida por LabVIEW
               moverMotor(ArrayMotores[i], ArrayMotores[i].pwmActual);
           }
           
-          //Si toca un final de carrera, frenar
+          // Seguridad por finales de carrera
           if(leerBit(dataAuxiliar.finalesCarrera, i)){
               frenarMotor(ArrayMotores[i]);
               ArrayMotores[i].estado = IDLE;
           }
           break;
+        }
 
         case META_ALCANZADA: // Se manda a llamar cuando los pasos no han cambiado
           // Estado de seguridad o bloqueo
-          
           frenarMotor(ArrayMotores[i]);
           break;
 
         }
 
       datosMuestreo.pasos[i] =  ArrayMotores[i].pasosActuales;
-      //datosMuestreo.estado[i] =  ArrayMotores[i].estado;
+      datosMuestreo.estado[i] =  ArrayMotores[i].estado;
       //**********************************************************************************************SIMULACION
-      datosMuestreo.estado[i] =  MOVIENDO;
+      //datosMuestreo.estado[i] =  MOVIENDO;
     }
 
 
     //**********************************************************************************************SIMULACION
-    datosMuestreo.estado[5] = MOVIENDO;;
+    datosMuestreo.estado[5] = (EstadoMotor)dataAuxiliar.estadoGripper;
     datosMuestreo.pasos[5] = 0;
 
     // MANDAR INDIVIDUALMENTE A LA COLA
@@ -535,7 +543,7 @@ void setup() {
       Serial.println(i);*/
       
       encoders[i].attachHalfQuad(ArrayMotores[i].pinA, ArrayMotores[i].pinB);
-      encoders[i].setFilter(10);
+      //encoders[i].setFilter(10);
       encoders[i].clearCount();
     } else {
       // El motor 6 no tiene pines de encoder asignados
