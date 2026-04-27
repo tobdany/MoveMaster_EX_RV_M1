@@ -6,6 +6,7 @@
 TaskHandle_t MuestreoHandler;
 TaskHandle_t ReadSerialHandler; 
 TaskHandle_t WriteSerialHandler;
+TaskHandle_t ReadAuxBoardHandler;
 
 //-------------------------------
 //--- ESTRUCTURAS ---
@@ -14,7 +15,10 @@ enum EstadoMotor {
     IDLE,        // Quieto, esperando orden
     MOVIENDO,    // En trayectoria
     META_ALCANZADA, // Se trabó o algo pasó
-    HOMING       // Buscando el cero
+    HOMING_FASE1, // Búsqueda rápida
+    HOMING_FASE2, // Alejarse
+    HOMING_FASE3,  // Búsqueda lenta
+    COMANDO_MANUAL
 };
 
 struct Motor_t {
@@ -23,14 +27,13 @@ struct Motor_t {
     int pwmL;       // Salida PWM Izquierda (o Reversa)
     int pwmR;       // Salida PWM Derecha (o Adelante)
     
-    // Configuración Mecánica
-    int pasosPorVuelta; 
-    
     // Control de Movimiento
     // Usamos int32_t para que coincida con el getCount() del ESP32Encoder
     int32_t pasosActuales;  
     int32_t metaPasos;
-    int32_t errorPasos;     // Útil para tu PID o control de llegada
+    int32_t errorPasos;
+    int32_t ultimoError;
+    int32_t pasosHomingAux;
     
     // Estado del Sistema
     int pwmActual;          // El valor final (0-255) que se está mandando
@@ -38,11 +41,19 @@ struct Motor_t {
     EstadoMotor estado;     // IDLE, MOVIENDO, etc.
 };
 
+//Estructura para mandar datos de la tarea de muestreo a la tarea de WriteSerial
+struct DatosCrudos_t {
+    int32_t pasos[6];
+    uint8_t finalesCarrera;
+    EstadoMotor estado[6];;
+};
+
 //Estructura para mandar datos a Labview
 struct __attribute__((packed)) MsgDatos_t {
      uint8_t header=0x3A;
      uint8_t funcion;
-     uint8_t payloadSize=25;
+     uint8_t edoMotores[3];
+     uint8_t finalesCarrera;
      uint8_t globalBuffer[24];
      uint8_t crcFinal;
 };
@@ -55,6 +66,18 @@ struct __attribute__((packed)) MsgComando_t {
     uint8_t payloadSize; // 24
     int32_t metas[6];    // 24 bytes (metas para los motores)
     uint8_t crcFinal;
+};
+
+//Estrucutra para recibir datos de la tarjeta auxiliar
+struct __attribute__((packed)) MsgStatus_Auxiliar_t {
+    uint8_t header = 0x3A;
+    uint8_t funcion = 0x07; 
+    uint8_t payloadSize = 5;
+    uint8_t estadoGripper;  
+    uint8_t finalesCarrera; 
+    uint8_t reserva1 = 0;
+    uint8_t reserva2 = 0;
+    uint8_t crc;
 };
 
 //-------------------------------
@@ -78,6 +101,7 @@ portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED; // Para evitar conflictos entre
 
 Motor_t ArrayMotores[NUM_MOTORES];
 MsgDatos_t structMensaje;
+volatile MsgStatus_Auxiliar_t dataAuxiliar;
 
 
 //-------------------------------
@@ -103,12 +127,62 @@ void moverMotor(Motor_t &objMotor, int velocidad) {
         ledcWrite(objMotor.pwmL, 0);
     }
 }
-
+//Frena el motor
 void frenarMotor(Motor_t &objMotor){
   ledcWrite(objMotor.pwmL, 0); 
   ledcWrite(objMotor.pwmR, 0);
 }
 
+// Lee los finales de carrera que vienen de la tarjeta auxiliar
+bool leerBit(uint8_t byte, int posicion) {
+    // Extraemos el bit original (0 si se abrió el circuito/activó, 1 si está cerrado/reposo)
+    bool estaPresionado = (dataAuxiliar.finalesCarrera >> posicion) & 0x01;
+   
+    /*if(estaPresionado) { 
+        if(posicion == 0) frenarMotor(ArrayMotores[0]); // Cadera
+        if(posicion == 1 || posicion == 2) frenarMotor(ArrayMotores[3]); // Codo
+        if(posicion == 3 || posicion == 4) frenarMotor(ArrayMotores[4]); // Antebrazo
+    }*/
+
+    return estaPresionado; // Retornas TRUE si el switch está presionado
+}
+
+//Entrega el pwm según los pasos que le faltan
+int calcularControl(Motor_t &objMotor) {
+    // --- CONSTANTES DE CONTROL ---
+    // Como no tienes LabVIEW conectado aún, ajustamos estos valores aquí.
+    float Kp = 1.2;  // Ganancia Proporcional (fuerza para llegar)
+    float Kd = 0.8;  // Ganancia Derivativa (amortiguación para no pasarse)
+    
+    // 1. Calcular el error actual
+    // (Ya lo calculas en la tarea de muestreo, pero lo aseguramos aquí)
+    int32_t error = objMotor.metaPasos - objMotor.pasosActuales;
+    
+    // 2. Calcular la Derivada (Cambio del error)
+    // El periodo es constante (4ms), así que no es estrictamente necesario dividir por dt
+    int32_t derivada = error - objMotor.ultimoError;
+    
+    // 3. Cálculo del PID (solo PD en este caso)
+    float salida = (error * Kp) + (derivada * Kd);
+    
+    // 4. Guardar el error para el próximo ciclo
+    objMotor.ultimoError = error;
+    
+    // 5. Gestión de "Zona Muerta" (Deadzone)
+    // Evita que el motor zumbe o intente moverse por errores de 1 o 2 pasos
+    if (abs(error) < 3) {
+        return 0;
+    }
+
+    // 6. PWM Mínimo (Opcional)
+    // Los motores del Movemaster necesitan un mínimo de voltaje para vencer la fricción
+    int pwmMinimo = 45; 
+    if (salida > 0 && salida < pwmMinimo) salida = pwmMinimo;
+    if (salida < 0 && salida > -pwmMinimo) salida = -pwmMinimo;
+
+    // 7. Limitar y retornar el resultado
+    return (int)constrain(salida, -255, 255);
+}
 
 
 //-------------------------------
@@ -120,93 +194,194 @@ void frenarMotor(Motor_t &objMotor){
 
 void tareaMuestreo(void * parameter) {
   //Serial.println("[TASK] Muestreo Iniciada");
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-    const TickType_t xPeriodo = pdMS_TO_TICKS(4); 
-    uint8_t localBuffer[24]; 
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+  const TickType_t xPeriodo = pdMS_TO_TICKS(4); 
 
-    for (;;) {
-        vTaskDelayUntil(&xLastWakeTime, xPeriodo);
-        memset(localBuffer, 0, 24); 
-        
-        for(int i = 0; i < NUM_ENCODERS; i++){
-          //***********************************************************************************SIMULACION
-            int32_t pasos = ArrayMotores[i].pasosActuales;
-           // int32_t pasos = encoders[i].getCount();
-            // Usamos datos simulados o reales de los encoders
-            //int32_t pasos = (i * 1000) + (esp_random() % 1000);
-            memcpy(&localBuffer[i * 4], &pasos, 4);
+  for (;;) {
+    vTaskDelayUntil(&xLastWakeTime, xPeriodo);
+
+    DatosCrudos_t datosMuestreo;
+    datosMuestreo.finalesCarrera = dataAuxiliar.finalesCarrera;
+
+    for(int i = 0; i < NUM_MOTORES; i++){
+      ArrayMotores[i].pasosActuales = encoders[i].getCount();
+
+      //***************************************************************************************************SIMULACION
+      //ArrayMotores[i].pasosActuales  = (i * 1000) + (esp_random() % 1000);
+
+      //***************************************************************************************************SIMULACION2
+      //datosMuestreo.pasos[i] = ArrayMotores[i].pasosActuales;
+
+      switch (ArrayMotores[i].estado) {
+            
+        case IDLE:
+          frenarMotor(ArrayMotores[i]);
+          // Se queda aquí hasta que ReadSerial cambie el estado a MOVIENDO o HOMING
+          break;
+
+        case MOVIENDO:
+          if(leerBit(dataAuxiliar.finalesCarrera, i)){
+              ArrayMotores[i].estado = IDLE;
+              frenarMotor(ArrayMotores[i]);
+              break;
+          }
+          // Calcular error
+          ArrayMotores[i].errorPasos = ArrayMotores[i].metaPasos - ArrayMotores[i].pasosActuales;
+
+          // Si el error es pequeño, llegamos a la meta
+          if (abs(ArrayMotores[i].errorPasos) < 5) { // Tolerancia de 5 pasos
+              ArrayMotores[i].estado = META_ALCANZADA;
+          } else {
+              // Aquí llamarías a tu función de control (ej. un PD simple)
+              int pwmCalculado = calcularControl(ArrayMotores[i]); 
+              moverMotor(ArrayMotores[i], pwmCalculado);
+          }
+          break;
+
+        case HOMING_FASE1: // BÚSQUEDA RÁPIDA
+          moverMotor(ArrayMotores[i], -100); // Velocidad moderada
+          if (leerBit(dataAuxiliar.finalesCarrera, i)) {
+              frenarMotor(ArrayMotores[i]);
+              // Guardamos dónde estamos para saber cuánto alejarnos
+              ArrayMotores[i].pasosHomingAux = encoders[i].getCount(); 
+              ArrayMotores[i].estado = HOMING_FASE2; 
+          }
+            
+          break;
+
+        case HOMING_FASE2: // ALEJARSE (BACK-OFF)
+          moverMotor(ArrayMotores[i], 80); // Mover en sentido contrario
+          // Nos alejamos, por ejemplo, 100 pasos
+          if (abs(encoders[i].getCount() - ArrayMotores[i].pasosHomingAux) > 100) {
+              frenarMotor(ArrayMotores[i]);
+              ArrayMotores[i].estado = HOMING_FASE3;
+          }
+          break;
+
+        case HOMING_FASE3: // TOQUE LENTO FINAL
+          moverMotor(ArrayMotores[i], -50); // Velocidad muy baja (precisión)
+          if (leerBit(dataAuxiliar.finalesCarrera, i)) {
+              frenarMotor(ArrayMotores[i]);
+              encoders[i].clearCount(); // ¡ESTE ES EL CERO REAL!
+              ArrayMotores[i].pasosActuales = 0;
+              ArrayMotores[i].metaPasos = 0;
+              ArrayMotores[i].estado = IDLE; 
+          }
+          break;
+
+        case COMANDO_MANUAL:
+          // Verificamos si ya llegó a la meta
+          if (abs(ArrayMotores[i].metaPasos - ArrayMotores[i].pasosActuales) < 5) {
+              frenarMotor(ArrayMotores[i]);
+              ArrayMotores[i].estado = IDLE; // Volvemos a esperar
+          } else {
+              //Si no hemos llegado, aplicamos el PWM que recibimos de LabVIEW
+              moverMotor(ArrayMotores[i], ArrayMotores[i].pwmActual);
+          }
+          
+          //Si toca un final de carrera, frenar
+          if(leerBit(dataAuxiliar.finalesCarrera, i)){
+              frenarMotor(ArrayMotores[i]);
+              ArrayMotores[i].estado = IDLE;
+          }
+          break;
+
+        case META_ALCANZADA: // Se manda a llamar cuando los pasos no han cambiado
+          // Estado de seguridad o bloqueo
+          
+          frenarMotor(ArrayMotores[i]);
+          break;
+
         }
 
-        MsgDatos_t clusterLocalMsg;
-        clusterLocalMsg.funcion = 0x01; 
-        memcpy(clusterLocalMsg.globalBuffer, localBuffer, 24);
-
-        uint16_t sumaCrc = 0;
-        sumaCrc += clusterLocalMsg.header;
-        sumaCrc += clusterLocalMsg.funcion;
-        sumaCrc += clusterLocalMsg.payloadSize;
-        for(int i = 0; i < 24; i++) sumaCrc += clusterLocalMsg.globalBuffer[i];
-        clusterLocalMsg.crcFinal = (uint8_t)(sumaCrc & 0xFF);
-
-        // MANDAR INDIVIDUALMENTE A LA COLA
-        // Ya no llenamos un array de 25 aquí
-        if (xQueueSend(colaTelemetria, &clusterLocalMsg, 0) != pdPASS) {
-            // Si la cola se llena, se descarta el dato para no bloquear el núcleo
-        }
+      datosMuestreo.pasos[i] =  ArrayMotores[i].pasosActuales;
+      //datosMuestreo.estado[i] =  ArrayMotores[i].estado;
+      //**********************************************************************************************SIMULACION
+      datosMuestreo.estado[i] =  MOVIENDO;
     }
+
+
+    //**********************************************************************************************SIMULACION
+    datosMuestreo.estado[5] = MOVIENDO;;
+    datosMuestreo.pasos[5] = 0;
+
+    // MANDAR INDIVIDUALMENTE A LA COLA
+    xQueueSend(colaTelemetria, &datosMuestreo, 0);
+  }
+
 }
+
+
+
 //-------------------------------
 // --- TAREA : Leer Consola ---
 //-------------------------------
 void ReadSerial(void * parameter) {
-    MsgComando_t comando;
-    const size_t tamanoPaquete = sizeof(MsgComando_t);
-    uint8_t buffer[tamanoPaquete];
+MsgComando_t comando;
+const size_t tamanoPaquete = sizeof(MsgComando_t);
+uint8_t buffer[tamanoPaquete];
 
-    for (;;) {
-        // ¿Hay suficientes bytes para un paquete completo?
-        if (Serial.available() >= tamanoPaquete) {
-            
-            // Sincronización: Buscamos el header 0x3A
-            if (Serial.peek() == 0x3A) {
-                Serial.readBytes(buffer, tamanoPaquete);
+for (;;) {
+    // ¿Hay suficientes bytes para un paquete completo?
+    if (Serial.available() >= tamanoPaquete) {
+        
+      // Sincronización: Buscamos el header 0x3A
+      if (Serial.peek() == 0x3A) {
+          Serial.readBytes(buffer, tamanoPaquete);
 
-                // Mapeamos el buffer a nuestra estructura
-                memcpy(&comando, buffer, tamanoPaquete);
+          // Mapeamos el buffer a nuestra estructura
+          memcpy(&comando, buffer, tamanoPaquete);
 
-                // --- VALIDACIÓN DE CRC ---
-                uint16_t sumaCrc = 0;
-                sumaCrc += comando.header;
-                sumaCrc += comando.funcion;
-                sumaCrc += comando.payloadSize;
-                for(int i = 0; i < 24; i++) {
-                    sumaCrc += ((uint8_t*)comando.metas)[i];
-                }
+          // --- VALIDACIÓN DE CRC ---
+          uint16_t sumaCrc = 0;
+          sumaCrc += comando.header;
+          sumaCrc += comando.funcion;
+          sumaCrc += comando.payloadSize;
+          for(int i = 0; i < 24; i++) {
+              sumaCrc += ((uint8_t*)comando.metas)[i];
+          }
 
-                if(true){
-                  
-                //if ((uint8_t)(sumaCrc & 0xFF) == comando.crcFinal) {
-                    // --- DATOS VÁLIDOS: ACTUALIZAR MOTORES ---
-
-                    portENTER_CRITICAL(&mux);
-                    for(int i = 0; i < NUM_MOTORES; i++) {
-                        // Actualizamos la meta de pasos para cada motor
-                        ArrayMotores[i].metaPasos = comando.metas[i];
-                        ArrayMotores[i].estado = MOVIENDO;
-
-                        //**********************************************************************************************************SIMULACION
-                        ArrayMotores[i].pasosActuales = comando.metas[i];
+          if ((uint8_t)(sumaCrc & 0xFF) == comando.crcFinal) {
+            // --- DATOS VÁLIDOS: ACTUALIZAR MOTORES ---
+            portENTER_CRITICAL(&mux);
+            for(int i = 0; i < NUM_MOTORES; i++) {
+              //Función 3:  Se presionaron las flechas del control VI <- ->
+              if(comando.funcion==3){
+                  if(comando.metas[i] != 0){
+                    ArrayMotores[i].estado = COMANDO_MANUAL;
+                    ArrayMotores[i].metaPasos = ArrayMotores[i].pasosActuales + comando.metas[i];
+        
+                    // Asignación de PWM con signo
+                    if(comando.metas[i] < 0) {
+                      ArrayMotores[i].pwmActual = -((int)comando.payloadSize); 
+                    } else {
+                      ArrayMotores[i].pwmActual = (int)comando.payloadSize; 
                     }
-                    portEXIT_CRITICAL(&mux);
-                } 
-            } else {
-                // Si el primer byte no es el header, lo descartamos y seguimos buscando
-                Serial.read();
-            }
-        }
-        // Pequeño delay para no estresar el núcleo
-        vTaskDelay(pdMS_TO_TICKS(10));
+                  }
+
+                }else{
+
+                  //Función normal
+                  ArrayMotores[i].metaPasos = comando.metas[i];
+                  ArrayMotores[i].estado = MOVIENDO; // Activa el PID
+
+                }
+                  //**********************************************************************************************************SIMULACION
+                  //ArrayMotores[i].pasosActuales = comando.metas[i];
+              }
+              portEXIT_CRITICAL(&mux);
+          } 
+
+      } else {
+          // Si el primer byte no es el header, lo descartamos y seguimos buscando
+          Serial.read();
+      }
+
     }
+
+    // Pequeño delay para no estresar el núcleo
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
 }
 
 //-------------------------------
@@ -215,23 +390,94 @@ void ReadSerial(void * parameter) {
 
 void WriteSerial(void * parameter){
   //Serial.println("[TASK] WriteSerial Iniciada");
-
+    DatosCrudos_t datosRecibidos;
     MsgDatos_t msgParaEnviar; 
-    
+
     for(;;){
         // Recibimos de uno en uno con espera infinita
-        if (xQueueReceive(colaTelemetria, &msgParaEnviar, portMAX_DELAY) == pdPASS) {
-            // MANDAR BINARIO DIRECTO
-            // LabVIEW recibirá esto conforme llegue y lo guardará en su buffer de entrada
-           Serial.write(msgParaEnviar.header); 
-           Serial.write(msgParaEnviar.funcion); 
-           Serial.write(msgParaEnviar.payloadSize);      
-           Serial.write(msgParaEnviar.globalBuffer, 24); 
-           Serial.write(msgParaEnviar.crcFinal);
+        if (xQueueReceive(colaTelemetria, &datosRecibidos, portMAX_DELAY) == pdPASS) {
+          
+          msgParaEnviar.funcion = 0x01; 
+          msgParaEnviar.finalesCarrera=datosRecibidos.finalesCarrera;
+          memcpy(msgParaEnviar.globalBuffer, datosRecibidos.pasos, 24);
+
+          msgParaEnviar.edoMotores[0] = 0;
+          msgParaEnviar.edoMotores[1] = 0;
+          msgParaEnviar.edoMotores[2] = 0;
+
+          // Byte 0: [M2_bit0 | M1_bit2-0 | M0_bit2-0] (Aproximadamente)
+          msgParaEnviar.edoMotores[0] = (datosRecibidos.estado[0] & 0x07) | 
+                                          ((datosRecibidos.estado[1] & 0x07) << 3) |
+                                          ((datosRecibidos.estado[2] & 0x03) << 6);
+
+          // Byte 1: [M4_bit1-0 | M3_bit2-0 | M2_bit2-1]
+          msgParaEnviar.edoMotores[1] = ((datosRecibidos.estado[2] >> 2) & 0x01) |
+                                          ((datosRecibidos.estado[3] & 0x07) << 1) |
+                                          ((datosRecibidos.estado[4] & 0x07) << 4) |
+                                          ((datosRecibidos.estado[5] & 0x01) << 7);
+
+          // Byte 2: [Libre | M5_bit2-1]
+          msgParaEnviar.edoMotores[2] = (datosRecibidos.estado[5] >> 1) & 0x03;
+
+          uint16_t sumaCrc = 0;
+          sumaCrc += msgParaEnviar.header;
+          sumaCrc += msgParaEnviar.funcion;
+          sumaCrc += msgParaEnviar.finalesCarrera;
+
+
+          for(int i=0; i<3; i++) sumaCrc += msgParaEnviar.edoMotores[i];
+          for(int i = 0; i < 24; i++) sumaCrc += msgParaEnviar.globalBuffer[i];
+          msgParaEnviar.crcFinal = (uint8_t)(sumaCrc & 0xFF);
+
+          // MANDAR BINARIO DIRECTO
+          // LabVIEW recibirá esto conforme llegue y lo guardará en su buffer de entrada
+          Serial.write((uint8_t*)&msgParaEnviar, sizeof(MsgDatos_t));
         }
     }
 }
 
+//-------------------------------
+// --- TAREA : Leer TARJETA AUXILIAR ---
+//-------------------------------
+void ReadAuxBoard(void * parameter){
+    const size_t tamanoPaquete = sizeof(MsgStatus_Auxiliar_t);
+    uint8_t buffer[tamanoPaquete];
+
+    for (;;) {
+        // ¿Hay suficientes bytes para un paquete completo?
+        if (Serial2.available() >= tamanoPaquete) {
+            
+            // Sincronización: Buscamos el header 0x3A
+            if (Serial2.peek() == 0x3A) {
+                Serial2.readBytes(buffer, tamanoPaquete);
+
+                // Mapeamos el buffer a nuestra estructura
+                memcpy((void*)&dataAuxiliar, buffer, tamanoPaquete);
+
+                dataAuxiliar.finalesCarrera = (~dataAuxiliar.finalesCarrera) & 0x1F;
+
+                // --- VALIDACIÓN DE CRC ---
+                uint16_t sumaCrc = 0;
+                sumaCrc += dataAuxiliar.header;
+                sumaCrc += dataAuxiliar.funcion;
+                sumaCrc += dataAuxiliar.payloadSize;
+                sumaCrc += dataAuxiliar.estadoGripper;
+                sumaCrc += dataAuxiliar.finalesCarrera;
+                sumaCrc += dataAuxiliar.reserva1;
+                sumaCrc += dataAuxiliar.reserva2;
+
+                for(int i = 0; i < 5; i++) {
+                  leerBit(dataAuxiliar.finalesCarrera, i);
+                }
+            } else {
+                // Si el primer byte no es el header, lo descartamos y seguimos buscando
+                Serial2.read();
+            }
+        }
+        // Pequeño delay para no estresar el núcleo
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
 
 //-------------------------------
 // TAREA: SETUP
@@ -256,7 +502,7 @@ void setup() {
 //--- Pines del PWM
   const int frecuencia = 5000;
   const int resolucion = 8;
-  const int pinesPWM_L[] = {25, 27, 14, 16, 21}; 
+  const int pinesPWM_L[] = {25, 27, 14, 16, 21};  // 16 es rx2, 17 es tx2
   const int pinesPWM_R[] = {26, 04, 15, 17, 02}; 
 
 
@@ -271,8 +517,6 @@ void setup() {
     {23, 05}  // Motor 5
   };
 
-  //const int arrayPasosPorVuelta[]={400,400,400,96,96,0};
-  const int arrayPasosPorVuelta[]={400,400,400,192,192,0};
 
 // --- ASIGNACIÓN DE PINES ---
   for(int i = 0; i < NUM_MOTORES; i++) {
@@ -299,10 +543,16 @@ void setup() {
       ArrayMotores[i].pinB = -1;
     }
 
-    //Inicializar estados
-    ArrayMotores[i].estado = IDLE;
+    //Inicializar estrcuctura del motor
+    ArrayMotores[i].pasosActuales=0;
     ArrayMotores[i].metaPasos = 0;
-    
+    ArrayMotores[i].errorPasos=0;
+    ArrayMotores[i].ultimoError = 0;
+    ArrayMotores[i].pasosHomingAux=0;
+    ArrayMotores[i].estado = IDLE;
+    ArrayMotores[i].pwmActual = 0;
+    ArrayMotores[i].dirActual = false;
+
     // Configurar PWM (LEDC)
     ledcAttach(ArrayMotores[i].pwmL, frecuencia, resolucion);
     ledcAttach(ArrayMotores[i].pwmR, frecuencia, resolucion);
@@ -311,7 +561,7 @@ void setup() {
 
   Serial.println("[SETUP] Pines configurados.");
 // --- Asignación de memoria a la colaTelemetría ---
-  colaTelemetria = xQueueCreate(100, sizeof(MsgDatos_t));
+  colaTelemetria = xQueueCreate(100, sizeof(DatosCrudos_t));
   if (colaTelemetria == NULL) {
         Serial.println("Error al crear la cola");
   }
@@ -322,7 +572,7 @@ void setup() {
   xTaskCreatePinnedToCore(tareaMuestreo, "TaskMuestreo", 4096, NULL, 3, &MuestreoHandler, 1);
   xTaskCreatePinnedToCore(ReadSerial, "TaskReadSerial", 4096, NULL, 1, &ReadSerialHandler, 0);
   xTaskCreatePinnedToCore(WriteSerial, "TaskWriteSerial", 4096, NULL, 1, &WriteSerialHandler, 0);
-
+  xTaskCreatePinnedToCore(ReadAuxBoard,"ReadAuxiliarBoard",4096,NULL,2,&ReadAuxBoardHandler,0);
   //Serial.println("[SETUP] Todo listo. Entrando a loop.");
 }
 

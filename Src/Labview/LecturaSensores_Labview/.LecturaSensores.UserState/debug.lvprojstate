@@ -50,6 +50,19 @@
         </Generic>
       </Probes>
     </VI>
+    <VI name="FGV_EstadoMotores.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="468"/>
+        </Generic>
+      </Probes>
+    </VI>
     <VI name="VI_caller.vi">
       <Breakpoints>
         <NodeIndexes>
@@ -103,9 +116,27 @@
           <SignalUID value="434"/>
           <SignalUID value="1425"/>
           <SignalUID value="170"/>
-          <SignalUID value="9123"/>
           <SignalUID value="4507"/>
           <SignalUID value="41"/>
+        </Generic>
+      </Probes>
+    </VI>
+    <VI name="esP32DataToInfo.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="4063"/>
+          <SignalUID value="4754"/>
+          <SignalUID value="4519"/>
+          <SignalUID value="4535"/>
+          <SignalUID value="2140"/>
+          <SignalUID value="3058"/>
+          <SignalUID value="7183"/>
         </Generic>
       </Probes>
     </VI>
@@ -131,25 +162,6 @@
           <SignalUID value="8675"/>
           <SignalUID value="4392"/>
           <SignalUID value="4417"/>
-        </Generic>
-      </Probes>
-    </VI>
-    <VI name="obtener_Telemetria.vi">
-      <Breakpoints>
-        <NodeIndexes>
-        </NodeIndexes>
-        <SignalIndexes>
-        </SignalIndexes>
-      </Breakpoints>
-      <Probes>
-        <Generic>
-          <SignalUID value="4063"/>
-          <SignalUID value="4754"/>
-          <SignalUID value="4519"/>
-          <SignalUID value="4535"/>
-          <SignalUID value="2140"/>
-          <SignalUID value="3058"/>
-          <SignalUID value="7183"/>
         </Generic>
       </Probes>
     </VI>

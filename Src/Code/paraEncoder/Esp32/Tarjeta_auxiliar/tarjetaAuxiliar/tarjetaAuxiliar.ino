@@ -75,11 +75,15 @@ uint32_t tiempoObjetivo = 0; // Cuántos ms debe moverse
 
 uint8_t obtenerEstadoSwitches() {
     uint8_t registro = 0;
+    //Serial.print("LS: ");
     for(int i = 0; i < numeroFinalesCarrera; i++) {
         // (Normalmente Cerrados), si se abre da 0.
         // Si quieres que el bit sea 1 al presionarse: !(digitalRead)
         registro |= (digitalRead(pinesFinalCarrera[i]) << i);
+        /*Serial.print(digitalRead(pinesFinalCarrera[i]));
+        Serial.print(" , ");*/
     }
+    //Serial.println();
     return registro;
 }
 
@@ -108,8 +112,8 @@ void funcionEmergencia(uint8_t finalCarreraData) {
     // Enviamos el estado inmediatamente para avisar del error
     enviarEstadoGeneral();
     
-    Serial.print("EMERGENCIA - Switches: ");
-    Serial.println(finalCarreraData, BIN);
+    //Serial.print("EMERGENCIA Switches: ");
+    //Serial.println(finalCarreraData, BIN);
 }
 
 
@@ -169,7 +173,6 @@ void tareaLeerSerial(void *pvParameters) {
             for(int i = 0; i < TAMANO_PACKET - 1; i++) crcCalculado += ptr[i];
 
             if (crcCalculado == rawMsg.crcFinal) {
-                // CORRECCIÓN: Mandar a la cola el tipo de dato correcto
                 xQueueSend(colaControl, &rawMsg, pdMS_TO_TICKS(10));
             }
         }
