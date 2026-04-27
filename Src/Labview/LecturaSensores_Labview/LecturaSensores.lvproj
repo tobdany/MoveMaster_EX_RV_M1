@@ -14,16 +14,33 @@
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Controls" Type="Folder">
 			<Item Name="Ctr_Enc_Values.ctl" Type="VI" URL="../Control/Ctr_Enc_Values.ctl"/>
+			<Item Name="Ctrl_Array_Enc_Out.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out.ctl"/>
+			<Item Name="Ctrl_Array_Enc_Out_final.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out_final.ctl"/>
+			<Item Name="Ctrl_Articulacion_PIDGui.ctl" Type="VI" URL="../Control/Ctrl_Articulacion_PIDGui.ctl"/>
+			<Item Name="Ctrl_ControlPIDEvent.ctl" Type="VI" URL="../Control/Ctrl_ControlPIDEvent.ctl"/>
+			<Item Name="Ctrl_Dashboard_StateMach.ctl" Type="VI" URL="../Control/Ctrl_Dashboard_StateMach.ctl"/>
+			<Item Name="Ctrl_DataLogger_SM.ctl" Type="VI" URL="../Control/Ctrl_DataLogger_SM.ctl"/>
 			<Item Name="Ctrl_DataLoggerQueue.ctl" Type="VI" URL="../Control/Ctrl_DataLoggerQueue.ctl"/>
 			<Item Name="Ctrl_Datos6Motores.ctl" Type="VI" URL="../Control/Ctrl_Datos6Motores.ctl"/>
+			<Item Name="Ctrl_datos6motores_final.ctl" Type="VI" URL="../Control/Ctrl_datos6motores_final.ctl"/>
 			<Item Name="Ctrl_DLQueue.ctl" Type="VI" URL="../Control/Ctrl_DLQueue.ctl"/>
 			<Item Name="Ctrl_Enc_Values_Steps.ctl" Type="VI" URL="../Control/Ctrl_Enc_Values_Steps.ctl"/>
 			<Item Name="Ctrl_Errores.ctl" Type="VI" URL="../Control/Ctrl_Errores.ctl"/>
+			<Item Name="Ctrl_EscrituraComandos.ctl" Type="VI" URL="../Control/Ctrl_EscrituraComandos.ctl"/>
+			<Item Name="Ctrl_EstadoMotorEsp.ctl" Type="VI" URL="../Ctrl_EstadoMotorEsp.ctl"/>
 			<Item Name="Ctrl_Estados.ctl" Type="VI" URL="../Ctrl_Estados.ctl"/>
+			<Item Name="Ctrl_EstadosMotor.ctl" Type="VI" URL="../Ctrl_EstadosMotor.ctl"/>
+			<Item Name="Ctrl_Fgv_DatosMotores.ctl" Type="VI" URL="../Control/Ctrl_Fgv_DatosMotores.ctl"/>
+			<Item Name="Ctrl_GuiEvent.ctl" Type="VI" URL="../Control/Ctrl_GuiEvent.ctl"/>
+			<Item Name="Ctrl_IndicadoresControl.ctl" Type="VI" URL="../Control/Ctrl_IndicadoresControl.ctl"/>
 			<Item Name="Ctrl_IndicadoresMainPanel.ctl" Type="VI" URL="../Control/Ctrl_IndicadoresMainPanel.ctl"/>
+			<Item Name="Ctrl_MainPanelGui.ctl" Type="VI" URL="../Ctrl_MainPanelGui.ctl"/>
 			<Item Name="Ctrl_Modbus13.ctl" Type="VI" URL="../Control/Ctrl_Modbus13.ctl"/>
+			<Item Name="Ctrl_Modbus28.ctl" Type="VI" URL="../Control/Ctrl_Modbus28.ctl"/>
 			<Item Name="Ctrl_Modbus64.ctl" Type="VI" URL="../Control/Ctrl_Modbus64.ctl"/>
+			<Item Name="Ctrl_Modbus_To_Esp32.ctl" Type="VI" URL="../Control/Ctrl_Modbus_To_Esp32.ctl"/>
 			<Item Name="Ctrl_Motores_Valores.ctl" Type="VI" URL="../Control/Ctrl_Motores_Valores.ctl"/>
+			<Item Name="Ctrl_QueuePID.ctl" Type="VI" URL="../Control/Ctrl_QueuePID.ctl"/>
 		</Item>
 		<Item Name="Modbus_VI" Type="Folder">
 			<Item Name="decodeModbusMessage.vi" Type="VI" URL="../decodeModbusMessage.vi"/>
@@ -52,23 +69,6 @@
 		<Item Name="Cluster_ValorFinalesCarrera.ctl" Type="VI" URL="../Cluster_ValorFinalesCarrera.ctl"/>
 		<Item Name="Control 2" Type="VI"/>
 		<Item Name="Controlador_grados_a_pasos.vi" Type="VI" URL="../Controlador_grados_a_pasos.vi"/>
-		<Item Name="Ctrl_Array_Enc_Out.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out.ctl"/>
-		<Item Name="Ctrl_Array_Enc_Out_final.ctl" Type="VI" URL="../Control/Ctrl_Array_Enc_Out_final.ctl"/>
-		<Item Name="Ctrl_Articulacion_PIDGui.ctl" Type="VI" URL="../Control/Ctrl_Articulacion_PIDGui.ctl"/>
-		<Item Name="Ctrl_ControlPIDEvent.ctl" Type="VI" URL="../Control/Ctrl_ControlPIDEvent.ctl"/>
-		<Item Name="Ctrl_Dashboard_StateMach.ctl" Type="VI" URL="../Control/Ctrl_Dashboard_StateMach.ctl"/>
-		<Item Name="Ctrl_DataLogger_SM.ctl" Type="VI" URL="../Control/Ctrl_DataLogger_SM.ctl"/>
-		<Item Name="Ctrl_datos6motores_final.ctl" Type="VI" URL="../Control/Ctrl_datos6motores_final.ctl"/>
-		<Item Name="Ctrl_EscrituraComandos.ctl" Type="VI" URL="../Control/Ctrl_EscrituraComandos.ctl"/>
-		<Item Name="Ctrl_EstadoMotorEsp.ctl" Type="VI" URL="../Ctrl_EstadoMotorEsp.ctl"/>
-		<Item Name="Ctrl_EstadosMotor.ctl" Type="VI" URL="../Ctrl_EstadosMotor.ctl"/>
-		<Item Name="Ctrl_Fgv_DatosMotores.ctl" Type="VI" URL="../Control/Ctrl_Fgv_DatosMotores.ctl"/>
-		<Item Name="Ctrl_GuiEvent.ctl" Type="VI" URL="../Control/Ctrl_GuiEvent.ctl"/>
-		<Item Name="Ctrl_IndicadoresControl.ctl" Type="VI" URL="../Control/Ctrl_IndicadoresControl.ctl"/>
-		<Item Name="Ctrl_MainPanelGui.ctl" Type="VI" URL="../Ctrl_MainPanelGui.ctl"/>
-		<Item Name="Ctrl_Modbus28.ctl" Type="VI" URL="../Control/Ctrl_Modbus28.ctl"/>
-		<Item Name="Ctrl_Modbus_To_Esp32.ctl" Type="VI" URL="../Control/Ctrl_Modbus_To_Esp32.ctl"/>
-		<Item Name="Ctrl_QueuePID.ctl" Type="VI" URL="../Control/Ctrl_QueuePID.ctl"/>
 		<Item Name="Enum_VICaller.ctl" Type="VI" URL="../Control/VI_Caller/Enum_VICaller.ctl"/>
 		<Item Name="esP32DataToInfo.vi" Type="VI" URL="../esP32DataToInfo.vi"/>
 		<Item Name="excel_creacion_archivo.vi" Type="VI" URL="../excel_creacion_archivo.vi"/>
