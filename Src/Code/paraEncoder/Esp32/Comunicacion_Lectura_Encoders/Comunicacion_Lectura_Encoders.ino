@@ -54,9 +54,11 @@ struct Motor_t {
     int32_t errorPasos;
     int32_t ultimoError;
     int32_t pasosHomingAux;
+    int32_t ticksRestantes; // Contador para el timer
     
     // Estado del Sistema
     int pwmActual;          // El valor final (0-255) que se está mandando
+    
 
     EstadoMotor estadoReporte;     // Lo que va a LabVIEW
     Comportamiento_t modoActual;   // Cada motor sabe qué está haciendo
@@ -256,7 +258,27 @@ void tareaMuestreo(void * parameter) {
          break;
 
         case MODE_FOLLOW_ROUTINE:
-         break;
+        {
+          bool limiteAlcanzado = leerBit(datosMuestreo.finalesCarrera, i);
+
+          if (ArrayMotores[i].ticksRestantes > 0 && !limiteAlcanzado) {
+            // Seguimos moviendo el motor a la velocidad indicada
+            moverMotor(ArrayMotores[i], ArrayMotores[i].pwmActual);
+            ArrayMotores[i].estadoReporte = ST_MOVIENDO;
+            ArrayMotores[i].ticksRestantes--;
+          } else {
+            frenarMotor(ArrayMotores[i]);
+            ArrayMotores[i].modoActual = MODE_IDLE;
+            ArrayMotores[i].estadoReporte = ST_IDLE;
+
+            if (limiteAlcanzado) {
+              ArrayMotores[i].estadoReporte = ST_ERROR_TRABADO;
+            } else {
+              ArrayMotores[i].estadoReporte = ST_IDLE;
+            }
+          }
+          break;
+        }
 
         case MODE_HOMING:
           ArrayMotores[i].estadoReporte = ST_HOMING;
@@ -296,6 +318,11 @@ void tareaMuestreo(void * parameter) {
       }
 
       datosMuestreo.pasos[i] =  ArrayMotores[i].pasosActuales;
+      //***************************************************************************************************************SIMULACION
+      //datosMuestreo.pasos[1] = ArrayMotores[0].metaPasos;
+      //datosMuestreo.pasos[2] = ArrayMotores[0].errorPasos;
+
+
       datosMuestreo.estado[i] =  ArrayMotores[i].estadoReporte;
       //**********************************************************************************************SIMULACION
       //datosMuestreo.estado[i] =  MOVIENDO;
@@ -360,9 +387,28 @@ for (;;) {
               else if (ordenNueva == MODE_IDLE) {
                   ArrayMotores[i].modoActual = MODE_IDLE;
               }
+              else if (ordenNueva == MODE_FOLLOW_ROUTINE) {
+                for(int i = 0; i < NUM_MOTORES; i++) {
+                  // Separamos los 32 bits en dos de 16
+                  // int16_t inferior: Segundos
+                  int16_t segundos = (int16_t)(comando.metas[i] & 0xFFFF);
+                  // int16_t superior: PWM
+                  int16_t pwmValue = (int16_t)((comando.metas[i] >> 16) & 0xFFFF);
+
+                  if (segundos > 0) {
+                      ArrayMotores[i].modoActual = MODE_FOLLOW_ROUTINE;
+                      ArrayMotores[i].pwmActual = pwmValue;
+                      // Convertimos segundos a "ticks" de la tarea (4ms cada tick)
+                      // Ticks = segundos * 1000ms / 4ms = segundos * 250
+                      ArrayMotores[i].ticksRestantes = (int32_t)segundos * 250;
+                  } else {
+                      ArrayMotores[i].modoActual = MODE_IDLE;
+                  }
+                }
+              }
                 //**********************************************************************************************************SIMULACION
                   //ArrayMotores[i].pasosActuales = comando.metas[i];
-              }
+            }
               portEXIT_CRITICAL(&mux);
           } 
 
