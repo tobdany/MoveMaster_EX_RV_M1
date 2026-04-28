@@ -11,14 +11,34 @@ TaskHandle_t ReadAuxBoardHandler;
 //-------------------------------
 //--- ESTRUCTURAS ---
 //-------------------------------
+// Mantiene la lógica completa para el control interno
+enum MaqEstado_t {
+    MQ_IDLE=1,
+    MQ_HOMING=2,
+    MQ_MOVIENDO=3,
+    MQ_META=4
+};
+
+// Reporta a Labview el estado simplificado (Máximo 8 estados)
 enum EstadoMotor {
-    IDLE,        // Quieto, esperando orden
-    MOVIENDO,    // En trayectoria
-    META_ALCANZADA, // Se trabó o algo pasó
-    HOMING_FASE1, // Búsqueda rápida
-    HOMING_FASE2, // Alejarse
-    HOMING_FASE3,  // Búsqueda lenta
-    COMANDO_MANUAL
+    ST_IDLE = 0,           // 000: Quieto / Esperando
+    ST_MOVIENDO = 1,       // 001: Ejecutando trayectoria o comando manual
+    ST_HOMING = 2,         // 010: En proceso de búsqueda de cero
+    ST_ERROR_TRABADO = 3   // 011: Meta no alcanzada / Obstrucción
+};
+
+enum Comportamiento_t {
+    MODE_IDLE=0,
+    MODE_FAST_MOV=1,
+    MODE_MOVE_DEG=2,
+    MODE_FOLLOW_ROUTINE=3,
+    MODE_HOMING=4
+};
+
+enum Homing_t{
+  MAQ_HOMING_F1=1,
+  MAQ_HOMING_F2=2,
+  MAQ_HOMING_F3=3
 };
 
 struct Motor_t {
@@ -37,15 +57,17 @@ struct Motor_t {
     
     // Estado del Sistema
     int pwmActual;          // El valor final (0-255) que se está mandando
-    bool dirActual;         // true = Adelante, false = Atrás
-    EstadoMotor estado;     // IDLE, MOVIENDO, etc.
+
+    EstadoMotor estadoReporte;     // Lo que va a LabVIEW
+    Comportamiento_t modoActual;   // Cada motor sabe qué está haciendo
+    Homing_t faseHoming;           // Fase individual de homing
 };
 
 //Estructura para mandar datos de la tarea de muestreo a la tarea de WriteSerial
 struct DatosCrudos_t {
     int32_t pasos[6];
     uint8_t finalesCarrera;
-    EstadoMotor estado[6];;
+    EstadoMotor estado[6];
 };
 
 //Estructura para mandar datos a Labview
@@ -103,13 +125,11 @@ Motor_t ArrayMotores[NUM_MOTORES];
 MsgDatos_t structMensaje;
 volatile MsgStatus_Auxiliar_t dataAuxiliar;
 
-
 //-------------------------------
 // --- ENCODERS --- 
 //-------------------------------
 
 ESP32Encoder encoders[NUM_MOTORES];
-const int PASOS_POR_VUELTA = 400;
 
 //-------------------------------
 // --- FUNCIONES --- 
@@ -136,14 +156,7 @@ void frenarMotor(Motor_t &objMotor){
 // Lee los finales de carrera que vienen de la tarjeta auxiliar
 bool leerBit(uint8_t byte, int posicion) {
     // Extraemos el bit original (0 si se abrió el circuito/activó, 1 si está cerrado/reposo)
-    bool estaPresionado = (dataAuxiliar.finalesCarrera >> posicion) & 0x01;
-   
-    /*if(estaPresionado) { 
-        if(posicion == 0) frenarMotor(ArrayMotores[0]); // Cadera
-        if(posicion == 1 || posicion == 2) frenarMotor(ArrayMotores[3]); // Codo
-        if(posicion == 3 || posicion == 4) frenarMotor(ArrayMotores[4]); // Antebrazo
-    }*/
-
+    bool estaPresionado = (byte >> posicion) & 0x01;
     return estaPresionado; // Retornas TRUE si el switch está presionado
 }
 
@@ -201,7 +214,9 @@ void tareaMuestreo(void * parameter) {
     vTaskDelayUntil(&xLastWakeTime, xPeriodo);
 
     DatosCrudos_t datosMuestreo;
+    portENTER_CRITICAL(&mux);
     datosMuestreo.finalesCarrera = dataAuxiliar.finalesCarrera;
+    portEXIT_CRITICAL(&mux);
 
     for(int i = 0; i < NUM_MOTORES; i++){
       ArrayMotores[i].pasosActuales = encoders[i].getCount();
@@ -212,98 +227,76 @@ void tareaMuestreo(void * parameter) {
       //***************************************************************************************************SIMULACION2
       //datosMuestreo.pasos[i] = ArrayMotores[i].pasosActuales;
 
-      switch (ArrayMotores[i].estado) {
-            
-        case IDLE:
+      switch (ArrayMotores[i].modoActual) {
+        case MODE_IDLE:
           frenarMotor(ArrayMotores[i]);
-          // Se queda aquí hasta que ReadSerial cambie el estado a MOVIENDO o HOMING
+          ArrayMotores[i].estadoReporte = ST_IDLE;
           break;
 
-        case MOVIENDO:
-          if(leerBit(dataAuxiliar.finalesCarrera, i)){
-              ArrayMotores[i].estado = IDLE;
-              frenarMotor(ArrayMotores[i]);
-              break;
-          }
-          // Calcular error
-          ArrayMotores[i].errorPasos = ArrayMotores[i].metaPasos - ArrayMotores[i].pasosActuales;
-
-          // Si el error es pequeño, llegamos a la meta
-          if (abs(ArrayMotores[i].errorPasos) < 5) { // Tolerancia de 5 pasos
-              ArrayMotores[i].estado = META_ALCANZADA;
-          } else {
-              // Aquí llamarías a tu función de control (ej. un PD simple)
-              int pwmCalculado = calcularControl(ArrayMotores[i]); 
-              moverMotor(ArrayMotores[i], pwmCalculado);
-          }
-          break;
-
-        case HOMING_FASE1: // BÚSQUEDA RÁPIDA
-          moverMotor(ArrayMotores[i], -100); // Velocidad moderada
-          if (leerBit(dataAuxiliar.finalesCarrera, i)) {
-              frenarMotor(ArrayMotores[i]);
-              // Guardamos dónde estamos para saber cuánto alejarnos
-              ArrayMotores[i].pasosHomingAux = encoders[i].getCount(); 
-              ArrayMotores[i].estado = HOMING_FASE2; 
-          }
-            
-          break;
-
-        case HOMING_FASE2: // ALEJARSE (BACK-OFF)
-          moverMotor(ArrayMotores[i], 80); // Mover en sentido contrario
-          // Nos alejamos, por ejemplo, 100 pasos
-          if (abs(encoders[i].getCount() - ArrayMotores[i].pasosHomingAux) > 100) {
-              frenarMotor(ArrayMotores[i]);
-              ArrayMotores[i].estado = HOMING_FASE3;
-          }
-          break;
-
-        case HOMING_FASE3: // TOQUE LENTO FINAL
-          moverMotor(ArrayMotores[i], -50); // Velocidad muy baja (precisión)
-          if (leerBit(dataAuxiliar.finalesCarrera, i)) {
-              frenarMotor(ArrayMotores[i]);
-              encoders[i].clearCount(); // ¡ESTE ES EL CERO REAL!
-              ArrayMotores[i].pasosActuales = 0;
-              ArrayMotores[i].metaPasos = 0;
-              ArrayMotores[i].estado = IDLE; 
-          }
-          break;
-
-        case COMANDO_MANUAL:
-        {
+        case MODE_FAST_MOV:{
           // Calculamos el error actual
-          int32_t errorActual = ArrayMotores[i].metaPasos - ArrayMotores[i].pasosActuales;
+         int32_t errorActual = ArrayMotores[i].metaPasos - ArrayMotores[i].pasosActuales;
           // Se detiene si está cerca (tolerancia) 
           // O si el signo del error cambió (indicando que ya se pasó de la meta)
           bool yaSePaso = false;
           if (ArrayMotores[i].pwmActual > 0 && errorActual <= 0) yaSePaso = true; // Iba hacia adelante y se pasó
           if (ArrayMotores[i].pwmActual < 0 && errorActual >= 0) yaSePaso = true; // Iba hacia atrás y se pasó
 
-          if (abs(errorActual) < 8 || yaSePaso) { 
+          if (abs(errorActual) < 8 || yaSePaso || leerBit(datosMuestreo.finalesCarrera, i)) { 
               frenarMotor(ArrayMotores[i]);
-              ArrayMotores[i].estado = IDLE; 
+              ArrayMotores[i].modoActual = MODE_IDLE;
           } else {
-              // Seguimos moviendo a la velocidad definida por LabVIEW
+              ArrayMotores[i].estadoReporte = ST_MOVIENDO;
               moverMotor(ArrayMotores[i], ArrayMotores[i].pwmActual);
           }
-          
-          // Seguridad por finales de carrera
-          if(leerBit(dataAuxiliar.finalesCarrera, i)){
-              frenarMotor(ArrayMotores[i]);
-              ArrayMotores[i].estado = IDLE;
+          break;
+        }
+
+        case MODE_MOVE_DEG:
+         break;
+
+        case MODE_FOLLOW_ROUTINE:
+         break;
+
+        case MODE_HOMING:
+          ArrayMotores[i].estadoReporte = ST_HOMING;
+          switch(ArrayMotores[i].faseHoming){
+            case MAQ_HOMING_F1:
+              moverMotor(ArrayMotores[i], -50); // Velocidad moderada
+              if (leerBit(datosMuestreo.finalesCarrera, i)) {
+                frenarMotor(ArrayMotores[i]);
+                // Guardamos dónde estamos para saber cuánto alejarnos
+                ArrayMotores[i].pasosHomingAux = ArrayMotores[i].pasosActuales;
+                ArrayMotores[i].faseHoming = MAQ_HOMING_F2;
+              }
+              break;
+
+            case MAQ_HOMING_F2:
+              moverMotor(ArrayMotores[i], 50); // Mover en sentido contrario
+              // Nos alejamos, por ejemplo, 100 pasos
+              if (abs(encoders[i].getCount() - ArrayMotores[i].pasosHomingAux) > 100) {
+                ArrayMotores[i].faseHoming = MAQ_HOMING_F3;
+              }
+              break;
+
+            case MAQ_HOMING_F3:
+              moverMotor(ArrayMotores[i], -50); // Velocidad muy baja (precisión)
+              if (leerBit(datosMuestreo.finalesCarrera, i)) {
+                frenarMotor(ArrayMotores[i]);
+                encoders[i].clearCount(); // ¡ESTE ES EL CERO REAL!
+                ArrayMotores[i].pasosActuales = 0;
+                ArrayMotores[i].metaPasos = 0;
+                ArrayMotores[i].modoActual = MODE_IDLE;
+              }
+              break;
+           
+            break;
           }
-          break;
-        }
 
-        case META_ALCANZADA: // Se manda a llamar cuando los pasos no han cambiado
-          // Estado de seguridad o bloqueo
-          frenarMotor(ArrayMotores[i]);
-          break;
-
-        }
+      }
 
       datosMuestreo.pasos[i] =  ArrayMotores[i].pasosActuales;
-      datosMuestreo.estado[i] =  ArrayMotores[i].estado;
+      datosMuestreo.estado[i] =  ArrayMotores[i].estadoReporte;
       //**********************************************************************************************SIMULACION
       //datosMuestreo.estado[i] =  MOVIENDO;
     }
@@ -352,29 +345,22 @@ for (;;) {
           if ((uint8_t)(sumaCrc & 0xFF) == comando.crcFinal) {
             // --- DATOS VÁLIDOS: ACTUALIZAR MOTORES ---
             portENTER_CRITICAL(&mux);
+            
             for(int i = 0; i < NUM_MOTORES; i++) {
-              //Función 3:  Se presionaron las flechas del control VI <- ->
-              if(comando.funcion==3){
-                  if(comando.metas[i] != 0){
-                    ArrayMotores[i].estado = COMANDO_MANUAL;
-                    ArrayMotores[i].metaPasos = ArrayMotores[i].pasosActuales + comando.metas[i];
-        
-                    // Asignación de PWM con signo
-                    if(comando.metas[i] < 0) {
-                      ArrayMotores[i].pwmActual = -((int)comando.payloadSize); 
-                    } else {
-                      ArrayMotores[i].pwmActual = (int)comando.payloadSize; 
-                    }
-                  }
-
-                }else{
-
-                  //Función normal
-                  ArrayMotores[i].metaPasos = comando.metas[i];
-                  ArrayMotores[i].estado = MOVIENDO; // Activa el PID
-
-                }
-                  //**********************************************************************************************************SIMULACION
+              Comportamiento_t ordenNueva = (Comportamiento_t)comando.funcion;
+              if(ordenNueva == MODE_FAST_MOV && comando.metas[i] != 0) {
+                  ArrayMotores[i].modoActual = MODE_FAST_MOV;
+                  ArrayMotores[i].metaPasos = ArrayMotores[i].pasosActuales + comando.metas[i];
+                  ArrayMotores[i].pwmActual = (comando.metas[i] < 0) ? -(int)comando.payloadSize : (int)comando.payloadSize;
+              } 
+              else if (ordenNueva == MODE_HOMING) {
+                  ArrayMotores[i].modoActual = MODE_HOMING;
+                  ArrayMotores[i].faseHoming = MAQ_HOMING_F1;
+              }
+              else if (ordenNueva == MODE_IDLE) {
+                  ArrayMotores[i].modoActual = MODE_IDLE;
+              }
+                //**********************************************************************************************************SIMULACION
                   //ArrayMotores[i].pasosActuales = comando.metas[i];
               }
               portEXIT_CRITICAL(&mux);
@@ -460,22 +446,27 @@ void ReadAuxBoard(void * parameter){
                 Serial2.readBytes(buffer, tamanoPaquete);
 
                 // Mapeamos el buffer a nuestra estructura
-                memcpy((void*)&dataAuxiliar, buffer, tamanoPaquete);
-
-                dataAuxiliar.finalesCarrera = (~dataAuxiliar.finalesCarrera) & 0x1F;
+                MsgStatus_Auxiliar_t temp;
+                memcpy(&temp, buffer, tamanoPaquete);
 
                 // --- VALIDACIÓN DE CRC ---
                 uint16_t sumaCrc = 0;
-                sumaCrc += dataAuxiliar.header;
-                sumaCrc += dataAuxiliar.funcion;
-                sumaCrc += dataAuxiliar.payloadSize;
-                sumaCrc += dataAuxiliar.estadoGripper;
-                sumaCrc += dataAuxiliar.finalesCarrera;
-                sumaCrc += dataAuxiliar.reserva1;
-                sumaCrc += dataAuxiliar.reserva2;
+                sumaCrc += temp.header;
+                sumaCrc += temp.funcion;
+                sumaCrc += temp.payloadSize;
+                sumaCrc += temp.estadoGripper;
+                sumaCrc += temp.finalesCarrera;
+                sumaCrc += temp.reserva1;
+                sumaCrc += temp.reserva2;
 
-                for(int i = 0; i < 5; i++) {
-                  leerBit(dataAuxiliar.finalesCarrera, i);
+                if ((uint8_t)(sumaCrc & 0xFF) == temp.crc) {
+                    uint8_t finalesProcesados = (~temp.finalesCarrera) & 0x1F;
+
+                    // --- SECCIÓN CRÍTICA ---
+                    portENTER_CRITICAL(&mux);
+                    dataAuxiliar.estadoGripper = temp.estadoGripper;
+                    dataAuxiliar.finalesCarrera = finalesProcesados;
+                    portEXIT_CRITICAL(&mux);
                 }
             } else {
                 // Si el primer byte no es el header, lo descartamos y seguimos buscando
@@ -557,9 +548,8 @@ void setup() {
     ArrayMotores[i].errorPasos=0;
     ArrayMotores[i].ultimoError = 0;
     ArrayMotores[i].pasosHomingAux=0;
-    ArrayMotores[i].estado = IDLE;
-    ArrayMotores[i].pwmActual = 0;
-    ArrayMotores[i].dirActual = false;
+    ArrayMotores[i].estadoReporte = ST_IDLE;
+    ArrayMotores[i].modoActual = MODE_IDLE;
 
     // Configurar PWM (LEDC)
     ledcAttach(ArrayMotores[i].pwmL, frecuencia, resolucion);
