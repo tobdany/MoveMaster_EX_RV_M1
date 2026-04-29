@@ -58,7 +58,7 @@ SemaphoreHandle_t xSerial2Mutex;
 Motor_t structGripper;
 
 //Configuración de pines
-int pinesFinalCarrera[] = {27, 4, 14, 15, 16}; 
+int pinesFinalCarrera[] = {27, 4, 14, 15, 16};  //16 es rx2
 int numeroFinalesCarrera = sizeof(pinesFinalCarrera) / sizeof(pinesFinalCarrera[0]);
 int frenosHombro = 17;
 int frenosCod = 21;

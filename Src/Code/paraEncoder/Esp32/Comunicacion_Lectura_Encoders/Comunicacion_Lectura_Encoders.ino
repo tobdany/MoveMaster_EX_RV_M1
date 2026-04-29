@@ -221,10 +221,10 @@ void tareaMuestreo(void * parameter) {
     portEXIT_CRITICAL(&mux);
 
     for(int i = 0; i < NUM_MOTORES; i++){
-      ArrayMotores[i].pasosActuales = encoders[i].getCount();
+      //ArrayMotores[i].pasosActuales = encoders[i].getCount();
 
       //***************************************************************************************************SIMULACION
-      //ArrayMotores[i].pasosActuales  = (i * 1000) + (esp_random() % 1000);
+      ArrayMotores[i].pasosActuales  = (i * 1000) + (esp_random() % 1000);
 
       //***************************************************************************************************SIMULACION2
       //datosMuestreo.pasos[i] = ArrayMotores[i].pasosActuales;
@@ -488,7 +488,7 @@ void ReadAuxBoard(void * parameter){
         if (Serial2.available() >= tamanoPaquete) {
             
             // Sincronización: Buscamos el header 0x3A
-            if (Serial2.peek() == 0x3A) {
+            if (Serial2.read() == 0x3A) {
                 Serial2.readBytes(buffer, tamanoPaquete);
 
                 // Mapeamos el buffer a nuestra estructura
@@ -505,7 +505,8 @@ void ReadAuxBoard(void * parameter){
                 sumaCrc += temp.reserva1;
                 sumaCrc += temp.reserva2;
 
-                if ((uint8_t)(sumaCrc & 0xFF) == temp.crc) {
+                if(true){
+                //if ((uint8_t)(sumaCrc & 0xFF) == temp.crc) {
                     uint8_t finalesProcesados = (~temp.finalesCarrera) & 0x1F;
 
                     // --- SECCIÓN CRÍTICA ---
@@ -547,8 +548,8 @@ void setup() {
 //--- Pines del PWM
   const int frecuencia = 5000;
   const int resolucion = 8;
-  const int pinesPWM_L[] = {25, 27, 14, 16, 21};  // 16 es rx2, 17 es tx2
-  const int pinesPWM_R[] = {26, 04, 15, 17, 02}; 
+  const int pinesPWM_L[] = {26, 04, 15, 17, 02};  // 16 es rx2, 17 es tx2
+  const int pinesPWM_R[] = {25, 27, 14, 16, 21}; 
 
 
 

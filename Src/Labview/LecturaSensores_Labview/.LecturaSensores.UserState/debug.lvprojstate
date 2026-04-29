@@ -35,6 +35,9 @@
         <Generic>
           <SignalUID value="2335"/>
           <SignalUID value="746"/>
+          <SignalUID value="1213"/>
+          <SignalUID value="2176"/>
+          <SignalUID value="1577"/>
         </Generic>
       </Probes>
     </VI>
@@ -167,6 +170,8 @@
           <SignalUID value="8675"/>
           <SignalUID value="4392"/>
           <SignalUID value="4417"/>
+          <SignalUID value="13626"/>
+          <SignalUID value="7028"/>
         </Generic>
       </Probes>
     </VI>

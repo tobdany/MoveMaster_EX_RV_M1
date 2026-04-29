@@ -69,7 +69,9 @@
 		<Item Name="Cluster_ValorFinalesCarrera.ctl" Type="VI" URL="../Cluster_ValorFinalesCarrera.ctl"/>
 		<Item Name="Control 2" Type="VI"/>
 		<Item Name="Controlador_grados_a_pasos.vi" Type="VI" URL="../Controlador_grados_a_pasos.vi"/>
+		<Item Name="Ctrl_CSVLoop.ctl" Type="VI" URL="../Ctrl_CSVLoop.ctl"/>
 		<Item Name="Enum_VICaller.ctl" Type="VI" URL="../Control/VI_Caller/Enum_VICaller.ctl"/>
+		<Item Name="escribirCSV.vi" Type="VI" URL="../escribirCSV.vi"/>
 		<Item Name="esP32DataToInfo.vi" Type="VI" URL="../esP32DataToInfo.vi"/>
 		<Item Name="excel_creacion_archivo.vi" Type="VI" URL="../excel_creacion_archivo.vi"/>
 		<Item Name="excel_lectura_archivo.vi" Type="VI" URL="../excel_lectura_archivo.vi"/>
@@ -77,6 +79,7 @@
 		<Item Name="FGV_DatosMotores.vi" Type="VI" URL="../FGV_DatosMotores.vi"/>
 		<Item Name="FGV_Error.vi" Type="VI" URL="../FGV_Error.vi"/>
 		<Item Name="FGV_EstadoMotores.vi" Type="VI" URL="../FGV_EstadoMotores.vi"/>
+		<Item Name="FGV_LoopCSV.vi" Type="VI" URL="../FGV_LoopCSV.vi"/>
 		<Item Name="FGV_MainPanel.vi" Type="VI" URL="../FGV_MainPanel.vi"/>
 		<Item Name="Global_init.vi" Type="VI" URL="../Global_init.vi"/>
 		<Item Name="LogData_Command.vi" Type="VI" URL="../LogData_Command.vi"/>
