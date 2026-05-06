@@ -2,14 +2,19 @@
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 
+// --- CONFIGURACIÓN DE LÓGICA DE FRENOS ---
+const uint8_t FRENO_ACTIVO = HIGH;
+const uint8_t FRENO_LIBRE = !FRENO_ACTIVO;
 
 // --- CONFIGURACIÓN DE PINES ---
 const uint8_t NUM_MOTORES = 6;
 const uint8_t NUM_ENCODERS = 5;
+const uint8_t NUM_FINAL_C = 5;
 const uint8_t PIN_LPWM[NUM_MOTORES] = { 2, 4, 6, 8, 10, 12 };
 const uint8_t PIN_RPWM[NUM_MOTORES] = { 3, 5, 7, 9, 11, 13 };
 const uint8_t PIN_ENCODER_A[NUM_ENCODERS] = { 39, 35, 31, 27, 23 };
 const uint8_t PIN_ENCODER_B[NUM_ENCODERS] = { 41, 37, 33, 29, 25 };
+const uint8_t PIN_FINAL_CARRERA[NUM_FINAL_C] = { 43, 45, 47, 49, 51 };
 const uint8_t PIN_FRENO[2] = { 14, 15 };
 
 // --- ENUMS ---
@@ -23,10 +28,10 @@ enum MaqEstado_t {
 
 // Reporta a Labview el estado simplificado (Máximo 8 estados)
 enum EstadoMotor {
-  ST_IDLE = 0,          // 000: Quieto / Esperando
-  ST_MOVIENDO = 1,      // 001: Ejecutando trayectoria o comando manual
-  ST_HOMING = 2,        // 010: En proceso de búsqueda de cero
-  ST_ERROR_TRABADO = 3  // 011: Meta no alcanzada / Obstrucción
+  LV_IDLE = 0,          // 000: Quieto / Esperando
+  LV_MOVIENDO = 1,      // 001: Ejecutando trayectoria o comando manual
+  LV_HOMING = 2,        // 010: En proceso de búsqueda de cero
+  LV_ERROR_TRABADO = 3  // 011: Meta no alcanzada / Obstrucción
 };
 
 enum Comportamiento_t {
@@ -34,7 +39,8 @@ enum Comportamiento_t {
   MODE_FAST_MOV = 1,
   MODE_MOVE_DEG = 2,
   MODE_FOLLOW_ROUTINE = 3,
-  MODE_HOMING = 4
+  MODE_HOMING = 4,
+  MODE_EMERGENCY_STOP = 5
 };
 
 enum Homing_t {
@@ -137,12 +143,14 @@ void configurarTimer5() {
 void frenarMotor(Motor_t &m) {
   analogWrite(m.pwmL, 0);
   analogWrite(m.pwmR, 0);
+  digitalWrite(PIN_FRENO[0], FRENO_ACTIVO);
+  digitalWrite(PIN_FRENO[1], FRENO_ACTIVO);
 }
 
 
 void moverMotor(Motor_t &m, int16_t v) {
-  //digitalWrite(PIN_FRENO[0], LOW);
-  //digitalWrite(PIN_FRENO[1], LOW);
+  digitalWrite(PIN_FRENO[0], FRENO_LIBRE);
+  digitalWrite(PIN_FRENO[1], FRENO_LIBRE);
 
   if (v > 0) {
     analogWrite(m.pwmR, v);
@@ -155,7 +163,21 @@ void moverMotor(Motor_t &m, int16_t v) {
   }
 }
 
+uint8_t leerFinalesCarrera() {
+  uint8_t valFinalCarrera = 0;
+  for (int i = 0; i < NUM_FINAL_C; i++) {
+    //Los finales de carrera son siempre cerrados (entregan 1 aunque no estén presionados)
+    if (digitalRead(PIN_FINAL_CARRERA[i] == LOW)) valFinalCarrera |= (1 << i);
+  }
+  return valFinalCarrera;
+}
 
+bool finalCarreraPorArticulacion(int i) {
+  if (i <= 3) {
+    return (digitalRead(PIN_FINAL_CARRERA[0]) == LOW);
+  }
+  return false;
+}
 
 //--- LECTURA DE COMANDOS DESDE LABVIEW ---
 void procesarLecturaSerial() {
@@ -203,13 +225,18 @@ void procesarLecturaSerial() {
                 } else {
                   ArrayMotores[i].modoActual = MODE_IDLE;
                 }
-              }  // Cierra else if Routine
-            }    // Cierra el FOR de motores
-          }      // Cierra IF del CRC
+              } else if (comando.funcion == 0x04) {
+                ArrayMotores[i].modoActual = MODE_IDLE;
+                ArrayMotores[i].pwmActual = 0;
+                ArrayMotores[i].metaPasos = ArrayMotores[i].pasosActuales;
+                frenarMotor(ArrayMotores[i]);
+              }
+            }
+          }
         } else {
           break;
         }  //Cierra bloque atómico
-      } // Cierra lo del crc
+      }    // Cierra lo del crc
     } else {
       Serial.read();  // Descartar si no es el header
     }
@@ -234,7 +261,7 @@ void setup() {
     ArrayMotores[i].errorPasos = 0;
     ArrayMotores[i].ultimoError = 0;
     ArrayMotores[i].pasosHomingAux = 0;
-    ArrayMotores[i].estadoReporte = ST_IDLE;
+    ArrayMotores[i].estadoReporte = LV_IDLE;
     ArrayMotores[i].modoActual = MODE_IDLE;
   }
   pinMode(PIN_FRENO[0], OUTPUT);
@@ -257,12 +284,16 @@ void setup() {
 void actualizarLogMotor(int i) {
   switch (ArrayMotores[i].modoActual) {
     case MODE_IDLE:
-      moverMotor(ArrayMotores[i], 0);  // Freno/Parada
-      ArrayMotores[i].estadoReporte = ST_IDLE;
+      frenarMotor(ArrayMotores[i]);  // Freno/Parada
+      ArrayMotores[i].estadoReporte = LV_IDLE;
       break;
 
     case MODE_FAST_MOV:
       {
+        //bool limiteAlcanzado = finalCarreraPorArticulacion(i);
+        //*****************************************************************SIMULACION
+        bool limiteAlcanzado = false;
+
         int32_t pasos;
         int32_t meta;
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -270,18 +301,27 @@ void actualizarLogMotor(int i) {
           meta = ArrayMotores[i].metaPasos;
         }
         int32_t errorActual = meta - pasos;
-        // Lógica de frenado por meta o por paso de signo (igual que ESP32)
         bool yaSePaso = false;
         if (ArrayMotores[i].pwmActual > 0 && errorActual <= 0) yaSePaso = true;
         if (ArrayMotores[i].pwmActual < 0 && errorActual >= 0) yaSePaso = true;
 
-        if (labs(errorActual) < 8 || yaSePaso) {
-          moverMotor(ArrayMotores[i], 0);
+        // Prioridad 1: Si chocó, frena de inmediato
+        if (limiteAlcanzado) {
+          frenarMotor(ArrayMotores[i]);
           ArrayMotores[i].modoActual = MODE_IDLE;
-        } else {
-          ArrayMotores[i].estadoReporte = ST_MOVIENDO;
+          ArrayMotores[i].estadoReporte = LV_ERROR_TRABADO;
+        }
+        // Prioridad 2: Si llegó a la meta
+        else if (labs(errorActual) < 8 || yaSePaso) {
+          frenarMotor(ArrayMotores[i]);
+          ArrayMotores[i].modoActual = MODE_IDLE;
+        }
+        // Prioridad 3: Seguir moviendo
+        else {
+          ArrayMotores[i].estadoReporte = LV_MOVIENDO;
           moverMotor(ArrayMotores[i], ArrayMotores[i].pwmActual);
         }
+
         break;
       }
 
@@ -290,24 +330,23 @@ void actualizarLogMotor(int i) {
 
     case MODE_FOLLOW_ROUTINE:
       {
-        //bool limiteAlcanzado = leerBit(datosMuestreo.finalesCarrera, i);
+        //bool limiteAlcanzado = finalCarreraPorArticulacion(i);
         //*****************************************************************SIMULACION
         bool limiteAlcanzado = false;
 
         if (ArrayMotores[i].ticksRestantes > 0 && !limiteAlcanzado) {
           // Seguimos moviendo el motor a la velocidad indicada
           moverMotor(ArrayMotores[i], ArrayMotores[i].pwmActual);
-          ArrayMotores[i].estadoReporte = ST_MOVIENDO;
+          ArrayMotores[i].estadoReporte = LV_MOVIENDO;
           ArrayMotores[i].ticksRestantes--;
         } else {
           frenarMotor(ArrayMotores[i]);
           ArrayMotores[i].modoActual = MODE_IDLE;
-          ArrayMotores[i].estadoReporte = ST_IDLE;
 
           if (limiteAlcanzado) {
-            ArrayMotores[i].estadoReporte = ST_ERROR_TRABADO;
+            ArrayMotores[i].estadoReporte = LV_ERROR_TRABADO;
           } else {
-            ArrayMotores[i].estadoReporte = ST_IDLE;
+            ArrayMotores[i].estadoReporte = LV_IDLE;
           }
         }
         break;
@@ -322,6 +361,8 @@ void actualizarLogMotor(int i) {
 
 void enviarTelemetriaLabVIEW() {
   MsgDatos_t msg;
+
+  //PASOS
   for (int i = 0; i < NUM_ENCODERS; i++) {
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
       msg.pasos[i] = ArrayMotores[i].pasosActuales;
@@ -329,6 +370,19 @@ void enviarTelemetriaLabVIEW() {
       //msg.pasos[i] = (int32_t)(i * 1000) + random(1000);
     }
   }
+
+  //ESTADO DEL MOTOR
+  // Byte 0: Motores 0, 1 y parte del 2
+  msg.edoMotores[0] = (ArrayMotores[0].estadoReporte & 0x07) | ((ArrayMotores[1].estadoReporte & 0x07) << 3) | ((ArrayMotores[2].estadoReporte & 0x03) << 6);
+
+  // Byte 1: Resto del 2, Motor 3, 4 y parte del 5
+  msg.edoMotores[1] = ((ArrayMotores[2].estadoReporte >> 2) & 0x01) | ((ArrayMotores[3].estadoReporte & 0x07) << 1) | ((ArrayMotores[4].estadoReporte & 0x07) << 4) | ((ArrayMotores[5].estadoReporte & 0x01) << 7);
+
+  // Byte 2: Resto del Motor 5
+  msg.edoMotores[2] = (ArrayMotores[5].estadoReporte >> 1) & 0x03;
+
+  //LEER FINALES DE CARRERA
+  msg.finalesCarrera = leerFinalesCarrera();
 
   uint16_t sumaCrc = 0;
   sumaCrc += msg.header;
