@@ -1,153 +1,139 @@
-// ================= CONFIG =================
-#define CENTRO     512
-#define DEADZONE   100
-#define FILTRO_N   3
-#define RAMPA      30
-#define TIMEOUT    300
+// ================================================================
+// RECEPTOR MEGA: CONTROL DE 6 MOTORES BTS7960 + MONITOR SERIAL DEBUG
+// ================================================================
 
-// ================= VARIABLES =================
+#define CENTRO      512
+#define DEADZONE    80   // Ignora pequeños movimientos del joystick
+#define FILTRO_N    3    // Suavizado de señal
+#define RAMPA        40   // Velocidad de respuesta (0-255)
+#define TIMEOUT     500  // Failsafe: se detiene si no hay señal en 0.5 seg
+
+// Variables de control
 int joy[6];
-int pwmActual[6] = {0,0,0,0,0,0};
+int pwmActual[6] = {0,0,0,0,0,0}; 
 unsigned long lastSignal = 0;
 
-// Filtro promedio
-int filtro[6][FILTRO_N];
-int filtroIndex = 0;
+// Pines para los 6 drivers BTS7960
+int RPWM[6] = {2, 4, 6, 8, 10, 12};
+int LPWM[6] = {3, 5, 7, 9, 11, 13};
 
-// BTS7960 o LEDs
-int RPWM[6] = {5, 7, 9, 11, 13, 45};
-int LPWM[6] = {6, 8, 10, 12, 44, 46};
-int EN[6]   = {22, 23, 24, 25, 26, 27};
+String entradaBT = ""; 
+bool capturando = false;
 
-// Bluetooth
-String buffer = "";
-bool recibiendo = false;
-
-// ================= SETUP =================
 void setup() {
-  Serial.begin(9600);
-  Serial1.begin(9600);
-
+  // Serial 0: Monitor PC (Configurar a 115200)
+  Serial.begin(115200); 
+  
+  // Serial 1: Bluetooth (Pines 19 RX y 18 TX)
+  Serial1.begin(9600); 
+  
   for (int i = 0; i < 6; i++) {
     pinMode(RPWM[i], OUTPUT);
     pinMode(LPWM[i], OUTPUT);
-    pinMode(EN[i], OUTPUT);
-    digitalWrite(EN[i], HIGH);
   }
 
-  Serial.println("MEGA LISTO");
+  Serial.println("\n--- RECEPTOR MEGA INICIADO (MODO DEBUG) ---");
+  Serial.println("Esperando datos con formato <J1,J2,J3,J4,J5,J6,Sum>...");
 }
 
-// ================= LOOP =================
 void loop() {
-
-  // ---- Recepción Bluetooth robusta ----
+  // 1. LECTURA DEL PUERTO SERIAL 1 (BLUETOOTH)
   while (Serial1.available()) {
     char c = Serial1.read();
 
     if (c == '<') {
-      buffer = "";
-      recibiendo = true;
-    }
-    else if (c == '>' && recibiendo) {
-      recibiendo = false;
-
-      if (procesarPaquete(buffer)) {
-        lastSignal = millis();
-        controlMotors();
+      entradaBT = "";
+      capturando = true;
+    } 
+    else if (c == '>' && capturando) {
+      capturando = false;
+      
+      // MOSTRAR TRAMA RECIBIDA
+      Serial.print("\n>>> Trama Cruda: <");
+      Serial.print(entradaBT);
+      Serial.println(">");
+      
+      if (procesarPaquete(entradaBT)) {
+        lastSignal = millis(); 
+        Serial.println("Checksum OK. Actualizando motores...");
+        actualizarMotores();   
+      } else {
+        Serial.println("Error: Checksum NO coincide.");
       }
-    }
-    else if (recibiendo) {
-      buffer += c;
+    } 
+    else if (capturando) {
+      entradaBT += c;
     }
   }
 
-  // ---- Failsafe ----
+  // 2. FAILSAFE: Si pasa mucho tiempo sin señal, apagar todo
   if (millis() - lastSignal > TIMEOUT) {
-    stopMotors();
+    if(pwmActual[0] != 0 || pwmActual[1] != 0) { // Solo imprime si estaban encendidos
+       Serial.println("!!! FAILSAFE ACTIVADO: Señal perdida !!!");
+    }
+    detenerMotores();
   }
 }
 
-// ================= PROCESAR PAQUETE =================
+// Función para separar los datos por comas y validar Checksum
 bool procesarPaquete(String data) {
-  int checksumRx = 0;
-  int checksumCalc = 0;
-
+  int ckSumCalc = 0;
+  int ckSumRecibido = 0;
+  String tempData = data; // Copia para no destruir la original
+  
   for (int i = 0; i < 7; i++) {
-    int comma = data.indexOf(',');
-    String token;
+    int comma = tempData.indexOf(',');
+    String valorStr = (comma == -1) ? tempData : tempData.substring(0, comma);
+    tempData = tempData.substring(comma + 1);
 
-    if (comma == -1) token = data;
-    else {
-      token = data.substring(0, comma);
-      data = data.substring(comma + 1);
-    }
+    int valorInt = valorStr.toInt();
 
     if (i < 6) {
-      joy[i] = token.toInt();
-      checksumCalc += joy[i];
+      joy[i] = valorInt;
+      ckSumCalc += valorInt;
+      // Opcional: ver valores individuales
+      Serial.print("J"); Serial.print(i+1); Serial.print(":"); Serial.print(valorInt); Serial.print(" ");
     } else {
-      checksumRx = token.toInt();
+      ckSumRecibido = valorInt;
+      Serial.print("| Sum Recibido: "); Serial.println(ckSumRecibido);
     }
   }
-
-  if (checksumCalc != checksumRx) {
-    stopMotors();
-    return false;
-  }
-
-  return true;
+  
+  return (ckSumCalc == ckSumRecibido);
 }
 
-// ================= FILTRO =================
-int aplicarFiltro(int canal, int valor) {
-  filtro[canal][filtroIndex] = valor;
-  int suma = 0;
-
-  for (int i = 0; i < FILTRO_N; i++) {
-    suma += filtro[canal][i];
-  }
-
-  return suma / FILTRO_N;
-}
-
-// ================= CONTROL MOTORES =================
-void controlMotors() {
-
+void actualizarMotores() {
+  Serial.print("PWM Salida: ");
   for (int i = 0; i < 6; i++) {
+    int desplazamiento = joy[i] - CENTRO;
 
-    // 1️⃣ Filtro
-    int filtrado = aplicarFiltro(i, joy[i]);
-
-    // 2️⃣ Centro
-    int desplazamiento = filtrado - CENTRO;
-
-    // 3️⃣ Deadzone
     if (abs(desplazamiento) < DEADZONE) desplazamiento = 0;
 
-    // 4️⃣ Mapeo a PWM
     int target = map(desplazamiento, -512, 512, -255, 255);
 
-    // 5️⃣ Rampa rápida
-    if (pwmActual[i] < target) pwmActual[i] += RAMPA;
-    if (pwmActual[i] > target) pwmActual[i] -= RAMPA;
+    // Rampa
+    if (pwmActual[i] < target) pwmActual[i] = min(pwmActual[i] + RAMPA, target);
+    else if (pwmActual[i] > target) pwmActual[i] = max(pwmActual[i] - RAMPA, target);
 
-    int pwm = pwmActual[i];
-    int outR = 0, outL = 0;
+    // Salida física
+    if (pwmActual[i] > 0) {
+      analogWrite(RPWM[i], pwmActual[i]);
+      analogWrite(LPWM[i], 0);
+    } else if (pwmActual[i] < 0) {
+      analogWrite(RPWM[i], 0);
+      analogWrite(LPWM[i], abs(pwmActual[i]));
+    } else {
+      analogWrite(RPWM[i], 0);
+      analogWrite(LPWM[i], 0);
+    }
 
-    if (pwm > 0) outR = pwm;
-    else if (pwm < 0) outL = -pwm;
-
-    analogWrite(RPWM[i], outR);
-    analogWrite(LPWM[i], outL);
+    Serial.print(pwmActual[i]);
+    Serial.print("\t");
   }
-
-  filtroIndex++;
-  if (filtroIndex >= FILTRO_N) filtroIndex = 0;
+  Serial.println(); 
 }
 
-// ================= STOP TOTAL =================
-void stopMotors() {
+void detenerMotores() {
   for (int i = 0; i < 6; i++) {
     analogWrite(RPWM[i], 0);
     analogWrite(LPWM[i], 0);
