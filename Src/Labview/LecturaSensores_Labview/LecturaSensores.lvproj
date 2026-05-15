@@ -63,6 +63,7 @@
 			<Item Name="WriteCommand.vi" Type="VI" URL="../WriteCommand.vi"/>
 		</Item>
 		<Item Name="calculoVelocidad.vi" Type="VI" URL="../calculoVelocidad.vi"/>
+		<Item Name="clean.vi" Type="VI" URL="../clean.vi"/>
 		<Item Name="Cluster_ControlPID_Subpanel.ctl" Type="VI" URL="../Control/Cluster_ControlPID_Subpanel.ctl"/>
 		<Item Name="Cluster_Dashboard.ctl" Type="VI" URL="../Control/Cluster_Dashboard.ctl"/>
 		<Item Name="Cluster_EstadoMotores.ctl" Type="VI" URL="../Cluster_EstadoMotores.ctl"/>

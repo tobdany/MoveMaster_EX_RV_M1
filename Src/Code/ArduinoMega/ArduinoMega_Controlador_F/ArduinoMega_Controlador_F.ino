@@ -209,7 +209,7 @@ void procesarLecturaSerial() {
             for (int i = 0; i < NUM_MOTORES; i++) {
               Comportamiento_t ordenNueva = (Comportamiento_t)comando.funcion;
 
-              if (ordenNueva == MODE_FAST_MOV && comando.metas[i] != 0) {
+              if (ordenNueva == MODE_FAST_MOV) {
                 ArrayMotores[i].modoActual = MODE_FAST_MOV;
                 ArrayMotores[i].metaPasos = ArrayMotores[i].pasosActuales + comando.metas[i];
                 ArrayMotores[i].pwmActual = (comando.metas[i] < 0) ? -(int)comando.payloadSize : (int)comando.payloadSize;
