@@ -136,7 +136,49 @@ La segunda estructura fundamental es la que define el paquete de telemetría. Al
 	} MsgDatos_t;
 \end{lstlisting}
 
+\section{Definición de Enumeraciones (Enums)}
+Para garantizar la integridad de la máquina de estados y optimizar la comunicación serial, se implementaron enumeraciones que separan la lógica de control interno de los reportes enviados a la interfaz de usuario.
 
+\begin{lstlisting}[language=C++, caption={Enumeradores para reportes y comportamientos del sistema}, label={lst:enums_sistema}]
+	// Reporta a Labview el estado simplificado (Maximo 8 estados)
+	enum EstadoReporte {
+		LV_IDLE = 0,          // 000: Quieto / Esperando
+		LV_MOVIENDO = 1,      // 001: Ejecutando trayectoria o comando manual
+		LV_HOMING = 2,        // 010: En proceso de busqueda de cero
+		LV_ERROR_TRABADO = 3  // 011: Meta no alcanzada / Obstruccion
+	};
+	
+	// Define el modo de operacion solicitado por el controlador
+	enum Comportamiento_t {
+		MODE_IDLE = 0,           // Reposo activo
+		MODE_FAST_MOV = 1,       // Movimiento rapido (Jogging)
+		MODE_MOVE_DEG = 2,       // Posicionamiento por grados
+		MODE_FOLLOW_ROUTINE = 3, // Ejecucion de trayectorias (Excel)
+		MODE_HOMING = 4,         // Rutina de referenciado
+		MODE_EMERGENCY_STOP = 5  // Paro de emergencia inmediato
+	};
+\end{lstlisting}
+
+Adicionalmente, se utiliza un enumerador específico para la gestión detallada de la lógica de control interna. Este permite que cada articulación rastree su progreso durante tareas complejas como el referenciado (\textit{Homing}) o el posicionamiento punto a punto.
+
+\begin{lstlisting}[language=C++, caption={Enumeradores para la logica interna de control}, label={lst:enums_internos}]
+	// Mantiene la logica completa para el control de pasos interno
+	enum MaqEstado_t {
+		MQ_IDLE = 1,      // Motor en espera
+		MQ_HOMING = 2,    // Ejecutando fase de busqueda
+		MQ_MOVIENDO = 3,  // En transito hacia la meta
+		MQ_META = 4       // Posicion alcanzada con exito
+	};
+	
+	// Fases individuales para la rutina de referenciado
+	enum Homing_t {
+		MAQ_HOMING_F1 = 1, // Busqueda rapida de sensor
+		MAQ_HOMING_F2 = 2, // Retroceso de precision
+		MAQ_HOMING_F3 = 3  // Ajuste final de cero
+	};
+\end{lstlisting}
+
+Esta distinción es fundamental para el determinismo del sistema. Mientras que la lógica interna utiliza estados detallados para el control de los motores, la telemetría enviada a LabVIEW se compacta en el enumerador \texttt{EstadoReporte} para cumplir con la restricción de 3 bits por motor dentro de la trama de 31 bytes.
 
 \section{Restricciones de Hardware y Determinismo}
 La arquitectura basada en el ATMega2560 requiere una gestión estricta de los tiempos de ciclo. El proceso de envío serial, al ser asíncrono y dependiente de un buffer, puede comprometer la estabilidad del sistema si no se regula adecuadamente. 
@@ -153,6 +195,8 @@ Los estados operativos definidos son:
 	\item \textbf{MODE\_FOLLOW\_ROUTINE:} Modo de ejecución de trayectorias. El sistema procesa vectores de PWM y tiempos de ejecución provenientes de archivos de datos, utilizando temporizadores internos para asegurar la detención precisa del movimiento.
 \end{itemize}
 
+
+
 \begin{center}
 	\small
 	\renewcommand{\arraystretch}{1.2}
@@ -166,6 +210,153 @@ Los estados operativos definidos son:
 		\fcolorbox{green!30!black}{green!5}{\textbf{Ejecutar Modo (FAST / FOLLOW / JOY)}}
 	\end{tabular}
 \end{center}
+
+\section{Adquisición de Datos y Gestión de Periféricos I/O}
+La interacción con el brazo Mitsubishi Move Master EX requiere la gestión precisa de tres tipos de señales críticas: la retroalimentación de posición (encoders), la detección de límites físicos (finales de carrera) y el control de estabilidad (frenos electromecánicos).
+
+\subsection{Retroalimentación de Posición vía Encoders}
+A diferencia de los sistemas basados en interrupciones externas que pueden saturar el procesador a altas velocidades, se implementó una estrategia de \textbf{muestreo periódico}. Los estados de las fases A y B de cada encoder son leídos cada cierto tiempo dentro de una interrupción de temporizador (\textit{Timer Interrupt}). 
+
+Esta técnica permite filtrar el ruido electrónico y asegura que el conteo de pasos sea determinista, evitando que el microcontrolador pierda ciclos de ejecución críticos para la comunicación serial. Los valores acumulados se almacenan en variables de tipo \texttt{int32\_t} dentro de la estructura \texttt{Motor\_t} para su posterior envío a LabVIEW.
+
+\subsection{Detección de Límites (Finales de Carrera)}
+El robot cuenta con interruptores de límite en configuración Siempre Abierta (NO). Para mejorar la experiencia de usuario y la interpretación de datos en la interfaz de LabVIEW, se implementó una inversión lógica en el firmware. 
+
+Aunque el hardware detecta una transición física, el código procesa esta señal para \textbf{retornar un valor booleano TRUE} únicamente cuando el sensor está siendo presionado. Esta abstracción facilita la lógica de seguridad en la interfaz, permitiendo que el operario identifique visualmente el estado de colisión o límite de manera intuitiva y directa.
+
+\subsection{Control de Frenos Electromecánicos}
+Los frenos del robot son dispositivos de seguridad que evitan el colapso de las articulaciones por gravedad cuando los motores no están energizados. Su estado se gestiona mediante lecturas digitales directas (\texttt{digitalRead}), las cuales son integradas en la trama de telemetría. Esta adquisición permite que LabVIEW confirme en tiempo real si el brazo se encuentra en estado de liberación para movimiento o bajo retención de seguridad.
+
+\begin{lstlisting}[language=C++, caption={Lógica de lectura de señales digitales y acondicionamiento}, label={lst:lectura_sensores}]
+	// Lectura de finales de carrera con logica positiva para la interfaz
+	uint8_t leerFinalesCarrera() {
+		uint8_t estadoByte = 0;
+		for (int i = 0; i < NUM_FINAL_C; i++) {
+			// Se retorna TRUE si el sensor esta presionado
+			if (digitalRead(PIN_FINAL_CARRERA[i]) == HIGH) {
+				estadoByte |= (1 << i);
+			}
+		}
+		return estadoByte;
+	}
+	
+	// Monitoreo de estado de frenos
+	void monitorearFrenos() {
+		bool estadoFreno1 = digitalRead(PIN_FRENO[0]);
+		bool estadoFreno2 = digitalRead(PIN_FRENO[1]);
+		// Logica de seguridad integrada...
+	}
+\end{lstlisting}
+
+\subsection{Procesamiento de Encoders y Optimización por Hardware}
+
+Para la lectura de los encoders, se descartó el uso de interrupciones externas convencionales (\textit{External Interrupts}), ya que la alta frecuencia de pulsos generada por los cinco motores simultáneamente saturaba el procesador, provocando un comportamiento errático en el giro de los motores y pérdida de pasos. 
+
+En su lugar, se implementó una estrategia de \textbf{muestreo por interrupción de temporizador (Timer Interrupt Handling)} utilizando el Timer 5 del ATMega2560.
+
+\subsubsection{Configuración del Timer 5 y Resolución de Pasos}
+El Timer 5 se configuró en modo CTC (\textit{Clear Timer on Compare Match}) con un valor de comparación de 199 y un prescaler de 8. Esto genera una frecuencia de muestreo de 10 kHz (cada 100 $\mu$s). Esta frecuencia es lo suficientemente alta para capturar todos los cambios de fase sin sobrecargar la CPU, permitiendo que el hilo principal del programa ejecute la lógica de control y comunicación sin retardos.
+
+En cuanto a la resolución, se implementó una decodificación de tipo \textbf{Half-Quad}. Aunque el disco físico del encoder del Mitsubishi Move Master EX posee 200 ranuras, la lógica de software permite detectar cambios de estado específicos que duplican la resolución efectiva a 400 pasos por revolución, logrando un equilibrio ideal entre precisión posicional y carga computacional.
+
+\subsubsection{Algoritmo de Tabla de Búsqueda (Look-up Table)}
+Para determinar el sentido de giro y el conteo de pasos de forma ultra rápida dentro de la ISR (\textit{Interrupt Service Routine}), se utilizó una tabla de estados precalculada:
+
+\begin{lstlisting}[language=C++, caption={Tabla de estados para decodificacion de Encoders}, label={lst:encoder_table}]
+	const int8_t encoderTable[16] = {
+		0, 0, 0, 0,   // Sin cambio o estados invalidos
+		1, 0, 0, -1,  // Incremento detectado / Error
+		-1, 0, 0, 1,   // Decremento detectado / Error
+		0, 0, 0, 0    // Sin cambio o estados invalidos
+	};
+\end{lstlisting}
+
+La lógica consiste en concatenar el estado anterior de las fases A y B con el estado actual, formando un índice de 4 bits (valores de 0 a 15). Este índice accede directamente a la tabla, la cual devuelve un \textbf{1} para incrementar, un \textbf{-1} para decrementar o un \textbf{0} si no hubo cambio o si el cambio detectado es físicamente imposible (ruido).
+
+\subsubsection{Pseudocódigo de la Lógica de Lectura}
+El siguiente pseudocódigo ilustra la operación realizada cada 100 microsegundos:
+
+\begin{center}
+	\begin{minipage}{0.85\textwidth}
+		\begin{tcolorbox}[
+			colback=green!20,      % Fondo verde pastel
+			colframe=green!20,     % Borde del mismo verde pastel
+			coltitle=black,        % Titulo en negro
+			colupper=black,        % Texto superior en negro
+			title=Algoritmo de Muestreo (ISR Timer 5), 
+			fonttitle=\bfseries,
+			arc=2mm                % Bordes ligeramente redondeados para suavizar la estética
+			]
+			\small
+			\begin{enumerate}
+				\item \textbf{Para cada} motor $i$ del 0 al 4:
+				\begin{enumerate}
+					\item Leer estados físicos de los pines Fase A y Fase B.
+					\item Combinar estados: $Actual = (FaseA \ll 1) \text{ OR } FaseB$.
+					\item Crear índice: $Indice = (Anterior[i] \ll 2) \text{ OR } Actual$.
+					\item Consultar tabla: $Delta = encoderTable[Indice]$.
+					\item Actualizar posición: $Pasos[i] = Pasos[i] + Delta$.
+					\item Guardar estado para el siguiente ciclo: $Anterior[i] = Actual$.
+				\end{enumerate}
+				\item \textbf{Fin del ciclo}
+			\end{enumerate}
+		\end{tcolorbox}
+	\end{minipage}
+\end{center}
+
+\section{Interfaz de Usuario en LabVIEW}
+La estación de control fue desarrollada en LabVIEW, aprovechando su capacidad para la gestión de datos mediante una arquitectura de manejador de mensajes encolados (QMH). La interfaz se organiza en un panel principal con una barra de navegación lateral que permite conmutar entre tres pestañas operativas: \textbf{Dashboard}, \textbf{Control Manual} y \textbf{Control PID}.
+
+\subsection{Panel de Monitoreo (Dashboard)}
+La pestaña de \textit{Dashboard} funciona como el centro de diagnóstico principal. En esta vista se presentan indicadores visuales de tipo carátula para cada una de las articulaciones (Cadera, Hombro, Codo, Antebrazo y Muñeca). Para cada eje, el sistema despliega en tiempo real:
+\begin{itemize}
+	\item \textbf{Conteo de Pasos:} Valor absoluto del encoder tras el procesamiento en el microcontrolador.
+	\item \textbf{Velocidad:} Cálculo derivado de la variación de pasos por unidad de tiempo.
+	\item \textbf{Estado de Alarmas:} Indicadores de seguridad para los finales de carrera y estados de error.
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{images/Interfaz/dashboard}
+	\caption[Dashboard.]{Ventana de lectura de los encoders.}
+	\label{fig:dashboard}
+\end{figure}
+
+
+\subsection{Modos de Control: Manual y Trayectorias}
+La pestaña de \textbf{Control Manual} ofrece al operario dos métodos para manipular el brazo:
+\begin{enumerate}
+	\item \textbf{Control por PWM:} Ajuste directo del ciclo de trabajo para cada motor mediante controles deslizantes (\textit{sliders}), permitiendo movimientos finos para el posicionamiento inicial del robot.
+	\item \textbf{Rutina desde Archivo:} Funcionalidad avanzada que permite cargar un archivo externo (CSV o Excel) con trayectorias predefinidas. El sistema lee estas coordenadas y las envía de forma secuencial al controlador para su ejecución automática.
+\end{enumerate}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/Interfaz/control}
+	\caption{Ventana de control de la interfaz.}
+	\label{fig:control}
+\end{figure}
+
+
+
+\subsection{Sintonización y Control PID}
+La pestaña de \textbf{Control PID} está diseñada para la optimización dinámica del movimiento. Esta sección permite al usuario ajustar las constantes de control ($K_p$, $T_i$, $T_d$) de manera individual para cada articulación. Incluye una gráfica de tiempo real (\textit{Waveform Chart}) que superpone el \textbf{Setpoint} (posición deseada) frente a la \textbf{Posición Actual}, permitiendo visualizar el error, el sobreimpulso y el tiempo de asentamiento del sistema bajo diferentes condiciones de carga.
+
+\begin{center}
+	\fcolorbox{green!30!black}{green!5}{
+		\begin{minipage}{0.9\textwidth}
+			\textbf{Nota de Seguridad:} Independientemente de la pestaña activa, la interfaz mantiene un botón de \textbf{Paro de Emergencia} global que, al activarse, envía una señal prioritaria para frenar todos los motores y bloquear las articulaciones.
+		\end{minipage}
+	}
+\end{center}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/Interfaz/pid}
+	\caption{Ventana de PID de la interfaz.}
+	\label{fig:pid}
+\end{figure}
+
 
 \begin{resultadosFase}
 	\begin{itemize}

@@ -2,16 +2,19 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Transformador original}}{6}{figure.3.1}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Especificaciones del transformador}}{6}{figure.3.2}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Componentes de la Drive Unit}}{7}{figure.3.3}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Panel del controlador viejo}}{8}{figure.3.4}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Tabla de especificaciones del motor y frenos. \cite {tesisSebas} }}{9}{figure.3.5}%
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Fuente de poder conmutada seleccionada}}{12}{figure.3.6}%
-\contentsline {figure}{\numberline {3.7}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{13}{figure.3.7}%
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{14}{figure.3.8}%
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Creación de una placa de distribución de potencia simple}}{14}{figure.3.9}%
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{15}{figure.3.10}%
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Tabla con valores AWG}}{15}{figure.3.11}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Transformador original}}{7}{figure.3.1}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Especificaciones del transformador}}{7}{figure.3.2}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Componentes de la Drive Unit}}{8}{figure.3.3}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Panel del controlador viejo}}{9}{figure.3.4}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Tabla de especificaciones del motor y frenos. \cite {tesisSebas} }}{10}{figure.3.5}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Fuente de poder conmutada seleccionada}}{13}{figure.3.6}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{14}{figure.3.7}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{15}{figure.3.8}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Creación de una placa de distribución de potencia simple}}{15}{figure.3.9}%
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{16}{figure.3.10}%
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Tabla con valores AWG}}{16}{figure.3.11}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Topología.}}{20}{figure.4.1}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Topología.}}{21}{figure.4.1}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Dashboard.}}{31}{figure.4.2}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Ventana de control de la interfaz.}}{31}{figure.4.3}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Ventana de PID de la interfaz.}}{32}{figure.4.4}%
