@@ -68,6 +68,20 @@
         </Generic>
       </Probes>
     </VI>
+    <VI name="FGV_MainPanel.vi">
+      <Breakpoints>
+        <NodeIndexes>
+        </NodeIndexes>
+        <SignalIndexes>
+        </SignalIndexes>
+      </Breakpoints>
+      <Probes>
+        <Generic>
+          <SignalUID value="1037"/>
+          <SignalUID value="488"/>
+        </Generic>
+      </Probes>
+    </VI>
     <VI name="VI_caller.vi">
       <Breakpoints>
         <NodeIndexes>

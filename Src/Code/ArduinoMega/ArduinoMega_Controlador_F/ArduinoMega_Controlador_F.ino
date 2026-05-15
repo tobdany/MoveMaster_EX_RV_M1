@@ -12,8 +12,8 @@ const uint8_t NUM_ENCODERS = 5;
 const uint8_t NUM_FINAL_C = 5;
 const uint8_t PIN_LPWM[NUM_MOTORES] = { 2, 4, 6, 8, 10, 12 };
 const uint8_t PIN_RPWM[NUM_MOTORES] = { 3, 5, 7, 9, 11, 13 };
-const uint8_t PIN_ENCODER_A[NUM_ENCODERS] = { 39, 35, 31, 27, 23 };
-const uint8_t PIN_ENCODER_B[NUM_ENCODERS] = { 41, 37, 33, 29, 25 };
+const uint8_t PIN_ENCODER_A[NUM_ENCODERS] = { 39, 35, 31, 27, 25 };
+const uint8_t PIN_ENCODER_B[NUM_ENCODERS] = { 41, 37, 33, 29, 23 };
 const uint8_t PIN_FINAL_CARRERA[NUM_FINAL_C] = { 43, 45, 47, 49, 51 };
 const uint8_t PIN_FRENO[2] = { 14, 15 };
 
@@ -167,12 +167,16 @@ uint8_t leerFinalesCarrera() {
   uint8_t valFinalCarrera = 0;
   for (int i = 0; i < NUM_FINAL_C; i++) {
     //Los finales de carrera son siempre cerrados (entregan 1 aunque no estén presionados)
-    if (digitalRead(PIN_FINAL_CARRERA[i] == LOW)) valFinalCarrera |= (1 << i);
+    if (digitalRead(PIN_FINAL_CARRERA[i]) == LOW) valFinalCarrera |= (1 << i);
   }
+  //*********************************SIMULACION
+  //return 0x03;
   return valFinalCarrera;
 }
 
 bool finalCarreraPorArticulacion(int i) {
+  //*******************************************************SIMULACION******************************
+  //return false;
   if (i <= 3) {
     return (digitalRead(PIN_FINAL_CARRERA[0]) == LOW);
   }
@@ -225,11 +229,12 @@ void procesarLecturaSerial() {
                 } else {
                   ArrayMotores[i].modoActual = MODE_IDLE;
                 }
-              } else if (comando.funcion == 0x04) {
-                ArrayMotores[i].modoActual = MODE_IDLE;
-                ArrayMotores[i].pwmActual = 0;
-                ArrayMotores[i].metaPasos = ArrayMotores[i].pasosActuales;
-                frenarMotor(ArrayMotores[i]);
+              } else if (ordenNueva == MODE_EMERGENCY_STOP) {
+                for (int j = 0; j < NUM_MOTORES; j++) {
+                  ArrayMotores[j].modoActual = MODE_EMERGENCY_STOP;
+                  // Forzamos el frenado inmediato incluso antes del siguiente ciclo de control
+                  frenarMotor(ArrayMotores[j]);
+                }
               }
             }
           }
@@ -290,9 +295,9 @@ void actualizarLogMotor(int i) {
 
     case MODE_FAST_MOV:
       {
-        //bool limiteAlcanzado = finalCarreraPorArticulacion(i);
+        bool limiteAlcanzado = finalCarreraPorArticulacion(i);
         //*****************************************************************SIMULACION
-        bool limiteAlcanzado = false;
+        //bool limiteAlcanzado = false;
 
         int32_t pasos;
         int32_t meta;
@@ -330,9 +335,9 @@ void actualizarLogMotor(int i) {
 
     case MODE_FOLLOW_ROUTINE:
       {
-        //bool limiteAlcanzado = finalCarreraPorArticulacion(i);
+        bool limiteAlcanzado = finalCarreraPorArticulacion(i);
         //*****************************************************************SIMULACION
-        bool limiteAlcanzado = false;
+        //bool limiteAlcanzado = false;
 
         if (ArrayMotores[i].ticksRestantes > 0 && !limiteAlcanzado) {
           // Seguimos moviendo el motor a la velocidad indicada
@@ -355,6 +360,19 @@ void actualizarLogMotor(int i) {
     case MODE_HOMING:
       // Aquí iría tu lógica de finales de carrera cuando los conectes
       // Por ahora, solo es el cascarón de la máquina de estados
+      break;
+
+    case MODE_EMERGENCY_STOP:
+      // 1. Detención física inmediata
+      frenarMotor(ArrayMotores[i]);
+
+      // 2. Limpieza de software: igualar meta a posición actual para evitar tirones
+      ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        ArrayMotores[i].metaPasos = ArrayMotores[i].pasosActuales;
+      }
+      ArrayMotores[i].pwmActual = 0;
+      ArrayMotores[i].ticksRestantes = 0;
+      ArrayMotores[i].estadoReporte = LV_IDLE;
       break;
   }
 }
