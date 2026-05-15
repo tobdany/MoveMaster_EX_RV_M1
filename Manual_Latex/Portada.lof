@@ -2,41 +2,16 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Transformador original}}{8}{figure.3.1}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Especificaciones del transformador}}{8}{figure.3.2}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Componentes de la Drive Unit}}{9}{figure.3.3}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Panel del controlador viejo}}{10}{figure.3.4}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Tabla de especificaciones del motor y frenos. \cite {tesisSebas} }}{11}{figure.3.5}%
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Fuente de poder conmutada seleccionada}}{14}{figure.3.6}%
-\contentsline {figure}{\numberline {3.7}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{15}{figure.3.7}%
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{16}{figure.3.8}%
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Creación de una placa de distribución de potencia simple}}{16}{figure.3.9}%
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{17}{figure.3.10}%
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Tabla con valores AWG}}{17}{figure.3.11}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Transformador original}}{6}{figure.3.1}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Especificaciones del transformador}}{6}{figure.3.2}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Componentes de la Drive Unit}}{7}{figure.3.3}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Panel del controlador viejo}}{8}{figure.3.4}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Tabla de especificaciones del motor y frenos. \cite {tesisSebas} }}{9}{figure.3.5}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Fuente de poder conmutada seleccionada}}{12}{figure.3.6}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{13}{figure.3.7}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{14}{figure.3.8}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Creación de una placa de distribución de potencia simple}}{14}{figure.3.9}%
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{15}{figure.3.10}%
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Tabla con valores AWG}}{15}{figure.3.11}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Pines del driver BTS7960}}{22}{figure.4.1}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Medición de corriente en el driver BTS7960}}{22}{figure.4.2}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Especificaciones de corriente del pin del módulo BTS7960}}{23}{figure.4.3}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Pines del ACS712}}{24}{figure.4.4}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Hoja técnica del sensor ACS712}}{24}{figure.4.5}%
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Diagrama de conexión del sensor de corriente}}{26}{figure.4.6}%
-\contentsline {figure}{\numberline {4.7}{\ignorespaces Panel frontal de la interfaz para leer el sensor de corriente.}}{27}{figure.4.7}%
-\contentsline {figure}{\numberline {4.8}{\ignorespaces Main del programa elaborado en Labview.}}{28}{figure.4.8}%
-\contentsline {figure}{\numberline {4.9}{\ignorespaces Estructura del consumidor en Labview,}}{28}{figure.4.9}%
-\contentsline {figure}{\numberline {4.10}{\ignorespaces Estructura del productor en Labview.}}{29}{figure.4.10}%
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Pieza frontal de la caja.}}{33}{figure.5.1}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Pieza lateral derecha del gabinete.}}{33}{figure.5.2}%
-\contentsline {figure}{\numberline {5.3}{\ignorespaces Pieza posterior de la caja,}}{34}{figure.5.3}%
-\contentsline {figure}{\numberline {5.4}{\ignorespaces Pieza lateral izquierda del gabinete}}{34}{figure.5.4}%
-\contentsline {figure}{\numberline {5.5}{\ignorespaces Pieza base del gabinete.}}{35}{figure.5.5}%
-\contentsline {figure}{\numberline {5.6}{\ignorespaces Pieza superior del gabinete}}{36}{figure.5.6}%
-\contentsline {figure}{\numberline {5.7}{\ignorespaces Vista de la caja desde la esquina frontal derecha}}{37}{figure.5.7}%
-\contentsline {figure}{\numberline {5.8}{\ignorespaces Vista del gabinete desde la cara trasera}}{37}{figure.5.8}%
-\contentsline {figure}{\numberline {5.9}{\ignorespaces Vista superior de las repisas del gabinete}}{38}{figure.5.9}%
-\contentsline {figure}{\numberline {5.10}{\ignorespaces Dimensiones de las repisas}}{39}{figure.5.10}%
-\contentsline {figure}{\numberline {5.11}{\ignorespaces Repisa de los drivers Bts7960}}{39}{figure.5.11}%
-\contentsline {figure}{\numberline {5.12}{\ignorespaces Vista trasera de la repisa de los drivers Bts7960}}{40}{figure.5.12}%
-\contentsline {figure}{\numberline {5.13}{\ignorespaces Ensamblaje de los componentes electrónicos en el gabinete.}}{40}{figure.5.13}%
-\contentsline {figure}{\numberline {5.14}{\ignorespaces Ventilación del gabinete}}{41}{figure.5.14}%
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Topología.}}{20}{figure.4.1}%
