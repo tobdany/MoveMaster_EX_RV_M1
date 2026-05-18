@@ -14,8 +14,8 @@ int pwmActual[6] = {0,0,0,0,0,0};
 unsigned long lastSignal = 0;
 
 // Pines para los 6 drivers BTS7960
-int RPWM[6] = {2, 4, 6, 8, 10, 12};
-int LPWM[6] = {3, 5, 7, 9, 11, 13};
+int RPWM[6] = {4, 2, 6, 8, 10, 12};
+int LPWM[6] = {5, 3, 7, 9, 11, 13};
 
 String entradaBT = ""; 
 bool capturando = false;
