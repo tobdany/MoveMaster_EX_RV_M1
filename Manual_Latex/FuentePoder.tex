@@ -4,7 +4,7 @@
 \begin{resumenCapitulo}
 	Este capítulo detalla la transición del sistema de alimentación original hacia una arquitectura moderna de potencia. Se analizan los requerimientos de corriente de los actuadores, la integración de fuentes conmutadas y las soluciones de hardware personalizadas para optimizar la distribución eléctrica y la seguridad del robot.
 \end{resumenCapitulo}
-
+\clearpage
 \section{Lista de materiales}
 \begin{itemize}
 	\item Fuente de poder de 12V y con capacidad de 40 Amp.
@@ -23,7 +23,7 @@ De acuerdo con las especificaciones técnicas detalladas en el manual del fabric
 	% --- PRIMERA MINIPAGE (Imagen del transformador) ---
 	\begin{minipage}{0.48\textwidth}
 		\centering
-		\includegraphics[width=\linewidth]{images/FuentePoder/screenshot001}[Titulo corto para la lista]{hi}
+		\includegraphics[width=\linewidth]{images/FuentePoder/screenshot001}
 		\caption[Transformador original]{Transformador de la etapa original de potencia del controlador.}
 		\label{fig:screenshot001}
 	\end{minipage}
@@ -73,15 +73,36 @@ Este análisis justifica la necesidad de migrar hacia una fuente conmutada moder
 
 
 \section{Análisis de Requerimientos Energéticos}
-Para determinar la capacidad necesaria de la fuente de alimentación, es fundamental analizar el consumo de corriente de todos los actuadores en su estado más crítico. Como se observa en la Figura \ref{fig:tabla_motores}, la cual presenta datos técnicos recopilados en la investigación de 	Sebastián, C. M. J., y Sebastián, M. C. J. \cite{tesisSebas}, se detallan las especificaciones nominales de los motores y frenos del brazo robótico.
+Para determinar la capacidad necesaria de la fuente de alimentación, es fundamental analizar el consumo de corriente de todos los actuadores en su estado más crítico. Como se observa en la tabla \ref{tab:especificaciones_motores}, la cual presenta datos técnicos recopilados en la investigación de 	Sebastián, C. M. J., y Sebastián, M. C. J. \cite{tesisSebas}, se detallan las especificaciones nominales de los motores y frenos del brazo robótico.
 
-\begin{figure}[h]
+\begin{table}[htbp]
 	\centering
-	\includegraphics[width=1\linewidth]{images/FuentePoder/screenshot005}
-	\caption{Tabla de especificaciones del motor y frenos. \cite{tesisSebas} }
-	\label{fig:tabla_motores}
-\end{figure}
-
+	\caption{Especificaciones técnicas de los actuadores y frenos del brazo robótico \cite{tesisSebas}.}
+	\label{tab:especificaciones_motores}
+	\renewcommand{\arraystretch}{1.5} % Ajusta la altura de las filas para que respire el texto
+	
+	% Alterna colores de fila: gris claro (black!12) y blanco, empezando en la fila 2 de datos
+	\rowcolors{2}{black!12}{white}
+	
+	\begin{tabular}{lccccccc}
+		\toprule
+		% Encabezado principal (en blanco/sin color de fondo)
+		\rowcolor{white}
+		\textbf{Especificaciones} & \textbf{\begin{tabular}[c]{@{}c@{}}Motor\\ J1\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Motor\\ J2\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Motor\\ J3\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Motor\\ J4\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Motor\\ J5\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Motor\\ Pinza\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Frenos J2\\ y J3\end{tabular}} \\ 
+		\midrule
+		
+		\textbf{Marca} & \begin{tabular}[c]{@{}c@{}}DTME-\\ 2730\end{tabular} & \begin{tabular}[c]{@{}c@{}}DTME-\\ 2730\end{tabular} & \begin{tabular}[c]{@{}c@{}}DTME-\\ 2730\end{tabular} & \begin{tabular}[c]{@{}c@{}}DTME-\\ 2730\end{tabular} & \begin{tabular}[c]{@{}c@{}}DTME-\\ 2730\end{tabular} & \begin{tabular}[c]{@{}c@{}}DTME-\\ 2730\end{tabular} & \begin{tabular}[c]{@{}c@{}}Type\\ BBS-41-\\ 1.5\end{tabular} \\ 
+		
+		\textbf{Voltaje} & 24 V & 24 V & 24 V & 24 V & 24 V & 12 V & 12 V \\ 
+		
+		\textbf{Potencia} & 30W & 30W & 30W & 11W & 11W & 11 W & 3.6 W \\ 
+		
+		\textbf{\begin{tabular}[c]{@{}l@{}}Corriente sin\\ carga\end{tabular}} & 1.4 A & 2.35 A & 1.7 A & 1.7 A & 2.5 A & 200 mA & N/A \\ 
+		
+		\textbf{\begin{tabular}[c]{@{}l@{}}Corriente Con\\ carga\end{tabular}} & 2 A & 2.75 A & 2.2 A & 2 A & 2.65 A & 200 mA & N/A \\ 
+		\bottomrule
+	\end{tabular}
+\end{table}
 
 
 Considerando un escenario de máxima exigencia operativa, donde todos los ejes se desplazan simultáneamente bajo carga, la corriente total requerida por los actuadores se obtiene mediante la sumatoria de las intensidades máximas registradas en la columna de ``Corriente con carga'':
@@ -90,7 +111,8 @@ Considerando un escenario de máxima exigencia operativa, donde todos los ejes s
 
 Además del consumo de los motores, el sistema integra una etapa lógica y de potencia que debe ser considerada en el presupuesto energético total:
 \begin{itemize}
-	\item \textbf{Microcontroladores:} Un Arduino Mega y dos módulos ESP32, encargados de la gestión de trayectorias y comunicación inalámbrica.
+	\item \textbf{Microcontroladores:} Un Arduino Mega, módulo HC-O5.
+	\item \textbf{Tarjeta de encoders y finales de carrera}. 
 	\item \textbf{Drivers de Potencia:} Seis puentes H modelo \textbf{BTS7960}.
 	\item \textbf{Sistemas de Frenado:} Frenos electromagnéticos que operan a 12V.
 \end{itemize}
@@ -143,7 +165,7 @@ Esta sobredimensión en el amperaje (40A frente a los 14A requeridos) se decidi�
 
 \subsection{Implementación del Módulo Step-Down para la Etapa Lógica}
 
-Debido a que la fuente conmutada principal entrega 12V y la lógica de control (Arduino Mega y ESP32) requiere una tensión estable de 5V (o de 7V en el caso de ser alimentados por medio del pin de Vin del Arduino), se integró un regulador de voltaje de tipo \textit{Step-Down} (convertidor Buck) de alta potencia. 
+Debido a que la fuente conmutada principal entrega 12V y la lógica de control (Arduino Mega) requiere una tensión estable de 5V, se integró un regulador de voltaje de tipo \textit{Step-Down} (convertidor Buck) de alta potencia. 
 
 Las especificaciones técnicas del módulo seleccionado justifican su uso en este entorno industrial:
 \begin{itemize}
@@ -181,10 +203,11 @@ La placa integra dos series de borneras de alta resistencia para facilitar la co
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.4\linewidth]{images/FuentePoder/screenshot008}
-	\caption[Creación de una placa de distribución de potencia simple]{Placa de distribución de potencia diseñada para la administración de 12V hacia los drivers de los motores.}
+	\includegraphics[width=0.4\linewidth]{images/Infraestructura/barraBus}
+	\caption[Creación de una placa de distribución de potencia simple]{Placa de distribución de potencia diseñada para la administración de 12V y 5V hacia los drivers de los motores.}
 	\label{fig:screenshot008}
 \end{figure}
+
 
 
 \begin{figure}
@@ -205,10 +228,6 @@ Para garantizar la seguridad del sistema y evitar caídas de tensión por resist
 	\label{fig:screenshot010}
 \end{figure}
 
-
-
-\section{Diseño del Enclosure y Seguridad}
-Para el diseño de donde se encuentra centralizada toda la electrónica del brazo se priorizó la protección física y térmica de los componentes; así como, la capacidad de poder sostener el brazo robótico sobre una de sus caras. El diseño es discutido en otros capítulos, pero tras la selección de los componentes dentro de este capítulo, se considera necesario un flujo de aire constante, así como la posibilidad de poder tener un acceso estratégico a los componentes para monitorear las conexiones y poder cambiar componentes de manera modular.
 
 
 \begin{resultadosFase}

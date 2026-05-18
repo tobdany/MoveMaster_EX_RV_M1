@@ -6,16 +6,16 @@
     "Session": {
         "Bookmarks": [
         ],
-        "CurrentFile": "../FuentePoder.tex",
+        "CurrentFile": "../Labview.tex",
         "FileVersion": 1,
         "Files": [
             {
-                "Col": 1,
+                "Col": 17,
                 "EditorGroup": 0,
                 "FileName": "../Portada.tex",
-                "FirstLine": 54,
+                "FirstLine": 200,
                 "FoldedLines": "",
-                "Line": 73
+                "Line": 227
             },
             {
                 "Col": 0,
@@ -26,12 +26,12 @@
                 "Line": 0
             },
             {
-                "Col": 89,
+                "Col": 0,
                 "EditorGroup": 0,
                 "FileName": "../Desarrollo.tex",
                 "FirstLine": 0,
                 "FoldedLines": "",
-                "Line": 13
+                "Line": 0
             },
             {
                 "Col": 0,
@@ -39,15 +39,55 @@
                 "FileName": "../Portada.aux",
                 "FirstLine": 0,
                 "FoldedLines": "",
-                "Line": 16
+                "Line": 29
             },
             {
-                "Col": 200,
+                "Col": 10,
                 "EditorGroup": 0,
                 "FileName": "../FuentePoder.tex",
+                "FirstLine": 4,
+                "FoldedLines": "",
+                "Line": 6
+            },
+            {
+                "Col": 0,
+                "EditorGroup": 0,
+                "FileName": "../SensorCorriente.tex",
+                "FirstLine": 70,
+                "FoldedLines": "",
+                "Line": 129
+            },
+            {
+                "Col": 30,
+                "EditorGroup": 0,
+                "FileName": "../InfraestructuraElectrica.tex",
+                "FirstLine": 511,
+                "FoldedLines": "",
+                "Line": 526
+            },
+            {
+                "Col": 0,
+                "EditorGroup": 0,
+                "FileName": "../PalabrasClaves.tex",
                 "FirstLine": 0,
                 "FoldedLines": "",
-                "Line": 4
+                "Line": 0
+            },
+            {
+                "Col": 0,
+                "EditorGroup": 0,
+                "FileName": "../Labview.tex",
+                "FirstLine": 58,
+                "FoldedLines": "",
+                "Line": 68
+            },
+            {
+                "Col": 121,
+                "EditorGroup": 0,
+                "FileName": "../Encoders.tex",
+                "FirstLine": 253,
+                "FoldedLines": "",
+                "Line": 270
             }
         ],
         "MasterFile": "../Portada.tex",

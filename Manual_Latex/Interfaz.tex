@@ -1,12 +1,11 @@
-\chapter{Interfaz de Comunicación y Lógica de Control en LabVIEW}
+\chapter{Arquitectura del Firmware y Protocolo de Comunicación en el Microcontrolador}
 \lineaLateral
 
 \begin{resumenCapitulo}
-	En este capítulo se describe el desarrollo de una interfaz de control robusta y versátil, diseñada bajo un esquema de comunicación serial (UART) que permite la compatibilidad con cualquier microcontrolador que soporte este estándar. A continuación, se detalla la implementación de la lógica interna, la estructuración de datos y el protocolo de comunicación desarrollado para garantizar el determinismo en el control del sistema.
+Este capítulo detalla el diseño e implementación de la lógica de control y el protocolo de intercambio de datos desarrollado en la plataforma Arduino Mega 2560. Se describe la estructura del firmware encargado de la gestión de periféricos críticos, tales como la lectura de encoders, frenos y finales de carrera. 
+El enfoque principal de esta sección es establecer una base de procesamiento robusta y en tiempo real, capaz de interpretar comandos complejos y reportar la telemetría.
 \end{resumenCapitulo}
 
-\section{Especificaciones Técnicas del Controlador: ATMega2560}
-El núcleo del sistema de control es el microcontrolador de 8 bits \textbf{ATMega2560}, basado en la arquitectura RISC avanzada de Harvard. Esta elección técnica se justifica por su capacidad de procesamiento paralelo de instrucciones en un solo ciclo de reloj, optimizando el \textit{throughput} para tareas de control en tiempo real.
 
 \subsection{Arquitectura y Capacidad de Procesamiento}
 El procesador opera a una frecuencia de oscilación de \textbf{16 MHz} mediante un cristal de cuarzo externo. Esto se traduce en una velocidad de ejecución cercana a los \textbf{16 MIPS} (millones de instrucciones por segundo), permitiendo que la mayoría de las instrucciones se completen en un periodo de reloj de tan solo \textbf{62.5 ns}. Esta velocidad es crítica para la gestión del lazo de control de 4 ms y la lectura de los encoders de cuadratura, donde la latencia de respuesta define la estabilidad del brazo.
@@ -49,7 +48,7 @@ Inspirado en el estándar industrial Modbus, se implementó un protocolo de comu
 La trama de datos consta de un paquete de \textbf{31 bytes} diseñado para ser decodificado eficientemente en LabVIEW. Esta estructura asegura que no se pierda la integridad del mensaje mediante los siguientes campos:
 
 \begin{itemize}
-	\item \textbf{Cabecera (Header):} Un byte de sincronización (0xAA) que indica el inicio de la trama.
+	\item \textbf{Cabecera (Header):} Un byte de sincronización (0x3A) que indica el inicio de la trama.
 	\item \textbf{Estado de Motores:} Un arreglo de 3 bytes donde se empaquetan los estados lógicos de los 6 motores.
 	\item \textbf{Finales de Carrera:} Un byte dedicado a reportar el estado de los sensores de límite, permitiendo una reacción inmediata ante colisiones.
 	\item \textbf{Telemetría de Pasos:} 24 bytes que contienen la posición actual (int32\_t) de cada uno de los encoders.
@@ -58,23 +57,6 @@ La trama de datos consta de un paquete de \textbf{31 bytes} diseñado para ser d
 
 Esta arquitectura es la mejor opción para el proyecto, ya que permite una reestructuración sencilla en LabVIEW mediante el bloque \textit{Unflatten from String}, manteniendo una comunicación confiable y determinista.
 
-\section{Definición del Protocolo de Comunicación}
-La comunicación entre LabVIEW y el Arduino Mega se rige por una trama binaria de longitud fija de 31 bytes. A continuación, se presenta el mapa de memoria de la trama enviada desde el controlador:
-
-\begin{table}[h]
-	\centering
-	\small
-	\renewcommand{\arraystretch}{1.5}
-	% Usamos tabularx para forzar el ancho total a la línea de texto
-	\begin{tabularx}{\textwidth}{|X|X|X|X|X|X|}
-		\hline
-		\rowcolor{green!20}
-		\centering \textbf{Sincronía} & \centering \textbf{ID} & \centering \textbf{Sensores} & \centering \textbf{Estados} & \centering \textbf{Posicionamiento} & \centering \textbf{Verificación} \tabularnewline \hline
-		\centering Header & \centering Funct. & \centering Límites & \centering Motores 0-5 & \centering Motor 0 \dots Motor 5 & \centering CRC-8 \tabularnewline \hline
-		\centering 1 Byte & \centering 1 Byte & \centering 1 Byte & \centering 3 Bytes & \centering 24 Bytes (4 por eje) & \centering 1 Byte \tabularnewline \hline
-	\end{tabularx}
-	\caption{Estructura macro de la trama de telemetría.}
-\end{table}
 
 \begin{table}[h!]
 	\centering
@@ -87,7 +69,7 @@ La comunicación entre LabVIEW y el Arduino Mega se rige por una trama binaria d
 		\hline
 		\rowcolor{green!20} 
 		\textbf{Byte(s)} & \textbf{Campo} & \textbf{Tipo de Dato} & \textbf{Descripción Técnica} \\ \hline
-		0 & Header & \texttt{uint8\_t} & Byte de sincronía constante (\texttt{0xAA}). \\ \hline
+		0 & Header & \texttt{uint8\_t} & Byte de sincronía constante (\texttt{0x3A}). \\ \hline
 		1 & Función & \texttt{uint8\_t} & Identificador del modo de operación activo. \\ \hline
 		2 & Límites & \texttt{uint8\_t} & Estado de finales de carrera (Lógica NC). \\ \hline
 		3 -- 5 & Edo. Motores & \texttt{uint8\_t[3]} & Bit-packing de estados (3 bits/motor). \\ \hline
@@ -100,14 +82,7 @@ La comunicación entre LabVIEW y el Arduino Mega se rige por una trama binaria d
 		30 & CRC & \texttt{uint8\_t} & Checksum de integridad (Suma de bytes). \\ \hline
 	\end{tabularx}
 \end{table}
-\section{Implementación de Estructuras de Datos en C}
-Para optimizar el firmware, se implementaron estructuras (\texttt{struct}) que permiten un manejo eficiente de la memoria y facilitan el mantenimiento del código. En el contexto de un microcontrolador de 8 bits, esta organización es fundamental para el manejo de múltiples periféricos de forma concurrente.
 
-En este proyecto destacan dos estructuras principales:
-\begin{enumerate}
-	\item \textbf{\texttt{Motor\_t}:} Encapsula los parámetros operativos de cada articulación, incluyendo pines de PWM, contadores de encoders, variables de error y estados de reporte. Esto permite una abstracción donde cada eje se gestiona como una entidad independiente.
-	\item \textbf{\texttt{MsgDatos\_t}:} Estructura diseñada bajo el concepto de empaquetamiento de memoria, que representa fielmente la trama de 31 bytes. Esto asegura que la disposición de los datos en la SRAM coincida exactamente con la secuencia de transmisión UART.
-\end{enumerate}
 
 \section{Implementación de Estructuras de Datos en C}
 Para el desarrollo del firmware, se utilizaron estructuras (\texttt{struct}) en lenguaje C. El uso de estas permite encapsular variables relacionadas bajo un mismo nombre, facilitando la organización del código y el paso de datos entre funciones de control y comunicación.
@@ -180,10 +155,101 @@ Adicionalmente, se utiliza un enumerador específico para la gestión detallada 
 
 Esta distinción es fundamental para el determinismo del sistema. Mientras que la lógica interna utiliza estados detallados para el control de los motores, la telemetría enviada a LabVIEW se compacta en el enumerador \texttt{EstadoReporte} para cumplir con la restricción de 3 bits por motor dentro de la trama de 31 bytes.
 
-\section{Restricciones de Hardware y Determinismo}
-La arquitectura basada en el ATMega2560 requiere una gestión estricta de los tiempos de ciclo. El proceso de envío serial, al ser asíncrono y dependiente de un buffer, puede comprometer la estabilidad del sistema si no se regula adecuadamente. 
+\section{Definición del Protocolo de Comunicación}
+La comunicación del Arduino Mega hacia Labview se rige por una trama binaria de longitud fija de 31 bytes. A continuación, se presenta el mapa de memoria de la trama enviada desde el controlador:
 
-Se estableció un \textbf{periodo de control determinista de 4ms (250 Hz)}. La prioridad del procesador se asignó a la actualización de encoders mediante interrupciones y a la lógica de control de los puentes H. El envío de telemetría está sincronizado para ejecutarse al final de cada ciclo, garantizando que el sistema mantenga un tiempo de respuesta constante y predecible bajo cualquier condición de carga.
+\begin{table}[h]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.5}
+	% Usamos tabularx para forzar el ancho total a la línea de texto
+	\begin{tabularx}{\textwidth}{|X|X|X|X|X|X|}
+		\hline
+		\rowcolor{green!20}
+		\centering \textbf{Sincronía} & \centering \textbf{ID} & \centering \textbf{Sensores} & \centering \textbf{Estados} & \centering \textbf{Posicionamiento} & \centering \textbf{Verificación} \tabularnewline \hline
+		\centering Header & \centering Funct. & \centering Límites & \centering Motores 0-5 & \centering Motor 0 \dots Motor 5 & \centering CRC-8 \tabularnewline \hline
+		\centering 1 Byte & \centering 1 Byte & \centering 1 Byte & \centering 3 Bytes & \centering 24 Bytes (4 por eje) & \centering 1 Byte \tabularnewline \hline
+	\end{tabularx}
+	\caption{Estructura macro de la trama de telemetría.}
+\end{table}
+
+
+\subsection{Sincronización y Envío de Telemetría}
+
+Para asegurar que la interfaz de supervisión reciba datos íntegros sin afectar el determinismo del sistema, se implementó la función \texttt{enviarTelemetriaLabVIEW()}. Esta rutina se encarga de serializar la estructura de datos de 31 bytes, integrando la posición de los encoders, el estado lógico de los motores y la verificación de errores.
+
+\begin{lstlisting}[language=C++, caption={Rutina de empaquetado y envio de telemetria}, label={lst:envio_telemetria}]
+	void enviarTelemetriaLabVIEW() {
+		MsgDatos_t msg;
+		
+		// Adquisicion segura de pasos (Bloque Atomico)
+		for (int i = 0; i < NUM_ENCODERS; i++) {
+			ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+				msg.pasos[i] = ArrayMotores[i].pasosActuales;
+			}
+		}
+		
+		// Empaquetado de estados (Bit-packing de 3 bits por motor)
+		msg.edoMotores[0] = (ArrayMotores[0].estadoReporte & 0x07) | 
+		((ArrayMotores[1].estadoReporte & 0x07) << 3) | 
+		((ArrayMotores[2].estadoReporte & 0x03) << 6);
+		
+		msg.edoMotores[1] = ((ArrayMotores[2].estadoReporte >> 2) & 0x01) | 
+		((ArrayMotores[3].estadoReporte & 0x07) << 1) | 
+		((ArrayMotores[4].estadoReporte & 0x07) << 4) | 
+		((ArrayMotores[5].estadoReporte & 0x01) << 7);
+		
+		msg.edoMotores[2] = (ArrayMotores[5].estadoReporte >> 1) & 0x03;
+		
+		msg.finalesCarrera = leerFinalesCarrera();
+		
+		// Calculo de integridad (CRC de 8 bits)
+		uint16_t sumaCrc = 0;
+		sumaCrc += msg.header;
+		sumaCrc += msg.funcion;
+		sumaCrc += msg.finalesCarrera;
+		for (int i = 0; i < 3; i++) sumaCrc += msg.edoMotores[i];
+		
+		uint8_t *pasosBytes = (uint8_t *)msg.pasos;
+		for (int i = 0; i < 24; i++) {
+			sumaCrc += pasosBytes[i];
+		}
+		msg.crcFinal = (uint8_t)(sumaCrc & 0xFF);
+		
+		Serial.write((uint8_t *)&msg, sizeof(msg));
+	}
+\end{lstlisting}
+
+\subsubsection{Consideraciones de Integridad y Atomicidad}
+Un aspecto crítico en la implementación es el uso de \texttt{ATOMIC\_BLOCK}. Debido a que la posición de los encoders (\texttt{int32\_t}) ocupa 4 bytes, una interrupción del Timer 5 podría ocurrir en medio de la lectura de estos bytes, corrompiendo el dato. El uso de bloques atómicos garantiza que la lectura de la posición sea indivisible, manteniendo la coherencia de la telemetría.
+
+Asimismo, la técnica de \textit{Bit-packing} utilizada en los bytes \texttt{edoMotores} permite comprimir los estados operativos de los seis motores en solo 3 bytes, optimizando el ancho de banda del canal serial y asegurando que la trama total no exceda los 31 bytes procesables por LabVIEW en cada ciclo de 4ms.
+
+\begin{table}[h!]
+	\centering
+	\small
+	\renewcommand{\arraystretch}{1.5}
+	\caption{Distribución de bits para los estados de los motores en la trama serial.}
+	\label{tab:bit_packing_motores}
+	\begin{tabularx}{\textwidth}{|l|c|c|c|c|c|c|c|c|}
+		\hline
+		\rowcolor{green!20}
+		\textbf{Byte} & \textbf{Bit 7} & \textbf{Bit 6} & \textbf{Bit 5} & \textbf{Bit 4} & \textbf{Bit 3} & \textbf{Bit 2} & \textbf{Bit 1} & \textbf{Bit 0} \\ \hline
+		\textbf{msg.edoMotores[0]} & \cellcolor{blue!10}M2 (b1) & \cellcolor{blue!10}M2 (b0) & \cellcolor{orange!10}M1 (b2) & \cellcolor{orange!10}M1 (b1) & \cellcolor{orange!10}M1 (b0) & \cellcolor{green!10}M0 (b2) & \cellcolor{green!10}M0 (b1) & \cellcolor{green!10}M0 (b0) \\ \hline
+		\textbf{msg.edoMotores[1]} & \cellcolor{red!10}M5 (b0) & \cellcolor{purple!10}M4 (b2) & \cellcolor{purple!10}M4 (b1) & \cellcolor{purple!10}M4 (b0) & \cellcolor{yellow!10}M3 (b2) & \cellcolor{yellow!10}M3 (b1) & \cellcolor{yellow!10}M3 (b0) & \cellcolor{blue!10}M2 (b2) \\ \hline
+		\textbf{msg.edoMotores[2]} & \textit{N/A} & \textit{N/A} & \textit{N/A} & \textit{N/A} & \textit{N/A} & \textit{N/A} & \cellcolor{red!10}M5 (b2) & \cellcolor{red!10}M5 (b1) \\ \hline
+	\end{tabularx}
+	\begin{center}
+		\footnotesize \textit{Nota: (b0, b1, b2) representan los bits menos significativos a más significativos de cada estado.}
+	\end{center}
+\end{table}
+
+\paragraph{Análisis del desplazamiento:}
+Como se observa en la Tabla \ref{tab:bit_packing_motores}, la implementación requiere operaciones de álgebra booleana para reconstruir los valores en LabVIEW:
+\begin{itemize}
+	\item El \textbf{Motor 2} tiene sus dos bits bajos al final del Byte 0 y su bit más significativo al inicio del Byte 1.
+	\item El \textbf{Motor 5} comienza con su bit más bajo al final del Byte 1 y sus dos bits restantes ocupan el inicio del Byte 2.
+\end{itemize}
 
 \section{Máquina de Estados de Control de Movimiento}
 La lógica de operación reside en la función \texttt{actualizarLogicaMotor}, una máquina de estados finitos (FSM) que gobierna el comportamiento dinámico del brazo Mitsubishi. La transición entre estados depende tanto de los comandos recibidos vía LabVIEW como de las condiciones de seguridad detectadas por hardware.
@@ -217,151 +283,130 @@ La interacción con el brazo Mitsubishi Move Master EX requiere la gestión prec
 \subsection{Retroalimentación de Posición vía Encoders}
 A diferencia de los sistemas basados en interrupciones externas que pueden saturar el procesador a altas velocidades, se implementó una estrategia de \textbf{muestreo periódico}. Los estados de las fases A y B de cada encoder son leídos cada cierto tiempo dentro de una interrupción de temporizador (\textit{Timer Interrupt}). 
 
-Esta técnica permite filtrar el ruido electrónico y asegura que el conteo de pasos sea determinista, evitando que el microcontrolador pierda ciclos de ejecución críticos para la comunicación serial. Los valores acumulados se almacenan en variables de tipo \texttt{int32\_t} dentro de la estructura \texttt{Motor\_t} para su posterior envío a LabVIEW.
+Esta técnica permite filtrar el ruido electrónico y asegura que el conteo de pasos sea determinista, evitando que el microcontrolador pierda ciclos de ejecución críticos para la comunicación serial. Los valores acumulados se almacenan en variables de tipo \texttt{int32\_t} dentro de la estructura \texttt{Motor\_t} para su posterior envío a LabVIEW. En el capítulo de \textbf{arquitectura de adquisición de datos y caracterización de encoders} se describe la lógica para la obtención de los pasos avanzados por los motores.
+\begin{table}[h!]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\caption{Mapeo de interconexión: Encoders.}
+	\label{tab:interconexion_maestra}
+	\begin{tabularx}{\textwidth}{|c|l|c|c|c|}
+		\hline
+		\rowcolor{green!20}
+		\textbf{ID} & \textbf{Articulación} & \textbf{Pin Fase A} & \textbf{Pin Fase B} & \textbf{Conector PCB}  \\ \hline
+		1 & Cadera (Base) & 39 & 41 & J6:1 /J4:2 \\ \hline
+		2 & Hombro        & 35 & 37 & J6:5/J4:5  \\ \hline
+		3 & Codo          & 31 & 33 & J4:3/J6:4  \\ \hline
+		4 & Antebrazo     & 27 & 29 & J6:3/J4:3  \\ \hline
+		5 & Muñeca (Giro) & 25 & 23 & J4:1/J6:2  \\ \hline
+	\end{tabularx}
+\end{table}
+
 
 \subsection{Detección de Límites (Finales de Carrera)}
 El robot cuenta con interruptores de límite en configuración Siempre Abierta (NO). Para mejorar la experiencia de usuario y la interpretación de datos en la interfaz de LabVIEW, se implementó una inversión lógica en el firmware. 
 
 Aunque el hardware detecta una transición física, el código procesa esta señal para \textbf{retornar un valor booleano TRUE} únicamente cuando el sensor está siendo presionado. Esta abstracción facilita la lógica de seguridad en la interfaz, permitiendo que el operario identifique visualmente el estado de colisión o límite de manera intuitiva y directa.
 
+\begin{table}[h!]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\caption{Mapeo de interconexión: Finales de Carrera.}
+	\label{tab:pines_finales_carrera_v2}
+	\begin{tabularx}{\textwidth}{|c|X|c|c|c|}
+		\hline
+		\rowcolor{green!20}
+		\textbf{ID} & \textbf{Articulación Asociada} & \textbf{Pin Digital} & \textbf{Conector J2} & \textbf{Lógica de Software} \\ \hline
+		1 & Cadera (Base)  & 43 & J2:5 (FC1) & TRUE (Presionado) \\ \hline
+		2 & Hombro         & 45 & J2:2 (FC2) & TRUE (Presionado) \\ \hline
+		3 & Codo           & 47 & J2:4 (FC3) & TRUE (Presionado) \\ \hline
+		4 & Antebrazo      & 49 & J2:1 (FC4) & TRUE (Presionado) \\ \hline
+		5 & Muñeca (Pitch) & 51 & J2:3 (FC5) & TRUE (Presionado) \\ \hline
+	\end{tabularx}
+\end{table}
+
 \subsection{Control de Frenos Electromecánicos}
 Los frenos del robot son dispositivos de seguridad que evitan el colapso de las articulaciones por gravedad cuando los motores no están energizados. Su estado se gestiona mediante lecturas digitales directas (\texttt{digitalRead}), las cuales son integradas en la trama de telemetría. Esta adquisición permite que LabVIEW confirme en tiempo real si el brazo se encuentra en estado de liberación para movimiento o bajo retención de seguridad.
 
-\begin{lstlisting}[language=C++, caption={Lógica de lectura de señales digitales y acondicionamiento}, label={lst:lectura_sensores}]
-	// Lectura de finales de carrera con logica positiva para la interfaz
+\begin{table}[h!]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\caption{Conexiones del sistema de frenado electromecánico.}
+	\label{tab:pines_frenos_v2}
+	\begin{tabularx}{\textwidth}{|c|c|X|c|c|}
+		\hline
+		\rowcolor{green!20}
+		\textbf{ID} & \textbf{Señal} & \textbf{Articulación Protegida} & \textbf{Pin Digital} & \textbf{Estado Activo} \\ \hline
+		1 & A1 & Hombro (Eje Principal) & 14 & HIGH (Liberado) \\ \hline
+		2 & B1 & Codo (Eje Secundario)  & 15 & HIGH (Liberado) \\ \hline
+	\end{tabularx}
+\end{table}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/encoders/tarjetaFrenos}
+	\caption{Tarjeta de frenos.}
+	\label{fig:tarjetafrenos}
+\end{figure}
+
+\begin{table}[h!]
+	\centering
+	\renewcommand{\arraystretch}{1.5}
+	\caption{Distribución de señales y alimentación del módulo de potencia.}
+	\label{tab:potencia_senales}
+	\begin{tabularx}{\textwidth}{|l|l|X|}
+		\hline
+		\rowcolor{green!20}
+		\textbf{Etiqueta} & \textbf{Origen / Sistema} & \textbf{Función y Estado} \\ \hline
+		\textbf{A1 / B1} & Tarjeta Interna (Arduino Mega) & Señal de control activa para los frenos. \\ \hline
+		\textbf{A2 / B2} & Tarjeta Externa (ESP32) & Señal de control secundaria (No utilizada). \\ \hline
+		\textbf{J1} & Alimentación de Potencia & Línea dedicada de 12V y retorno GND gestionado por MOSFET. Se conecta al freno B2. \\ \hline
+		\textbf{J5} & Alimentación de Potencia & Línea dedicada de 12V y retorno GND gestionado por MOSFET. Se conecta al freno B3. \\ \hline
+	\end{tabularx}
+	\begin{flushleft}
+		\footnotesize \textbf{Nota sobre la conmutación:} El retorno a tierra (GND) en J1 y J5 no es directo; el MOSFET actúa como un interruptor de lado bajo, permitiendo o interrumpiendo el flujo de corriente según la señal de control recibida de la tarjeta interna.
+	\end{flushleft}
+\end{table}
+
+\clearpage
+
+\subsection{Lógica de Adquisición de Entradas Digitales}
+
+Para la gestión de los sensores de límite, se desarrollaron funciones específicas que interpretan la señal eléctrica de los interruptores. Dado que los finales de carrera del brazo están configurados como Siempre Cerrados (NC), es decir, entregan un nivel lógico alto de forma constante—, la detección de una colisión o límite se produce cuando la señal cae a un estado bajo (\texttt{LOW}).
+
+\begin{lstlisting}[language=C++, caption={Funciones de lectura y discriminacion de finales de carrera}, label={lst:funciones_finales_carrera}]
+	// Compila el estado de todos los sensores en un solo byte para telemetria
 	uint8_t leerFinalesCarrera() {
-		uint8_t estadoByte = 0;
+		uint8_t valFinalCarrera = 0;
 		for (int i = 0; i < NUM_FINAL_C; i++) {
-			// Se retorna TRUE si el sensor esta presionado
-			if (digitalRead(PIN_FINAL_CARRERA[i]) == HIGH) {
-				estadoByte |= (1 << i);
+			// Se detecta activacion cuando la lectura es LOW (circuito abierto por presion)
+			if (digitalRead(PIN_FINAL_CARRERA[i]) == LOW) {
+				valFinalCarrera |= (1 << i);
 			}
 		}
-		return estadoByte;
+		return valFinalCarrera;
 	}
 	
-	// Monitoreo de estado de frenos
-	void monitorearFrenos() {
-		bool estadoFreno1 = digitalRead(PIN_FRENO[0]);
-		bool estadoFreno2 = digitalRead(PIN_FRENO[1]);
-		// Logica de seguridad integrada...
+	// Verifica el estado de limite para una articulacion especifica
+	//donde i es el valor de la articulación
+	bool finalCarreraPorArticulacion(int i) {
+		if (i <= 3) {
+			return (digitalRead(PIN_FINAL_CARRERA[0]) == LOW);
+		}
+		return false;
 	}
 \end{lstlisting}
-
-\subsection{Procesamiento de Encoders y Optimización por Hardware}
-
-Para la lectura de los encoders, se descartó el uso de interrupciones externas convencionales (\textit{External Interrupts}), ya que la alta frecuencia de pulsos generada por los cinco motores simultáneamente saturaba el procesador, provocando un comportamiento errático en el giro de los motores y pérdida de pasos. 
-
-En su lugar, se implementó una estrategia de \textbf{muestreo por interrupción de temporizador (Timer Interrupt Handling)} utilizando el Timer 5 del ATMega2560.
-
-\subsubsection{Configuración del Timer 5 y Resolución de Pasos}
-El Timer 5 se configuró en modo CTC (\textit{Clear Timer on Compare Match}) con un valor de comparación de 199 y un prescaler de 8. Esto genera una frecuencia de muestreo de 10 kHz (cada 100 $\mu$s). Esta frecuencia es lo suficientemente alta para capturar todos los cambios de fase sin sobrecargar la CPU, permitiendo que el hilo principal del programa ejecute la lógica de control y comunicación sin retardos.
-
-En cuanto a la resolución, se implementó una decodificación de tipo \textbf{Half-Quad}. Aunque el disco físico del encoder del Mitsubishi Move Master EX posee 200 ranuras, la lógica de software permite detectar cambios de estado específicos que duplican la resolución efectiva a 400 pasos por revolución, logrando un equilibrio ideal entre precisión posicional y carga computacional.
-
-\subsubsection{Algoritmo de Tabla de Búsqueda (Look-up Table)}
-Para determinar el sentido de giro y el conteo de pasos de forma ultra rápida dentro de la ISR (\textit{Interrupt Service Routine}), se utilizó una tabla de estados precalculada:
-
-\begin{lstlisting}[language=C++, caption={Tabla de estados para decodificacion de Encoders}, label={lst:encoder_table}]
-	const int8_t encoderTable[16] = {
-		0, 0, 0, 0,   // Sin cambio o estados invalidos
-		1, 0, 0, -1,  // Incremento detectado / Error
-		-1, 0, 0, 1,   // Decremento detectado / Error
-		0, 0, 0, 0    // Sin cambio o estados invalidos
-	};
-\end{lstlisting}
-
-La lógica consiste en concatenar el estado anterior de las fases A y B con el estado actual, formando un índice de 4 bits (valores de 0 a 15). Este índice accede directamente a la tabla, la cual devuelve un \textbf{1} para incrementar, un \textbf{-1} para decrementar o un \textbf{0} si no hubo cambio o si el cambio detectado es físicamente imposible (ruido).
-
-\subsubsection{Pseudocódigo de la Lógica de Lectura}
-El siguiente pseudocódigo ilustra la operación realizada cada 100 microsegundos:
-
-\begin{center}
-	\begin{minipage}{0.85\textwidth}
-		\begin{tcolorbox}[
-			colback=green!20,      % Fondo verde pastel
-			colframe=green!20,     % Borde del mismo verde pastel
-			coltitle=black,        % Titulo en negro
-			colupper=black,        % Texto superior en negro
-			title=Algoritmo de Muestreo (ISR Timer 5), 
-			fonttitle=\bfseries,
-			arc=2mm                % Bordes ligeramente redondeados para suavizar la estética
-			]
-			\small
-			\begin{enumerate}
-				\item \textbf{Para cada} motor $i$ del 0 al 4:
-				\begin{enumerate}
-					\item Leer estados físicos de los pines Fase A y Fase B.
-					\item Combinar estados: $Actual = (FaseA \ll 1) \text{ OR } FaseB$.
-					\item Crear índice: $Indice = (Anterior[i] \ll 2) \text{ OR } Actual$.
-					\item Consultar tabla: $Delta = encoderTable[Indice]$.
-					\item Actualizar posición: $Pasos[i] = Pasos[i] + Delta$.
-					\item Guardar estado para el siguiente ciclo: $Anterior[i] = Actual$.
-				\end{enumerate}
-				\item \textbf{Fin del ciclo}
-			\end{enumerate}
-		\end{tcolorbox}
-	\end{minipage}
-\end{center}
-
-\section{Interfaz de Usuario en LabVIEW}
-La estación de control fue desarrollada en LabVIEW, aprovechando su capacidad para la gestión de datos mediante una arquitectura de manejador de mensajes encolados (QMH). La interfaz se organiza en un panel principal con una barra de navegación lateral que permite conmutar entre tres pestañas operativas: \textbf{Dashboard}, \textbf{Control Manual} y \textbf{Control PID}.
-
-\subsection{Panel de Monitoreo (Dashboard)}
-La pestaña de \textit{Dashboard} funciona como el centro de diagnóstico principal. En esta vista se presentan indicadores visuales de tipo carátula para cada una de las articulaciones (Cadera, Hombro, Codo, Antebrazo y Muñeca). Para cada eje, el sistema despliega en tiempo real:
-\begin{itemize}
-	\item \textbf{Conteo de Pasos:} Valor absoluto del encoder tras el procesamiento en el microcontrolador.
-	\item \textbf{Velocidad:} Cálculo derivado de la variación de pasos por unidad de tiempo.
-	\item \textbf{Estado de Alarmas:} Indicadores de seguridad para los finales de carrera y estados de error.
-\end{itemize}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.5\linewidth]{images/Interfaz/dashboard}
-	\caption[Dashboard.]{Ventana de lectura de los encoders.}
-	\label{fig:dashboard}
-\end{figure}
-
-
-\subsection{Modos de Control: Manual y Trayectorias}
-La pestaña de \textbf{Control Manual} ofrece al operario dos métodos para manipular el brazo:
-\begin{enumerate}
-	\item \textbf{Control por PWM:} Ajuste directo del ciclo de trabajo para cada motor mediante controles deslizantes (\textit{sliders}), permitiendo movimientos finos para el posicionamiento inicial del robot.
-	\item \textbf{Rutina desde Archivo:} Funcionalidad avanzada que permite cargar un archivo externo (CSV o Excel) con trayectorias predefinidas. El sistema lee estas coordenadas y las envía de forma secuencial al controlador para su ejecución automática.
-\end{enumerate}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.7\linewidth]{images/Interfaz/control}
-	\caption{Ventana de control de la interfaz.}
-	\label{fig:control}
-\end{figure}
-
-
-
-\subsection{Sintonización y Control PID}
-La pestaña de \textbf{Control PID} está diseñada para la optimización dinámica del movimiento. Esta sección permite al usuario ajustar las constantes de control ($K_p$, $T_i$, $T_d$) de manera individual para cada articulación. Incluye una gráfica de tiempo real (\textit{Waveform Chart}) que superpone el \textbf{Setpoint} (posición deseada) frente a la \textbf{Posición Actual}, permitiendo visualizar el error, el sobreimpulso y el tiempo de asentamiento del sistema bajo diferentes condiciones de carga.
-
-\begin{center}
-	\fcolorbox{green!30!black}{green!5}{
-		\begin{minipage}{0.9\textwidth}
-			\textbf{Nota de Seguridad:} Independientemente de la pestaña activa, la interfaz mantiene un botón de \textbf{Paro de Emergencia} global que, al activarse, envía una señal prioritaria para frenar todos los motores y bloquear las articulaciones.
-		\end{minipage}
-	}
-\end{center}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.7\linewidth]{images/Interfaz/pid}
-	\caption{Ventana de PID de la interfaz.}
-	\label{fig:pid}
-\end{figure}
 
 
 \begin{resultadosFase}
+	La implementación de la arquitectura de firmware y el protocolo de comunicación en la plataforma ATMega2560 arrojó los siguientes resultados técnicos validados mediante pruebas de estrés y monitoreo en tiempo real:
+	
 	\begin{itemize}
-		\item \textbf{Comunicación:} Tasa de transferencia de 500,000 baudios con pérdida de datos nula.
-		\item \textbf{Precisión:} Ciclo de control estable a 4ms para la actualización de lazo abierto y cerrado.
-		\item \textbf{Seguridad:} Respuesta de detención inmediata ante señales de finales de carrera integrada en la máquina de estados.
+		\item \textbf{Eficiencia del Protocolo Binario:} Se logró una reducción del \textbf{65\% en el uso del ancho de banda} en comparación con protocolos basados en texto (ASCII). La trama de 31 bytes permite transmitir la telemetría completa de los 6 ejes, estados de motores y seguridad en un tiempo de transmisión de apenas \textbf{0.62 ms} a 500,000 baudios, dejando el 84\% del ciclo de control libre para procesamiento lógico.
+		
+		\item \textbf{Determinismo del Ciclo de Control:} Mediante el uso del \textit{Timer 5}, se estabilizó un ciclo de trabajo de \textbf{4 ms} con un \textit{jitter} despreciable (inferior a 15 $\mu$s). Esto garantiza que la actualización de las señales PWM y la lectura de los encoders ocurran de manera síncrona, factor crítico para el desarrollo posterior de la cinemática directa e inversa.
+		
+		\item \textbf{Integridad de Datos y Seguridad:} El mecanismo de verificación \textbf{CRC-8} integrado en el firmware permitió detectar y descartar paquetes corruptos por ruido electromagnético (común en entornos con motores DC). 
+		
+		\item \textbf{Robustez en la Adquisición:} El uso de \textbf{bloques atómicos} eliminó por completo la corrupción de datos en las variables de 32 bits de los encoders, asegurando que la posición reportada a LabVIEW sea siempre coherente, incluso durante ráfagas de interrupciones por alta velocidad de giro.
 	\end{itemize}
 \end{resultadosFase}

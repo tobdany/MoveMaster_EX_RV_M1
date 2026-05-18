@@ -114,7 +114,7 @@
 	keywordstyle=\color{codeblue}\bfseries,
 	numberstyle=\tiny\color{codegray},
 	stringstyle=\color{codepurple},
-	basicstyle=\ttfamily\footnotesize, % Letra de código (Typewriter)
+	basicstyle=\ttfamily\footnotesize, 
 	breakatwhitespace=false,         
 	breaklines=true,                 
 	captionpos=t,                    
@@ -125,11 +125,17 @@
 	showstringspaces=false,
 	showtabs=false,                  
 	tabsize=2,
-	frame=single, % Recuadro alrededor del código
-	rulecolor=\color{codegray}
+	frame=single, 
+	rulecolor=\color{codegray},
+	% --- AGREGA ESTAS LÍNEAS AQUÍ ABAJO ---
+	extendedchars=true,
+	literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{ñ}{{\~n}}1 {Ñ}{{\~N}}1
 }
 
 \lstset{style=arduinoStyle}
+\lstdefinestyle{pseudocodigo}{style=arduinoStyle} % <--- Y añade este alias por si acaso
 
 % ======================================
 % INICIO DEL DOCUMENTO
@@ -152,7 +158,7 @@
 		{\large Facultad de Ingeniería}
 	\end{flushright}
 	
-	\vspace{2.5cm} 
+	\vspace{2cm} 
 	
 	% 2. TÍTULO CON LÍNEA VERTICAL AL LADO
 	\begin{flushright}
@@ -179,7 +185,8 @@
 	\begin{flushright}
 		\begin{spacing}{1.4}
 			{\large \textbf{Alumna:}} \\
-			{\Large Daniela Tobón Pérez} \\ \vspace{0.6cm}
+			{\Large Daniela Tobón Pérez} \\ \vspace{0.4cm}
+			{\Large Luis Ángel Alonso López} \\ \vspace{0.4cm}
 			
 			{\large \textbf{Catedrático:}} \\
 			{\Large M.C. Juan Pablo Avendaño Santiago} \\ \vspace{0.6cm}
@@ -215,10 +222,13 @@
 	\include{PalabrasClaves}
 	%\include{Desarrollo} 
 	\include{FuentePoder}
+	\include{InfraestructuraElectrica}
+	\include{Encoders}
 	\include{Interfaz}
+	\include{Labview}
 	%\include{SensorCorriente}
 	%\include{Enclosure}
-	%\include{Conclusion}
+	\include{Conclusion}
 	
 	\include{ReferenciasBibliograficas}
 	

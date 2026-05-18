@@ -1,57 +1,56 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Interfaz de Comunicación y Lógica de Control en LabVIEW}{18}{chapter.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Arquitectura del Firmware y Protocolo de Comunicación en el Microcontrolador}{54}{chapter.6}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Especificaciones Técnicas del Controlador: ATMega2560}{19}{section.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}Arquitectura y Capacidad de Procesamiento}{19}{subsection.4.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}Resolución y Gestión de Señales PWM}{19}{subsection.4.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}Temporización e Interrupciones (Timers)}{20}{subsection.4.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.4}Recursos de Memoria y Comunicación}{20}{subsection.4.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Protocolo de Comunicación: Estructura y Fiabilidad}{20}{section.4.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Topología.}}{21}{figure.4.1}\protected@file@percent }
-\newlabel{fig:ardmega}{{4.1}{21}{Topología}{figure.4.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Definición del Protocolo de Comunicación}{22}{section.4.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Estructura macro de la trama de telemetría.}}{22}{table.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Desglose detallado del paquete de datos (31 Bytes).}}{22}{table.4.2}\protected@file@percent }
-\newlabel{tab:protocolo_detallado}{{4.2}{22}{Desglose detallado del paquete de datos (31 Bytes)}{table.4.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Implementación de Estructuras de Datos en C}{23}{section.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Implementación de Estructuras de Datos en C}{23}{section.4.5}\protected@file@percent }
-\newlabel{lst:motor_struct}{{4.1}{23}{Estructura de control para articulaciones individuales}{lstlisting.4.1}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.1}Estructura de control para articulaciones individuales}{23}{lstlisting.4.1}\protected@file@percent }
-\newlabel{lst:msgdatos_struct}{{4.2}{24}{Estructura de la trama de telemetría (31 Bytes)}{lstlisting.4.2}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.2}Estructura de la trama de telemetría (31 Bytes)}{24}{lstlisting.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Definición de Enumeraciones (Enums)}{24}{section.4.6}\protected@file@percent }
-\newlabel{lst:enums_sistema}{{4.3}{24}{Enumeradores para reportes y comportamientos del sistema}{lstlisting.4.3}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.3}Enumeradores para reportes y comportamientos del sistema}{24}{lstlisting.4.3}\protected@file@percent }
-\newlabel{lst:enums_internos}{{4.4}{25}{Enumeradores para la logica interna de control}{lstlisting.4.4}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.4}Enumeradores para la logica interna de control}{25}{lstlisting.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.7}Restricciones de Hardware y Determinismo}{25}{section.4.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.8}Máquina de Estados de Control de Movimiento}{26}{section.4.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.9}Adquisición de Datos y Gestión de Periféricos I/O}{26}{section.4.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.1}Retroalimentación de Posición vía Encoders}{27}{subsection.4.9.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.2}Detección de Límites (Finales de Carrera)}{27}{subsection.4.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.3}Control de Frenos Electromecánicos}{27}{subsection.4.9.3}\protected@file@percent }
-\newlabel{lst:lectura_sensores}{{4.5}{27}{Lógica de lectura de señales digitales y acondicionamiento}{lstlisting.4.5}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.5}Lógica de lectura de señales digitales y acondicionamiento}{27}{lstlisting.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.4}Procesamiento de Encoders y Optimización por Hardware}{28}{subsection.4.9.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Configuración del Timer 5 y Resolución de Pasos}{28}{subsection.4.9.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Algoritmo de Tabla de Búsqueda (Look-up Table)}{29}{subsection.4.9.4}\protected@file@percent }
-\newlabel{lst:encoder_table}{{4.6}{29}{Tabla de estados para decodificacion de Encoders}{lstlisting.4.6}{}}
-\@writefile{lol}{\contentsline {lstlisting}{\numberline {4.6}Tabla de estados para decodificacion de Encoders}{29}{lstlisting.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Pseudocódigo de la Lógica de Lectura}{29}{lstnumber.4.6.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.10}Interfaz de Usuario en LabVIEW}{30}{section.4.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.10.1}Panel de Monitoreo (Dashboard)}{30}{subsection.4.10.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Dashboard.}}{31}{figure.4.2}\protected@file@percent }
-\newlabel{fig:dashboard}{{4.2}{31}{Dashboard}{figure.4.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.10.2}Modos de Control: Manual y Trayectorias}{31}{subsection.4.10.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Ventana de control de la interfaz.}}{31}{figure.4.3}\protected@file@percent }
-\newlabel{fig:control}{{4.3}{31}{Ventana de control de la interfaz}{figure.4.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.10.3}Sintonización y Control PID}{32}{subsection.4.10.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Ventana de PID de la interfaz.}}{32}{figure.4.4}\protected@file@percent }
-\newlabel{fig:pid}{{4.4}{32}{Ventana de PID de la interfaz}{figure.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.0.1}Arquitectura y Capacidad de Procesamiento}{55}{subsection.6.0.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.0.2}Resolución y Gestión de Señales PWM}{55}{subsection.6.0.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.0.3}Temporización e Interrupciones (Timers)}{55}{subsection.6.0.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.0.4}Recursos de Memoria y Comunicación}{56}{subsection.6.0.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}Protocolo de Comunicación: Estructura y Fiabilidad}{56}{section.6.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces Topología.}}{57}{figure.6.1}\protected@file@percent }
+\newlabel{fig:ardmega}{{6.1}{57}{Topología}{figure.6.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Desglose detallado del paquete de datos (31 Bytes).}}{58}{table.6.1}\protected@file@percent }
+\newlabel{tab:protocolo_detallado}{{6.1}{58}{Desglose detallado del paquete de datos (31 Bytes)}{table.6.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}Implementación de Estructuras de Datos en C}{58}{section.6.2}\protected@file@percent }
+\newlabel{lst:motor_struct}{{6.1}{58}{Estructura de control para articulaciones individuales}{lstlisting.6.1}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6.1}Estructura de control para articulaciones individuales}{58}{lstlisting.6.1}\protected@file@percent }
+\newlabel{lst:msgdatos_struct}{{6.2}{58}{Estructura de la trama de telemetría (31 Bytes)}{lstlisting.6.2}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6.2}Estructura de la trama de telemetría (31 Bytes)}{58}{lstlisting.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.3}Definición de Enumeraciones (Enums)}{59}{section.6.3}\protected@file@percent }
+\newlabel{lst:enums_sistema}{{6.3}{59}{Enumeradores para reportes y comportamientos del sistema}{lstlisting.6.3}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6.3}Enumeradores para reportes y comportamientos del sistema}{59}{lstlisting.6.3}\protected@file@percent }
+\newlabel{lst:enums_internos}{{6.4}{59}{Enumeradores para la logica interna de control}{lstlisting.6.4}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6.4}Enumeradores para la logica interna de control}{59}{lstlisting.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Definición del Protocolo de Comunicación}{60}{section.6.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.2}{\ignorespaces Estructura macro de la trama de telemetría.}}{60}{table.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.1}Sincronización y Envío de Telemetría}{61}{subsection.6.4.1}\protected@file@percent }
+\newlabel{lst:envio_telemetria}{{6.5}{61}{Rutina de empaquetado y envio de telemetria}{lstlisting.6.5}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6.5}Rutina de empaquetado y envio de telemetria}{61}{lstlisting.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Consideraciones de Integridad y Atomicidad}{62}{lstnumber.6.5.39}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.3}{\ignorespaces Distribución de bits para los estados de los motores en la trama serial.}}{62}{table.6.3}\protected@file@percent }
+\newlabel{tab:bit_packing_motores}{{6.3}{62}{Distribución de bits para los estados de los motores en la trama serial}{table.6.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Análisis del desplazamiento:}{62}{table.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.5}Máquina de Estados de Control de Movimiento}{63}{section.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.6}Adquisición de Datos y Gestión de Periféricos I/O}{63}{section.6.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.1}Retroalimentación de Posición vía Encoders}{64}{subsection.6.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.4}{\ignorespaces Mapeo de interconexión: Encoders.}}{64}{table.6.4}\protected@file@percent }
+\newlabel{tab:interconexion_maestra}{{6.4}{64}{Mapeo de interconexión: Encoders}{table.6.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.2}Detección de Límites (Finales de Carrera)}{64}{subsection.6.6.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.5}{\ignorespaces Mapeo de interconexión: Finales de Carrera.}}{65}{table.6.5}\protected@file@percent }
+\newlabel{tab:pines_finales_carrera_v2}{{6.5}{65}{Mapeo de interconexión: Finales de Carrera}{table.6.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.3}Control de Frenos Electromecánicos}{65}{subsection.6.6.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.6}{\ignorespaces Conexiones del sistema de frenado electromecánico.}}{65}{table.6.6}\protected@file@percent }
+\newlabel{tab:pines_frenos_v2}{{6.6}{65}{Conexiones del sistema de frenado electromecánico}{table.6.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Tarjeta de frenos.}}{66}{figure.6.2}\protected@file@percent }
+\newlabel{fig:tarjetafrenos}{{6.2}{66}{Tarjeta de frenos}{figure.6.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.7}{\ignorespaces Distribución de señales y alimentación del módulo de potencia.}}{66}{table.6.7}\protected@file@percent }
+\newlabel{tab:potencia_senales}{{6.7}{66}{Distribución de señales y alimentación del módulo de potencia}{table.6.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6.4}Lógica de Adquisición de Entradas Digitales}{67}{subsection.6.6.4}\protected@file@percent }
+\newlabel{lst:funciones_finales_carrera}{{6.6}{67}{Funciones de lectura y discriminacion de finales de carrera}{lstlisting.6.6}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6.6}Funciones de lectura y discriminacion de finales de carrera}{67}{lstlisting.6.6}\protected@file@percent }
 \@setckpt{Interfaz}{
-\setcounter{page}{33}
+\setcounter{page}{69}
 \setcounter{equation}{0}
 \setcounter{enumi}{2}
 \setcounter{enumii}{6}
@@ -60,27 +59,27 @@
 \setcounter{footnote}{0}
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
-\setcounter{chapter}{4}
-\setcounter{section}{10}
-\setcounter{subsection}{3}
+\setcounter{chapter}{6}
+\setcounter{section}{6}
+\setcounter{subsection}{4}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{4}
-\setcounter{table}{2}
+\setcounter{figure}{2}
+\setcounter{table}{7}
 \setcounter{parentequation}{0}
 \setcounter{section@level}{0}
-\setcounter{Item}{12}
+\setcounter{Item}{8}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{21}
+\setcounter{bookmark@seq@number}{27}
 \setcounter{tcbbreakpart}{1}
 \setcounter{tcblayer}{0}
-\setcounter{tcolorbox@number}{9}
+\setcounter{tcolorbox@number}{17}
 \setcounter{tcbrastercolumn}{1}
 \setcounter{tcbrasterrow}{1}
 \setcounter{tcbrasternum}{1}
 \setcounter{tcbraster}{0}
-\setcounter{lstnumber}{7}
+\setcounter{lstnumber}{21}
 \setcounter{tcblisting}{0}
 \setcounter{lstlisting}{6}
 }

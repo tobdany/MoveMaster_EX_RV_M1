@@ -1,0 +1,90 @@
+\chapter{Labview}
+\lineaLateral
+
+\begin{resumenCapitulo}
+
+\end{resumenCapitulo}
+
+
+\section{Interfaz de Usuario en LabVIEW}
+La estación de control fue desarrollada en LabVIEW, aprovechando su capacidad para la gestión de datos mediante una arquitectura de manejador de mensajes encolados (QMH). La interfaz se organiza en un panel principal con una barra de navegación lateral que permite conmutar entre tres pestañas operativas: \textbf{Dashboard}, \textbf{Control Manual} y \textbf{Control PID}.
+
+\subsection{Panel de Monitoreo (Dashboard)}
+La pestaña de \textit{Dashboard} funciona como el centro de diagnóstico principal. En esta vista se presentan indicadores visuales de tipo carátula para cada una de las articulaciones (Cadera, Hombro, Codo, Antebrazo y Muñeca). Para cada eje, el sistema despliega en tiempo real:
+\begin{itemize}
+	\item \textbf{Conteo de Pasos:} Valor absoluto del encoder tras el procesamiento en el microcontrolador.
+	\item \textbf{Velocidad:} Cálculo derivado de la variación de pasos por unidad de tiempo.
+	\item \textbf{Estado de Alarmas:} Indicadores de seguridad para los finales de carrera y estados de error.
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/Interfaz/dashboard}
+	\caption[Dashboard.]{Ventana de lectura de los encoders.}
+	\label{fig:dashboard}
+\end{figure}
+
+
+\subsection{Modos de Control: Manual y Trayectorias}
+La pestaña de \textbf{Control Manual} ofrece al operario dos métodos para manipular el brazo:
+\begin{enumerate}
+	\item \textbf{Control por PWM:} Ajuste directo del ciclo de trabajo para cada motor mediante controles deslizantes (\textit{sliders}), permitiendo movimientos finos para el posicionamiento inicial del robot.
+	\item \textbf{Rutina desde Archivo:} Funcionalidad avanzada que permite cargar un archivo externo (CSV o Excel) con trayectorias predefinidas. El sistema lee estas coordenadas y las envía de forma secuencial al controlador para su ejecución automática.
+\end{enumerate}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/Interfaz/control}
+	\caption{Ventana de control de la interfaz.}
+	\label{fig:control}
+\end{figure}
+
+
+
+\subsection{Sintonización y Control PID}
+La pestaña de \textbf{Control PID} está diseñada para la optimización dinámica del movimiento. Esta sección permite al usuario ajustar las constantes de control ($K_p$, $T_i$, $T_d$) de manera individual para cada articulación. Incluye una gráfica de tiempo real (\textit{Waveform Chart}) que superpone el \textbf{Setpoint} (posición deseada) frente a la \textbf{Posición Actual}, permitiendo visualizar el error, el sobreimpulso y el tiempo de asentamiento del sistema bajo diferentes condiciones de carga.
+
+\begin{center}
+	\fcolorbox{green!30!black}{green!5}{
+		\begin{minipage}{0.9\textwidth}
+			\textbf{Nota de Seguridad:} Independientemente de la pestaña activa, la interfaz mantiene un botón de \textbf{Paro de Emergencia} global que, al activarse, envía una señal prioritaria para frenar todos los motores y bloquear las articulaciones.
+		\end{minipage}
+	}
+\end{center}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{images/Interfaz/pid}
+	\caption{Ventana de PID de la interfaz.}
+	\label{fig:pid}
+\end{figure}
+
+\section{Arquitectura del programa}
+
+
+\subsection{Bucle Productor: Gestión de Eventos de la UI}
+El núcleo de la interacción con el usuario reside en un bucle principal que implementa una \textbf{Estructura de Eventos}. Este loop actúa como el \textbf{Productor} del sistema, donde cada control del panel frontal (botones, interruptores y menús) tiene asignada una lógica específica. Ante cualquier interacción, el bucle genera indicaciones que son distribuidas a los subprocesos correspondientes, asegurando que la interfaz no se bloquee durante operaciones de cálculo intensivo.
+
+\subsubsection{Comunicación con el loop de procesamiento de la GUI}
+
+
+\subsection{Loop de Procesamiento y Control de Flujo}
+El bucle productor se comunica directamente con el loop de procesamiento de la UI para coordinar el inicio y la detención de las rutinas de control. Esta transferencia de directivas se realiza mediante el uso de una \textbf{Cola (Queue)}, la cual permite un paso de mensajes asíncrono y ordenado, garantizando que el sistema transite entre estados operativos de manera determinista.
+
+\subsection{Loop de Adquisición de Telemetría y Gestión VISA}
+Para la recepción de los datos provenientes del microcontrolador Arduino, se implementó un loop de adquisición dedicado. Este proceso se encarga de extraer y decodificar la telemetría enviada de forma constante. Como medida de seguridad y robustez, el loop de adquisición solo inicia su ejecución si existe una \textbf{Sesión de VISA activa}; en caso contrario, el proceso permanece inactivo para evitar excepciones o errores de desbordamiento de búfer. Asimismo, el bucle productor tiene la facultad de detener este proceso de forma inmediata según el estado global del sistema.
+
+\subsection{Registro de Datos y Uso de Variables Globales Funcionales (FGV)}
+La gestión del almacenamiento de datos en archivos de formato delimitado por comas (\textbf{.csv}) se centraliza a través de una \textbf{Variable Global Funcional (FGV)}. Esta estructura se utiliza como punto de control maestro para inicializar el registro, gestionar la escritura de las muestras y finalizar el cierre del archivo de manera segura al concluir el programa, evitando la pérdida de información o la corrupción del archivo.
+
+
+
+
+
+\begin{resultadosFase}
+	\begin{itemize}
+		\item \textbf{Estabilidad:} Salida constante de 12.1V bajo carga nominal.
+		\item \textbf{Eficiencia Térmica:} Temperatura del gabinete estable tras 30 minutos de operación.
+		\item \textbf{Funcionalidad:} Reducción del tiempo de conexión de motores en un 70\% gracias a la placa de interfaz.
+	\end{itemize}
+\end{resultadosFase}

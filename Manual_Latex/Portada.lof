@@ -2,19 +2,60 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Transformador original}}{7}{figure.3.1}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Especificaciones del transformador}}{7}{figure.3.2}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Componentes de la Drive Unit}}{8}{figure.3.3}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Panel del controlador viejo}}{9}{figure.3.4}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Tabla de especificaciones del motor y frenos. \cite {tesisSebas} }}{10}{figure.3.5}%
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Fuente de poder conmutada seleccionada}}{13}{figure.3.6}%
-\contentsline {figure}{\numberline {3.7}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{14}{figure.3.7}%
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{15}{figure.3.8}%
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Creación de una placa de distribución de potencia simple}}{15}{figure.3.9}%
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{16}{figure.3.10}%
-\contentsline {figure}{\numberline {3.11}{\ignorespaces Tabla con valores AWG}}{16}{figure.3.11}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Transformador original}}{10}{figure.3.1}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Especificaciones del transformador}}{10}{figure.3.2}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Componentes de la Drive Unit}}{11}{figure.3.3}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Panel del controlador viejo}}{12}{figure.3.4}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Fuente de poder conmutada seleccionada}}{15}{figure.3.5}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{16}{figure.3.6}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{17}{figure.3.7}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Creación de una placa de distribución de potencia simple}}{17}{figure.3.8}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{18}{figure.3.9}%
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Tabla con valores AWG}}{18}{figure.3.10}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Topología.}}{21}{figure.4.1}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Dashboard.}}{31}{figure.4.2}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Ventana de control de la interfaz.}}{31}{figure.4.3}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Ventana de PID de la interfaz.}}{32}{figure.4.4}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Distribución interna de actuadores y periféricos}}{22}{figure.4.1}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Ubicación de LS1}}{23}{figure.4.2}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Ubicación de LS2}}{23}{figure.4.3}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Ubicación de LS3}}{23}{figure.4.4}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Ubicación de LS4 y LS5}}{23}{figure.4.5}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Motor de la muñeca}}{24}{figure.4.6}%
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Motor hombro/antebrazo}}{24}{figure.4.7}%
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Segmento de captación}}{25}{figure.4.8}%
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Segmento de transmisión}}{25}{figure.4.9}%
+\contentsline {figure}{\numberline {4.10}{\ignorespaces Segmento SDP}}{25}{figure.4.10}%
+\contentsline {figure}{\numberline {4.11}{\ignorespaces SDP de frenos}}{27}{figure.4.11}%
+\contentsline {figure}{\numberline {4.12}{\ignorespaces SDP de M1}}{27}{figure.4.12}%
+\contentsline {figure}{\numberline {4.13}{\ignorespaces SDP de M2/M3}}{27}{figure.4.13}%
+\contentsline {figure}{\numberline {4.14}{\ignorespaces SDP de M4/M5}}{27}{figure.4.14}%
+\contentsline {figure}{\numberline {4.15}{\ignorespaces SDP del segmento B}}{28}{figure.4.15}%
+\contentsline {figure}{\numberline {4.16}{\ignorespaces Distribución General del SDP}}{28}{figure.4.16}%
+\contentsline {figure}{\numberline {4.17}{\ignorespaces Diagrama de conexión del final de carrera. Se colocó un resistor pull down.}}{35}{figure.4.17}%
+\contentsline {figure}{\numberline {4.18}{\ignorespaces Simulación en proteus del final de carrera no presionado.}}{36}{figure.4.18}%
+\contentsline {figure}{\numberline {4.19}{\ignorespaces Simulación en proteus del final de carrera simulado}}{36}{figure.4.19}%
+\contentsline {figure}{\numberline {4.20}{\ignorespaces Voltaje leído cuando el final de carrera no está presionado (5V).}}{36}{figure.4.20}%
+\contentsline {figure}{\numberline {4.21}{\ignorespaces Voltaje leído cuando el final de carrera está presionado (0V).}}{36}{figure.4.21}%
+\contentsline {figure}{\numberline {4.22}{\ignorespaces Etiquetado realizado en el segmento de transmisión de los encoders.}}{37}{figure.4.22}%
+\contentsline {figure}{\numberline {4.23}{\ignorespaces Etiquetado en los finales de carrera.}}{37}{figure.4.23}%
+\contentsline {figure}{\numberline {4.24}{\ignorespaces Conexión del freno.}}{38}{figure.4.24}%
+\contentsline {figure}{\numberline {4.25}{\ignorespaces Especificaciones de los motores (12 V / 3.6 W).}}{38}{figure.4.25}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Módulo de captación: Eje de la Base}}{42}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Sensor Sharp GP1R112: Ejes M2 y M3}}{43}{figure.5.2}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Sensor Sharp GP1R112: Ejes M4 y M5}}{43}{figure.5.3}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Disco óptico del encoder Sharp}}{44}{figure.5.4}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Validación dinámica en osciloscopio}}{46}{figure.5.5}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Implementación física de resistencias}}{46}{figure.5.6}%
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Modelado técnico en Proteus}}{46}{figure.5.7}%
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Diagrama de conexión física}}{46}{figure.5.8}%
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Validación Encoder 2}}{48}{figure.5.9}%
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Validación Encoder 3}}{48}{figure.5.10}%
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Validación Encoder 4}}{49}{figure.5.11}%
+\contentsline {figure}{\numberline {5.12}{\ignorespaces Validación Encoder 5}}{49}{figure.5.12}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Topología.}}{57}{figure.6.1}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Tarjeta de frenos.}}{66}{figure.6.2}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Dashboard.}}{70}{figure.7.1}%
+\contentsline {figure}{\numberline {7.2}{\ignorespaces Ventana de control de la interfaz.}}{71}{figure.7.2}%
+\contentsline {figure}{\numberline {7.3}{\ignorespaces Ventana de PID de la interfaz.}}{72}{figure.7.3}%
+\addvspace {10\p@ }
