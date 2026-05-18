@@ -1,47 +1,124 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
-\@writefile{toc}{\contentsline {chapter}{\numberline {7}Labview}{69}{chapter.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Labview}{71}{chapter.6}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {7.1}Interfaz de Usuario en LabVIEW}{69}{section.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.1}Panel de Monitoreo (Dashboard)}{70}{subsection.7.1.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7.1}{\ignorespaces Dashboard.}}{70}{figure.7.1}\protected@file@percent }
-\newlabel{fig:dashboard}{{7.1}{70}{Dashboard}{figure.7.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.2}Modos de Control: Manual y Trayectorias}{70}{subsection.7.1.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7.2}{\ignorespaces Ventana de control de la interfaz.}}{71}{figure.7.2}\protected@file@percent }
-\newlabel{fig:control}{{7.2}{71}{Ventana de control de la interfaz}{figure.7.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.3}Sintonización y Control PID}{71}{subsection.7.1.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7.3}{\ignorespaces Ventana de PID de la interfaz.}}{72}{figure.7.3}\protected@file@percent }
-\newlabel{fig:pid}{{7.3}{72}{Ventana de PID de la interfaz}{figure.7.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7.2}Arquitectura del programa}{72}{section.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.1}Eventos UI}{72}{subsection.7.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.2}Bucle Productor: Gestión de Eventos de la UI}{72}{subsection.7.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.3}Loop de Procesamiento y Control de Flujo}{72}{subsection.7.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.4}Loop de Adquisición de Telemetría y Gestión VISA}{73}{subsection.7.2.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2.5}Registro de Datos y Uso de Variables Globales Funcionales (FGV)}{73}{subsection.7.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}Interfaz de Usuario en LabVIEW}{72}{section.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.1}Panel de Monitoreo (Dashboard)}{72}{subsection.6.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.2}Modos de Control: Manual y Trayectorias}{72}{subsection.6.1.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces Dashboard.}}{73}{figure.6.1}\protected@file@percent }
+\newlabel{fig:dashboard}{{6.1}{73}{Dashboard}{figure.6.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1.3}Sintonización y Control PID}{73}{subsection.6.1.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces Ventana de control de la interfaz.}}{74}{figure.6.2}\protected@file@percent }
+\newlabel{fig:control}{{6.2}{74}{Ventana de control de la interfaz}{figure.6.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}Arquitectura del programa}{74}{section.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.1}Bucle Productor: Gestión de Eventos de la UI}{74}{subsection.6.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces Ventana de PID de la interfaz.}}{75}{figure.6.3}\protected@file@percent }
+\newlabel{fig:pid}{{6.3}{75}{Ventana de PID de la interfaz}{figure.6.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces Bucle de Eventos UI.}}{75}{figure.6.4}\protected@file@percent }
+\newlabel{fig:eventosui}{{6.4}{75}{Bucle de Eventos UI}{figure.6.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.5}{\ignorespaces Para cada botón de la interfaz principal, existe un evento.}}{75}{figure.6.5}\protected@file@percent }
+\newlabel{fig:eventos}{{6.5}{75}{Para cada botón de la interfaz principal, existe un evento}{figure.6.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.6}{\ignorespaces La \textbf  { UI Queue} es el tipo de dato que se comparte entre el \textbf  { loop de Eventos UI y el loop de procesamiento de la UI.} }}{76}{figure.6.6}\protected@file@percent }
+\newlabel{fig:uiqueue}{{6.6}{76}{La \textbf { UI Queue} es el tipo de dato que se comparte entre el \textbf { loop de Eventos UI y el loop de procesamiento de la UI.}}{figure.6.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.7}{\ignorespaces Se utiliza la \textbf  {FGV CSV} para que desde \textbf  {el loop de Eventos UI se mande al loop de Data Logger}.}}{76}{figure.6.7}\protected@file@percent }
+\newlabel{fig:comunicacioncondatalogger}{{6.7}{76}{Se utiliza la \textbf {FGV CSV} para que desde \textbf {el loop de Eventos UI se mande al loop de Data Logger}}{figure.6.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.8}{\ignorespaces Se utliza la \textbf  {FGV de ADQ} para que desde \textbf  {el loop de Eventos UI mande comandos al loop de Adquisición}}}{76}{figure.6.8}\protected@file@percent }
+\newlabel{fig:comunicacionconloopadquisicion}{{6.8}{76}{Se utliza la \textbf {FGV de ADQ} para que desde \textbf {el loop de Eventos UI mande comandos al loop de Adquisición}}{figure.6.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.9}{\ignorespaces El caso que ocurre al presionar stop es un ejemplo de como existe comunicación desde Eventos UI a los otros tres loops.}}{77}{figure.6.9}\protected@file@percent }
+\newlabel{fig:casostopeventosui}{{6.9}{77}{El caso que ocurre al presionar stop es un ejemplo de como existe comunicación desde Eventos UI a los otros tres loops}{figure.6.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.2}Loop de Procesamiento y Control de Flujo}{78}{subsection.6.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.1}{\ignorespaces Descripción de estados y acciones del bucle de procesamiento de la UI.}}{78}{table.6.1}\protected@file@percent }
+\newlabel{tab:casos_loop_ui}{{6.1}{78}{Descripción de estados y acciones del bucle de procesamiento de la UI}{table.6.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.10}{\ignorespaces Loop donde se procesan los comandos provenientes del \textbf  {loop de Eventos UI}.}}{79}{figure.6.10}\protected@file@percent }
+\newlabel{fig:loopprocesamiento}{{6.10}{79}{Loop donde se procesan los comandos provenientes del \textbf {loop de Eventos UI}}{figure.6.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.11}{\ignorespaces Este VI es el que se encarga de la lógica de insertar el subpanel. Sus únicos parámetros son el número del subpanel que se quiere insertar (0 para dashboard, 1 para control manual y 2 para lo del pid) y la acción 'Insert VI'.}}{79}{figure.6.11}\protected@file@percent }
+\newlabel{fig:vicaller}{{6.11}{79}{Este VI es el que se encarga de la lógica de insertar el subpanel. Sus únicos parámetros son el número del subpanel que se quiere insertar (0 para dashboard, 1 para control manual y 2 para lo del pid) y la acción 'Insert VI'}{figure.6.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.3}Registro de Datos y Uso de Variables Globales Funcionales (FGV)}{80}{subsection.6.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.12}{\ignorespaces Este loop actúa según los comandos que manda la \textbf  {FGV CSV} a la case structure.}}{80}{figure.6.12}\protected@file@percent }
+\newlabel{fig:datalogger}{{6.12}{80}{Este loop actúa según los comandos que manda la \textbf {FGV CSV} a la case structure}{figure.6.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.13}{\ignorespaces Estos botones son los encargados de inicializar el loop y detenerlo.}}{80}{figure.6.13}\protected@file@percent }
+\newlabel{fig:botonescsv}{{6.13}{80}{Estos botones son los encargados de inicializar el loop y detenerlo}{figure.6.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.2}{\ignorespaces Flujo lógico del sistema de registro de datos en archivos CSV.}}{81}{table.6.2}\protected@file@percent }
+\newlabel{tab:flujo_guardado_datos}{{6.2}{81}{Flujo lógico del sistema de registro de datos en archivos CSV}{table.6.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2.4}Loop de Adquisición de Telemetría y Gestión VISA}{82}{subsection.6.2.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.14}{\ignorespaces Loop de adquisición de datos. Es controlado por la \textbf  {FGV ADQ}.}}{82}{figure.6.14}\protected@file@percent }
+\newlabel{fig:adquisicion}{{6.14}{82}{Loop de adquisición de datos. Es controlado por la \textbf {FGV ADQ}}{figure.6.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.15}{\ignorespaces La \textbf  {FGV ADQ} es quien decide el comportamiento de la case structure,}}{82}{figure.6.15}\protected@file@percent }
+\newlabel{fig:fgvadq}{{6.15}{82}{La \textbf {FGV ADQ} es quien decide el comportamiento de la case structure,}{figure.6.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.3}{\ignorespaces Lógica operativa del bucle de comunicación VISA y decodificación.}}{83}{table.6.3}\protected@file@percent }
+\newlabel{tab:flujo_visa_comms}{{6.3}{83}{Lógica operativa del bucle de comunicación VISA y decodificación}{table.6.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.3}Subpanels}{84}{section.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.1}Interfaz principal}{84}{subsection.6.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.16}{\ignorespaces Interfaz cuando no existe ningún subpanel insertado.}}{85}{figure.6.16}\protected@file@percent }
+\newlabel{fig:interfazprincipal}{{6.16}{85}{Interfaz cuando no existe ningún subpanel insertado}{figure.6.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.17}{\ignorespaces Carpeta donde se guardan los subpanels.}}{85}{figure.6.17}\protected@file@percent }
+\newlabel{fig:carpetasubpanel}{{6.17}{85}{Carpeta donde se guardan los subpanels}{figure.6.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3.2}Subpanel de Dashboard}{86}{subsection.6.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Gestión de Datos mediante User Events}{86}{subsection.6.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Control de Ejecución y Determinismo}{86}{subsection.6.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.18}{\ignorespaces Front panel al abrir el \textbf  {Dashboard.vi}}}{87}{figure.6.18}\protected@file@percent }
+\newlabel{fig:subpaneldashboard}{{6.18}{87}{Front panel al abrir el \textbf {Dashboard.vi}}{figure.6.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.19}{\ignorespaces Único loop dentro del subpanel de dashboard.}}{87}{figure.6.19}\protected@file@percent }
+\newlabel{fig:loopdashboard}{{6.19}{87}{Único loop dentro del subpanel de dashboard}{figure.6.19}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Subpanel de Control}{88}{section.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Control de Movimiento Continuo (Sliders)}{88}{section.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Control Discreto de Precisión (Botones de Paso)}{88}{section.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Ejecución de Trayectorias Automatizadas (Módulo Excel)}{89}{section.6.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.20}{\ignorespaces Subpanel de controlVI.}}{89}{figure.6.20}\protected@file@percent }
+\newlabel{fig:frontpanelcontrol}{{6.20}{89}{Subpanel de controlVI}{figure.6.20}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.21}{\ignorespaces Único loop con el que funciona este subpanel.}}{90}{figure.6.21}\protected@file@percent }
+\newlabel{fig:loopcontrolvi}{{6.21}{90}{Único loop con el que funciona este subpanel}{figure.6.21}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6.4}{\ignorespaces Lógica de operación del Subpanel de Control Manual y Trayectorias.}}{90}{table.6.4}\protected@file@percent }
+\newlabel{tab:subpanel_control}{{6.4}{90}{Lógica de operación del Subpanel de Control Manual y Trayectorias}{table.6.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.5}VI principales}{91}{section.6.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5.1}FGV VISA WRITE}{91}{subsection.6.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6.5}{\ignorespaces Descripción de funciones y estructura de tramas en FGV VISA Write.}}{92}{table.6.5}\protected@file@percent }
+\newlabel{tab:fgv_visa_write_cases}{{6.5}{92}{Descripción de funciones y estructura de tramas en FGV VISA Write}{table.6.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.22}{\ignorespaces Icono del visa writre.}}{92}{figure.6.22}\protected@file@percent }
+\newlabel{fig:visawriteicon}{{6.22}{92}{Icono del visa writre}{figure.6.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.23}{\ignorespaces Loop del VI: VISA WRITE.}}{93}{figure.6.23}\protected@file@percent }
+\newlabel{fig:fgvvisawrite}{{6.23}{93}{Loop del VI: VISA WRITE}{figure.6.23}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5.2}decodeModbusMessage}{94}{subsection.6.5.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.24}{\ignorespaces Icono del decodeModbusMessage.}}{94}{figure.6.24}\protected@file@percent }
+\newlabel{fig:modbus}{{6.24}{94}{Icono del decodeModbusMessage}{figure.6.24}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Definiciones de Estructura de Datos}{94}{figure.6.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5.3}Procesamiento y Decodificación de Datos: Decode Modbus Message}{95}{subsection.6.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Estructura de la Lógica de Decodificación}{95}{subsection.6.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Interconectividad de Datos}{96}{Item.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.25}{\ignorespaces Loop del VI de decodeModbusMessage.}}{96}{figure.6.25}\protected@file@percent }
+\newlabel{fig:loopdecodemodbus}{{6.25}{96}{Loop del VI de decodeModbusMessage}{figure.6.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5.4}Global init}{97}{subsection.6.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Variables de Protocolo y Sincronización (MODBUS)}{97}{subsection.6.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Configuración del Recurso Serial (VISA)}{97}{subsection.6.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Monitoreo de Estado y Errores}{98}{subsection.6.5.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6.26}{\ignorespaces Símbolo del global init.}}{98}{figure.6.26}\protected@file@percent }
+\newlabel{fig:globaliniticon}{{6.26}{98}{Símbolo del global init}{figure.6.26}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.27}{\ignorespaces Al inicio del programa se asignan valores a estas variables. Se creó este VI para centralizar en un lugar la información que puede cambiar el comportamiento del programa y permite hacer cambios fácilmente.}}{99}{figure.6.27}\protected@file@percent }
+\newlabel{fig:globaklinit}{{6.27}{99}{Al inicio del programa se asignan valores a estas variables. Se creó este VI para centralizar en un lugar la información que puede cambiar el comportamiento del programa y permite hacer cambios fácilmente}{figure.6.27}{}}
 \@setckpt{Labview}{
-\setcounter{page}{74}
+\setcounter{page}{101}
 \setcounter{equation}{0}
-\setcounter{enumi}{2}
+\setcounter{enumi}{4}
 \setcounter{enumii}{6}
 \setcounter{enumiii}{0}
 \setcounter{enumiv}{0}
 \setcounter{footnote}{0}
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
-\setcounter{chapter}{7}
-\setcounter{section}{2}
-\setcounter{subsection}{5}
+\setcounter{chapter}{6}
+\setcounter{section}{5}
+\setcounter{subsection}{4}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{3}
-\setcounter{table}{0}
+\setcounter{figure}{27}
+\setcounter{table}{5}
 \setcounter{parentequation}{0}
 \setcounter{section@level}{0}
-\setcounter{Item}{10}
+\setcounter{Item}{16}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{30}
+\setcounter{bookmark@seq@number}{33}
 \setcounter{tcbbreakpart}{1}
 \setcounter{tcblayer}{0}
 \setcounter{tcolorbox@number}{21}

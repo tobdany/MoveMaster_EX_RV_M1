@@ -324,6 +324,14 @@ Aunque el hardware detecta una transición física, el código procesa esta señ
 	\end{tabularx}
 \end{table}
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{images/encoders/tarjetaEncoders}
+	\caption{Tarjeta de encoders. Los conectores correspondientes a la tarjeta interna es J2, J4 y J6.}
+	\label{fig:tarjetaencoders}
+\end{figure}
+
+
 \subsection{Control de Frenos Electromecánicos}
 Los frenos del robot son dispositivos de seguridad que evitan el colapso de las articulaciones por gravedad cuando los motores no están energizados. Su estado se gestiona mediante lecturas digitales directas (\texttt{digitalRead}), las cuales son integradas en la trama de telemetría. Esta adquisición permite que LabVIEW confirme en tiempo real si el brazo se encuentra en estado de liberación para movimiento o bajo retención de seguridad.
 

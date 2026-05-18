@@ -1,61 +1,84 @@
 \babel@toc {spanish}{}\relax 
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Transformador original}}{10}{figure.2.1}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Especificaciones del transformador}}{10}{figure.2.2}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Componentes de la Drive Unit}}{11}{figure.2.3}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Panel del controlador viejo}}{12}{figure.2.4}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Fuente de poder conmutada seleccionada}}{15}{figure.2.5}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{16}{figure.2.6}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{17}{figure.2.7}%
+\contentsline {figure}{\numberline {2.8}{\ignorespaces Creación de una placa de distribución de potencia simple}}{17}{figure.2.8}%
+\contentsline {figure}{\numberline {2.9}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{18}{figure.2.9}%
+\contentsline {figure}{\numberline {2.10}{\ignorespaces Tabla con valores AWG}}{18}{figure.2.10}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Transformador original}}{10}{figure.3.1}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Especificaciones del transformador}}{10}{figure.3.2}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Componentes de la Drive Unit}}{11}{figure.3.3}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Panel del controlador viejo}}{12}{figure.3.4}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Fuente de poder conmutada seleccionada}}{15}{figure.3.5}%
-\contentsline {figure}{\numberline {3.6}{\ignorespaces Nuevo regulador de voltaje para los microcontroladores}}{16}{figure.3.6}%
-\contentsline {figure}{\numberline {3.7}{\ignorespaces Ejemplos de barras de buses usadas en gabinetes}}{17}{figure.3.7}%
-\contentsline {figure}{\numberline {3.8}{\ignorespaces Creación de una placa de distribución de potencia simple}}{17}{figure.3.8}%
-\contentsline {figure}{\numberline {3.9}{\ignorespaces Conexión de la fuente de poder al regulador de voltaje y barra de bus.}}{18}{figure.3.9}%
-\contentsline {figure}{\numberline {3.10}{\ignorespaces Tabla con valores AWG}}{18}{figure.3.10}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Distribución interna de actuadores y periféricos}}{22}{figure.3.1}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Ubicación de LS1}}{23}{figure.3.2}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Ubicación de LS2}}{23}{figure.3.3}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Ubicación de LS3}}{23}{figure.3.4}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Ubicación de LS4 y LS5}}{23}{figure.3.5}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Motor de la muñeca}}{24}{figure.3.6}%
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Motor hombro/antebrazo}}{24}{figure.3.7}%
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Segmento de captación}}{25}{figure.3.8}%
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Segmento de transmisión}}{25}{figure.3.9}%
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Segmento SDP}}{25}{figure.3.10}%
+\contentsline {figure}{\numberline {3.11}{\ignorespaces SDP de frenos}}{27}{figure.3.11}%
+\contentsline {figure}{\numberline {3.12}{\ignorespaces SDP de M1}}{27}{figure.3.12}%
+\contentsline {figure}{\numberline {3.13}{\ignorespaces SDP de M2/M3}}{27}{figure.3.13}%
+\contentsline {figure}{\numberline {3.14}{\ignorespaces SDP de M4/M5}}{27}{figure.3.14}%
+\contentsline {figure}{\numberline {3.15}{\ignorespaces SDP del segmento B}}{28}{figure.3.15}%
+\contentsline {figure}{\numberline {3.16}{\ignorespaces Distribución General del SDP}}{28}{figure.3.16}%
+\contentsline {figure}{\numberline {3.17}{\ignorespaces Diagrama de conexión del final de carrera. Se colocó un resistor pull down.}}{35}{figure.3.17}%
+\contentsline {figure}{\numberline {3.18}{\ignorespaces Simulación en proteus del final de carrera no presionado.}}{36}{figure.3.18}%
+\contentsline {figure}{\numberline {3.19}{\ignorespaces Simulación en proteus del final de carrera simulado}}{36}{figure.3.19}%
+\contentsline {figure}{\numberline {3.20}{\ignorespaces Voltaje leído cuando el final de carrera no está presionado (5V).}}{36}{figure.3.20}%
+\contentsline {figure}{\numberline {3.21}{\ignorespaces Voltaje leído cuando el final de carrera está presionado (0V).}}{36}{figure.3.21}%
+\contentsline {figure}{\numberline {3.22}{\ignorespaces Etiquetado realizado en el segmento de transmisión de los encoders.}}{37}{figure.3.22}%
+\contentsline {figure}{\numberline {3.23}{\ignorespaces Etiquetado en los finales de carrera.}}{37}{figure.3.23}%
+\contentsline {figure}{\numberline {3.24}{\ignorespaces Conexión del freno.}}{38}{figure.3.24}%
+\contentsline {figure}{\numberline {3.25}{\ignorespaces Especificaciones de los motores (12 V / 3.6 W).}}{38}{figure.3.25}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Distribución interna de actuadores y periféricos}}{22}{figure.4.1}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Ubicación de LS1}}{23}{figure.4.2}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Ubicación de LS2}}{23}{figure.4.3}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Ubicación de LS3}}{23}{figure.4.4}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Ubicación de LS4 y LS5}}{23}{figure.4.5}%
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Motor de la muñeca}}{24}{figure.4.6}%
-\contentsline {figure}{\numberline {4.7}{\ignorespaces Motor hombro/antebrazo}}{24}{figure.4.7}%
-\contentsline {figure}{\numberline {4.8}{\ignorespaces Segmento de captación}}{25}{figure.4.8}%
-\contentsline {figure}{\numberline {4.9}{\ignorespaces Segmento de transmisión}}{25}{figure.4.9}%
-\contentsline {figure}{\numberline {4.10}{\ignorespaces Segmento SDP}}{25}{figure.4.10}%
-\contentsline {figure}{\numberline {4.11}{\ignorespaces SDP de frenos}}{27}{figure.4.11}%
-\contentsline {figure}{\numberline {4.12}{\ignorespaces SDP de M1}}{27}{figure.4.12}%
-\contentsline {figure}{\numberline {4.13}{\ignorespaces SDP de M2/M3}}{27}{figure.4.13}%
-\contentsline {figure}{\numberline {4.14}{\ignorespaces SDP de M4/M5}}{27}{figure.4.14}%
-\contentsline {figure}{\numberline {4.15}{\ignorespaces SDP del segmento B}}{28}{figure.4.15}%
-\contentsline {figure}{\numberline {4.16}{\ignorespaces Distribución General del SDP}}{28}{figure.4.16}%
-\contentsline {figure}{\numberline {4.17}{\ignorespaces Diagrama de conexión del final de carrera. Se colocó un resistor pull down.}}{35}{figure.4.17}%
-\contentsline {figure}{\numberline {4.18}{\ignorespaces Simulación en proteus del final de carrera no presionado.}}{36}{figure.4.18}%
-\contentsline {figure}{\numberline {4.19}{\ignorespaces Simulación en proteus del final de carrera simulado}}{36}{figure.4.19}%
-\contentsline {figure}{\numberline {4.20}{\ignorespaces Voltaje leído cuando el final de carrera no está presionado (5V).}}{36}{figure.4.20}%
-\contentsline {figure}{\numberline {4.21}{\ignorespaces Voltaje leído cuando el final de carrera está presionado (0V).}}{36}{figure.4.21}%
-\contentsline {figure}{\numberline {4.22}{\ignorespaces Etiquetado realizado en el segmento de transmisión de los encoders.}}{37}{figure.4.22}%
-\contentsline {figure}{\numberline {4.23}{\ignorespaces Etiquetado en los finales de carrera.}}{37}{figure.4.23}%
-\contentsline {figure}{\numberline {4.24}{\ignorespaces Conexión del freno.}}{38}{figure.4.24}%
-\contentsline {figure}{\numberline {4.25}{\ignorespaces Especificaciones de los motores (12 V / 3.6 W).}}{38}{figure.4.25}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Módulo de captación: Eje de la Base}}{42}{figure.4.1}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Sensor Sharp GP1R112: Ejes M2 y M3}}{43}{figure.4.2}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Sensor Sharp GP1R112: Ejes M4 y M5}}{43}{figure.4.3}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Disco óptico del encoder Sharp}}{44}{figure.4.4}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Validación dinámica en osciloscopio}}{46}{figure.4.5}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Implementación física de resistencias}}{46}{figure.4.6}%
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Modelado técnico en Proteus}}{46}{figure.4.7}%
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Diagrama de conexión física}}{46}{figure.4.8}%
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Validación Encoder 2}}{48}{figure.4.9}%
+\contentsline {figure}{\numberline {4.10}{\ignorespaces Validación Encoder 3}}{48}{figure.4.10}%
+\contentsline {figure}{\numberline {4.11}{\ignorespaces Validación Encoder 4}}{49}{figure.4.11}%
+\contentsline {figure}{\numberline {4.12}{\ignorespaces Validación Encoder 5}}{49}{figure.4.12}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Módulo de captación: Eje de la Base}}{42}{figure.5.1}%
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Sensor Sharp GP1R112: Ejes M2 y M3}}{43}{figure.5.2}%
-\contentsline {figure}{\numberline {5.3}{\ignorespaces Sensor Sharp GP1R112: Ejes M4 y M5}}{43}{figure.5.3}%
-\contentsline {figure}{\numberline {5.4}{\ignorespaces Disco óptico del encoder Sharp}}{44}{figure.5.4}%
-\contentsline {figure}{\numberline {5.5}{\ignorespaces Validación dinámica en osciloscopio}}{46}{figure.5.5}%
-\contentsline {figure}{\numberline {5.6}{\ignorespaces Implementación física de resistencias}}{46}{figure.5.6}%
-\contentsline {figure}{\numberline {5.7}{\ignorespaces Modelado técnico en Proteus}}{46}{figure.5.7}%
-\contentsline {figure}{\numberline {5.8}{\ignorespaces Diagrama de conexión física}}{46}{figure.5.8}%
-\contentsline {figure}{\numberline {5.9}{\ignorespaces Validación Encoder 2}}{48}{figure.5.9}%
-\contentsline {figure}{\numberline {5.10}{\ignorespaces Validación Encoder 3}}{48}{figure.5.10}%
-\contentsline {figure}{\numberline {5.11}{\ignorespaces Validación Encoder 4}}{49}{figure.5.11}%
-\contentsline {figure}{\numberline {5.12}{\ignorespaces Validación Encoder 5}}{49}{figure.5.12}%
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Topología.}}{57}{figure.5.1}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Tarjeta de encoders. Los conectores correspondientes a la tarjeta interna es J2, J4 y J6.}}{67}{figure.5.2}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Tarjeta de frenos.}}{68}{figure.5.3}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces Topología.}}{57}{figure.6.1}%
-\contentsline {figure}{\numberline {6.2}{\ignorespaces Tarjeta de frenos.}}{66}{figure.6.2}%
-\addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Dashboard.}}{70}{figure.7.1}%
-\contentsline {figure}{\numberline {7.2}{\ignorespaces Ventana de control de la interfaz.}}{71}{figure.7.2}%
-\contentsline {figure}{\numberline {7.3}{\ignorespaces Ventana de PID de la interfaz.}}{72}{figure.7.3}%
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Dashboard.}}{73}{figure.6.1}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Ventana de control de la interfaz.}}{74}{figure.6.2}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Ventana de PID de la interfaz.}}{75}{figure.6.3}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Bucle de Eventos UI.}}{75}{figure.6.4}%
+\contentsline {figure}{\numberline {6.5}{\ignorespaces Para cada botón de la interfaz principal, existe un evento.}}{75}{figure.6.5}%
+\contentsline {figure}{\numberline {6.6}{\ignorespaces La \textbf { UI Queue} es el tipo de dato que se comparte entre el \textbf { loop de Eventos UI y el loop de procesamiento de la UI.} }}{76}{figure.6.6}%
+\contentsline {figure}{\numberline {6.7}{\ignorespaces Se utiliza la \textbf {FGV CSV} para que desde \textbf {el loop de Eventos UI se mande al loop de Data Logger}.}}{76}{figure.6.7}%
+\contentsline {figure}{\numberline {6.8}{\ignorespaces Se utliza la \textbf {FGV de ADQ} para que desde \textbf {el loop de Eventos UI mande comandos al loop de Adquisición}}}{76}{figure.6.8}%
+\contentsline {figure}{\numberline {6.9}{\ignorespaces El caso que ocurre al presionar stop es un ejemplo de como existe comunicación desde Eventos UI a los otros tres loops.}}{77}{figure.6.9}%
+\contentsline {figure}{\numberline {6.10}{\ignorespaces Loop donde se procesan los comandos provenientes del \textbf {loop de Eventos UI}.}}{79}{figure.6.10}%
+\contentsline {figure}{\numberline {6.11}{\ignorespaces Este VI es el que se encarga de la lógica de insertar el subpanel. Sus únicos parámetros son el número del subpanel que se quiere insertar (0 para dashboard, 1 para control manual y 2 para lo del pid) y la acción 'Insert VI'.}}{79}{figure.6.11}%
+\contentsline {figure}{\numberline {6.12}{\ignorespaces Este loop actúa según los comandos que manda la \textbf {FGV CSV} a la case structure.}}{80}{figure.6.12}%
+\contentsline {figure}{\numberline {6.13}{\ignorespaces Estos botones son los encargados de inicializar el loop y detenerlo.}}{80}{figure.6.13}%
+\contentsline {figure}{\numberline {6.14}{\ignorespaces Loop de adquisición de datos. Es controlado por la \textbf {FGV ADQ}.}}{82}{figure.6.14}%
+\contentsline {figure}{\numberline {6.15}{\ignorespaces La \textbf {FGV ADQ} es quien decide el comportamiento de la case structure,}}{82}{figure.6.15}%
+\contentsline {figure}{\numberline {6.16}{\ignorespaces Interfaz cuando no existe ningún subpanel insertado.}}{85}{figure.6.16}%
+\contentsline {figure}{\numberline {6.17}{\ignorespaces Carpeta donde se guardan los subpanels.}}{85}{figure.6.17}%
+\contentsline {figure}{\numberline {6.18}{\ignorespaces Front panel al abrir el \textbf {Dashboard.vi}}}{87}{figure.6.18}%
+\contentsline {figure}{\numberline {6.19}{\ignorespaces Único loop dentro del subpanel de dashboard.}}{87}{figure.6.19}%
+\contentsline {figure}{\numberline {6.20}{\ignorespaces Subpanel de controlVI.}}{89}{figure.6.20}%
+\contentsline {figure}{\numberline {6.21}{\ignorespaces Único loop con el que funciona este subpanel.}}{90}{figure.6.21}%
+\contentsline {figure}{\numberline {6.22}{\ignorespaces Icono del visa writre.}}{92}{figure.6.22}%
+\contentsline {figure}{\numberline {6.23}{\ignorespaces Loop del VI: VISA WRITE.}}{93}{figure.6.23}%
+\contentsline {figure}{\numberline {6.24}{\ignorespaces Icono del decodeModbusMessage.}}{94}{figure.6.24}%
+\contentsline {figure}{\numberline {6.25}{\ignorespaces Loop del VI de decodeModbusMessage.}}{96}{figure.6.25}%
+\contentsline {figure}{\numberline {6.26}{\ignorespaces Símbolo del global init.}}{98}{figure.6.26}%
+\contentsline {figure}{\numberline {6.27}{\ignorespaces Al inicio del programa se asignan valores a estas variables. Se creó este VI para centralizar en un lugar la información que puede cambiar el comportamiento del programa y permite hacer cambios fácilmente.}}{99}{figure.6.27}%
