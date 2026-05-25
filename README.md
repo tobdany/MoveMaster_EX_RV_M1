@@ -16,16 +16,19 @@ Este repositorio contiene el ecosistema completo de software, firmware y documen
 
 El repositorio se organiza de la siguiente manera:
 
-├── DocumentacionReferencia/                    # Tesis e investigaciones previas de estudiantes que renovaron el robot.
-├── Hardware/                                   # Archivos de diseño electrónico y mapeo físico.
-│   └── Matriz_de_Interconexiones.xlsx          # Excel maestro con el pinout del conector SDP y código de colores.
-├── Manual_Latex/                               # Código fuente en LaTeX del reporte de investigación y manual de usuario.
-└── Src/                                        # Código fuente del sistema de control.
-    ├── Code/                                   # Firmware de bajo nivel para los microcontroladores.
-    │   ├── ArduinoMega/                       # Firmware de adquisición, control de frenos y comunicación Modbus.
-    │   └── paraEncoder/Esp32/                              # Código base para la futura adaptación y migración de hardware.
-    ├── Labview/                                # Código de la HMI, lectura de sensores, FGVs y arquitectura de loops.
-    └── Eutinas/                                # Archivos de trayectorias (CSV) cargables para rutinas de movimiento.
+```text
+├── DocumentacionReferencia/           # Tesis e investigaciones previas de estudiantes que renovaron el robot.
+├── Hardware/                          # Archivos de diseño electrónico y mapeo físico.
+│   └── Matriz_de_Interconexiones.xlsx # Excel maestro con el pinout del conector SDP y código de colores.
+├── Manual_Latex/                      # Código fuente en LaTeX del reporte de investigación y manual de usuario.
+└── Src/                               # Código fuente del sistema de control.
+    ├── Code/                          # Firmware de bajo nivel para los microcontroladores.
+    │   ├── ArduinoMega/               # Firmware de adquisición, control de frenos y comunicación Modbus.
+    │   └── paraEncoder/
+    │       └── Esp32/                 # Código base para la futura adaptación y migración de hardware.
+    ├── Labview/                       # Código de la HMI, lectura de sensores, FGVs y arquitectura de loops.
+    └── Rutinas/                       # Archivos de trayectorias (CSV) cargables para rutinas de movimiento.
+```
 
 --------------------------------------------------------------------------------
 
@@ -46,28 +49,36 @@ Ubicado en `src/Labview/`, centraliza las constantes críticas del protocolo y l
 
 ## 2. Flujo Lógico de Adquisición de Telemetría (Lazo VISA)
 
-El bucle de adquisición lee el búfer serial continuamente y opera bajo una máquina de estados de 5 pasos:
+El bucle de adquisición lee continuamente el búfer serial y opera mediante una máquina de estados de 5 pasos:
 
-[Start: Inicializa VISA y resetea valores]
-        ↓
+```text
+[Start: Inicializa VISA y reinicia valores]
+                ↓
 [Write Data: ¿Sesión VISA iniciada?]
         ├── No → [Espera activa / Idle]
         └── Sí → [Llama a Decode Modbus Message]
-                          ↓
-          [Manda datos en Arrays a FGV CSV y Dashboard]
-                          ↓
-                     [Repite ciclo]
+                                ↓
+          [Envía datos a Arrays, FGV CSV y Dashboard]
+                                ↓
+                        [Repite ciclo]
+```
 
-[Reconnect]
-→ Cierra VISA previa
-→ Reinicia con nuevo indicador
+### Reconnect
+
+```text
+→ Cierra la sesión VISA previa
+→ Reinicia con un nuevo indicador
 → Retorna a reposo / Idle
+```
 
-[Stop]
+### Stop
+
+```text
 → Cierra VISA
 → Vacía buffers
-→ Reinicia Shift Registers e Indicadores
+→ Reinicia Shift Registers e indicadores
 → Fin
+```
 
 --------------------------------------------------------------------------------
 
@@ -77,7 +88,7 @@ Este VI des-serializa secuencialmente los lotes de telemetría mediante una func
 
 1. Definiciones Clave:
 
-   * **Lote de Datos (*Paquetote*):**
+   * **Lote de Datos:**
      Bloque masivo de bytes recibidos en el búfer serial cuyo tamaño mínimo es igual a:
 
      Longitud de Trama (31) × Número de Paquetes
