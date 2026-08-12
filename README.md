@@ -17,22 +17,58 @@ Este repositorio contiene el ecosistema completo de software, firmware y documen
 El repositorio se organiza de la siguiente manera:
 
 ```text
-├── DocumentacionReferencia/           # Tesis e investigaciones previas de estudiantes que renovaron el robot.
-├── Hardware/                          # Archivos de diseño electrónico y mapeo físico.
-│   └── Matriz_de_Interconexiones.xlsx # Excel maestro con el pinout del conector SDP y código de colores.
-├── Manual_Latex/                      # Código fuente en LaTeX del reporte de investigación y manual de usuario.
-└── Src/                               # Código fuente del sistema de control.
+├── DocumentacionReferencia/           # Información técnica y documentos de soporte que sirvieron de apoyo (manuales, tesis, cálculos cinemáticos).
+├── Hardware/                          # Diseño físico y eléctrico del sistema.
+│   ├── Matriz_de_Interconexiones.xlsx # Mapa completo de conexiones físicas y pinout del brazo robótico.
+│   └── solidCaja/                     # Modelos CAD 3D (SolidWorks/STEP) del diseño de la caja de control y componentes.
+├── Manual.pdf                         # Reporte y manual de usuario final compilado.
+├── TeXstudio_Latex/                   # Código fuente en LaTeX, diagramas e imágenes utilizados para redactar el manual.
+└── Src/                               # Código fuente del sistema de control y comunicación.
     ├── Code/                          # Firmware de bajo nivel para los microcontroladores.
-    │   ├── ArduinoMega/               # Firmware de adquisición, control de frenos y comunicación Modbus.
-    │   └── paraEncoder/
-    │       └── Esp32/                 # Código base para la futura adaptación y migración de hardware.
-    ├── Labview/                       # Código de la HMI, lectura de sensores, FGVs y arquitectura de loops.
-    └── Rutinas/                       # Archivos de trayectorias (CSV) cargables para rutinas de movimiento.
+    │   ├── ControladorBrazo/          # Sistema principal de control.
+    │   │   ├── ArduinoMega/           # Firmware del controlador principal (adquisición, frenos y comunicación).
+    │   │   └── ESP32/                 # Firmware para lectura e integración de encoders con el ESP32.
+    │   ├── MandoBluetooth/            # Firmware para el control remoto inalámbrico vía Bluetooth (Arduino Nano / Joystick).
+    │   └── PruebasBasicas/            # Códigos de prueba unitarios e individuales hechos en el ESP32 (Encoders, Modbus, PWM, etc.).
+    ├── Labview/                       # HMI en LabVIEW (lectura de sensores, interfaz de usuario, FGVs y arquitectura de loops).
+    └── Rutinas/                       # Archivos de trayectorias (CSV y XLSX) cargables para secuencias de movimiento.
 ```
 
 --------------------------------------------------------------------------------
 
 # 🛠️ Detalles de la Arquitectura de Software y Hardware
+
+## Arquitectura del Software (`main`)
+
+El VI principal (`main.vi`) está diseñado bajo una arquitectura multihilo compuesta por **cuatro bucles concurrentes (parallel loops)** ejecutándose en paralelo. Esta distribución permite separar las tareas de alta prioridad (como la adquisición serial) de la gestión visual y el almacenamiento en disco, garantizando la captura de datos cada 4 ms sin bloqueos ni latencia en la interfaz de usuario.
+
+### 🔄 Bucles Concurrentes (Parallel Loops)
+
+1. **Loop de Eventos UI (`Event Loop UI`)**
+   - **Función**: Captura las interacciones y eventos generados por el usuario en el Panel Frontal (presión de botones, navegación, paradas de emergencia).
+   - **Comunicación**: Transmite las órdenes hacia los otros tres bucles mediante colas de mensajes (`UI Queue`) y Variables Globales Funcionales (`FGVs`).
+
+2. **Loop de Procesamiento de UI (`UI Processing Loop`)**
+   - **Función**: Recibe y procesa las órdenes provenientes del bucle de eventos a través de la cola de mensajería `UI Queue`.
+   - **Gestión de Subpanels**: Ejecuta la lógica para insertar dinámicamente las diferentes vistas en la ventana principal (`Dashboard.vi`, `Control.vi` y `PID.vi`) según la navegación seleccionada.
+
+3. **Loop de Logging de Datos (`Data Logger Loop`)**
+   - **Función**: Administra el registro continuo e historial de telemetría del robot.
+   - **Mecanismo**: Es controlado por la `FGV CSV`, la cual le dicta cuándo iniciar, pausar, estructurar o detener la escritura de datos en archivos en formato `.csv`.
+
+4. **Loop de Adquisición de Datos (`Adquisición ADQ Loop`)**
+   - **Función**: Mantiene el enlace de comunicación serial directa con el microcontrolador para la lectura/recepción de tramas de telemetría.
+   - **Mecanismo**: Es gobernado por la `FGV ADQ` y procesa ráfagas periódicas con la información de los 5 encoders y los finales de carrera sin congestionar el hilo de la interfaz gráfica.
+
+---
+
+### 📡 Mecanismos de Intercomunicación
+
+| Mecanismo de Comunicación | Origen ➔ Destino | Propósito |
+| :--- | :--- | :--- |
+| **`UI Queue`** | Eventos UI ➔ Procesamiento UI | Compartir comandos de acción e instrucciones de la interfaz. |
+| **`FGV CSV`** | Eventos UI ➔ Data Logger | Enviar estados y comandos para la gestión de archivos CSV. |
+| **`FGV ADQ`** | Eventos UI ➔ Adquisición | Controlar la secuencia de lectura y parámetros de la etapa de adquisición. |
 
 ## 1. Inicialización Global (`Global Init`)
 
@@ -223,11 +259,9 @@ Gobernado por la Variable Global Funcional `FGV CSV`, este lazo paralelo e indep
 1. LabVIEW:
    Versión 2026 o posterior con controladores NI-VISA instalados.
 
-2. Arduino IDE:
-   Para compilar y cargar el firmware en:
-   `Src/Code/ArduinoMega/`
+2. Arduino IDE
 
 3. Excel/Herramienta CSV:
    Necesario para el diseño e interpretación de hojas de trayectorias
    `src/rutinas/`
-```
+
